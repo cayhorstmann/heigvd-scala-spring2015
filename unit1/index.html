@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 1</title> 
+    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
+    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
+    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script> 
+  </head> 
+  <body>
+
+    <h1>Programmation appliquée en Scala</h1>
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p>
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2014 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a>
+      </p>
+    </div> 
+
+    
+    <h1>Why Scala?</h1> 
+    <p class='sideimage'><img src='scala_logo.png' alt=''/></p> 
+    <ul>
+      <li>Multi-paradigm language</li>
+      <li>Object-oriented and functional</li>
+      <li>Statically typed</li>
+      <li>Scalable from simple scripts to sophisticated (but still easy-to-use) libraries</li>
+      <li>Invented by Martin Odersky at EPFL</li> 
+      <li>Works with Java VM tools/libraries/infrastructure</li>
+      <li>Used for big-iron projects in industry</li>
+      <li>Pragmatic choice as successor to Java (whose evolution has slowed to a crawl)</li>
+      <li>Expands your mind and makes you think differently about programming in any language</li>
+    </ul>
+
+    <h1>About the Course</h1>
+
+    <ul><li>Meets Monday 13:00 - 16:25</li>
+      <li>Lecture/Lab/Break/Lecture/Lab</li>
+      <li>Short lectures/long labs</li>
+      <li>You can ask questions/write reports in English or French</li>
+      <li>Course/exams: 40%, labs/homeworks: 30%, project: 30%</li>
+    </ul>
+
+    <h1>What is the Most Important Skill...</h1>
+    <p>...that HEIG-VD computer science graduates wish they had learned better in college?</p>
+    <ol class='clicker'><li>Object-Oriented Programming</li>
+      <li>Functional Programming</li>
+      <li>Programming Projects</li>
+      <li>Giving Presentations in English</li>
+    </ol>
+    
+    <h1>Do You Already Know Some Scala?    </h1>
+      <ol class='clicker'><li>No</li>
+        <li>Just a little</li>
+        <li>I am reasonably fluent</li>
+        <li>I am an expert</li>
+      </ol>
+
+    <h1>Scala Basics</h1> 
+    <ul>
+      <li>Types <code>Int</code>, <code>Double</code>, <code>Boolean</code>, <code>String</code></li> 
+      <li>Arithmetic like in C++/Java: <code>+ - * / %</code></li> 
+      <li>Variable type is inferred: 
+        <pre>val luckyNumber = 13 // luckyNumber is an <strong>Int</strong></pre> 
+      </li> 
+      <li>Function types: 
+        <pre>val square = (x: Int) =&gt; x * x // square is an <strong>Int =&gt; Int</strong></pre> 
+      </li> 
+      <li>Semicolons at the end of a line are optional 
+        <pre>val x = 1
+val y = 2 + // end line with operator to indicate that there is more to come
+3</pre> 
+      </li> 
+      <li>Everything is an object 
+        <pre>1.<strong>to</strong>(10) // Apply <strong>to</strong> method to 1, returns Range(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)</pre> 
+      </li>
+    </ul>
+
+    <h1>Map</h1>
+    <ul><li><code>1.to(10)</code> yields a <code>Range</code></li>
+      <li>Collections <code>List</code>, <code>Vector</code> (similar to C++), <code>Range</code>, many more</li> 
+      <li><code>map</code> works on any collection 
+        <pre>val square = (x: Int) =&gt; x * x 
+1.to(9).map(square)
+  // Yields 1 4 9 16 25 ... 81</pre></li>
+      <li>Applies function to all elements and yields collection of results</li>
+      <li><a href='http://mathworld.wolfram.com/QuadraticResidue.html'>What is</a>
+        <pre>1.to(9).map(square).map(x =&gt; x % 10).distinct</pre></li>
+      <li>No <code>()</code> behind <code>distinct</code>. Rule of thumb: no args and not mutating ⇒ no <code>()</code></li>
+      <li>How many lines of code would this take in C++?</li>
+    </ul> 
+
+    <h1>Functional Programming</h1> 
+    <ul>
+      <li>Functional programming: Functions are values</li> 
+      <li>In C++, values are 
+        <ul>
+          <li>Primitive types <code>int</code>, <code>double</code>, etc.</li> 
+          <li>Structure/class values</li> 
+          <li>Pointers</li> 
+        </ul> 
+      </li> 
+      <li>A function is not a “first class” value in C++ 
+        <ul>
+          <li>Cannot create new functions in a running program</li> 
+        </ul> 
+      </li> 
+      <li>In a functional programming language, functions are first-class values 
+        <ul>
+          <li>Can have variables that hold functions</li> 
+          <li>Can create new functions</li> 
+        </ul> 
+      </li> 
+    </ul> 
+
+    <h1>Functional Programming in Scala</h1> 
+    <ul>
+      <li>Functions can be values 
+        <pre>val num = 3.14
+val fun = math.ceil _
+fun(num) // prints 4</pre> 
+      </li> 
+      <li>Functions can be anonymous... 
+        <pre>(x: Int) =&gt; x * x</pre> 
+      </li> 
+      <li>...just like numbers 
+        <pre>3.14</pre> 
+      </li> 
+      <li>Of course, can put function values into variables and then use them 
+        <pre>val square = <strong>(x: Int) =&gt; x * x</strong>
+square(10) // prints 100</pre> 
+      </li> 
+      <li>...again, just like numbers 
+        <pre>val pi = 3.14
+pi * 10 // prints 31.4</pre> 
+      </li> 
+    </ul> 
+
+    <h1>Why Functional Programming?</h1> 
+    <ul>
+      <li>Simpler and clearer programming style</li> 
+      <li>Often useful to pass functions as parameters 
+        <pre>val numbers = Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+numbers.map(<strong>(x: Int) =&gt; x * x</strong>)
+   // Prints Vector(1, 4, 9, 16, 25, 36, 49, 64, 81, 100)</pre> 
+      </li> 
+      <li>In C++, you can also do this, but there are no anonymous functions. 
+        <pre>vector&lt;int&gt; map(vector&lt;int&gt; values, <strong>int (*f)(int)</strong>) {
+   vector&lt;int&gt; result;
+   for (int i = 0; i &lt; size; i++) result.push_back(f(values[i]));
+   return result;
+}
+int square(int x) { return x * x; }
+ ...
+res = map(numbers, <strong>square</strong>); // Must pass name of function</pre> 
+      </li> 
+      <li>In Scala, but not in C++, a function can produce a new function</li> 
+    </ul> 
+
+    <h1>Immutability</h1> 
+    <ul>
+      <li>Immutable: Cannot change</li> 
+      <li>In Java, strings are immutable 
+        <ul>
+          <li><code>"Hello".toUpper()</code> doesn't change <code>"Hello"</code> but returns a new string <code>"HELLO"</code></li> 
+        </ul> 
+      </li> 
+      <li>In Scala, <code>val</code> are immutable 
+        <pre>val num = 3.14
+num = 1.42 // Error</pre> 
+      </li> 
+      <li>Pure functional programming: No mutations</li> 
+      <li>Don't mutate—always return the result as a new value</li> 
+      <li>Functions that don't mutate state are inherently parallelizable</li> 
+      <li>Important consideration in light of the end of <a href='http://www.intel.com/technology/mooreslaw/index.htm'>Moore's Law</a></li> 
+    </ul> 
+
+    <h1>Lab</h1> 
+    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <ul>
+      <li>Format of classes: approx. 20 minutes lecture, 40 minutes lab, 15 minutes wrap-up </li> 
+      <li>You work with a buddy </li> 
+      <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+      <li>When you get stuck, ask your buddy first!</li> 
+      <li>Switch coder/scribe roles each lab</li>
+      <li>The coder submits worksheet to Fatemeh.Borran@heig-vd.ch. Include the scribe's name in the worksheet!</li>
+      <li>The scribe submits answers to Fatemeh.Borran@heig-vd.ch. Include the coder's name in the report!</li> 
+    </ul> 
+
+    <h1>Part 1: The Scala Worksheet</h1> 
+    <ol class='la'>
+      <li>Start the Scala IDE and make a new Scala project: File -&gt; New -&gt; Scala Project. Give a name <code>Worksheets</code>. Right-click on the project in the Package Explorer, then select New -&gt; Scala Worksheet. Call it <code>Day1</code>.</li> 
+      <li>Make a new line before the <!-- { --><code>}</code> . Type <code>6 * 7</code> and then save (Ctrl+S/⌘+S). What do you get?</li> 
+      <li>Edit the line to read <code>val a = 6 * 7</code> and save. What do you get?</li> 
+      <li>Add <code>a</code>. What do you get? </li> 
+      <li>Add <code>a = 43</code>. What do you get? Why?</li> 
+      <li>Remove that line and add <code>val b;</code> (This time with a semicolon.) What do you get? Why?</li>
+      <li>Now remove that line.</li>
+    </ol> 
+
+    <h1>Part 2: Functions are Values</h1> 
+    <ol class='la'>
+      <li>Add <code>val triple = (x: Int) =&gt; 3 * x</code>. What do you get? </li> 
+      <li>Add <code>triple(5)</code>. What do you get? 
+        <blockquote>
+          <p>Tip: These “What do you get” exercises are a lot more enjoyable and effective when you and your buddy first discuss what you think you'll get before you execute the Save command.</p> 
+        </blockquote> 
+      </li> 
+      <li>Add <code>triple</code>. What do you get?</li> 
+      <li>What is the type of <code>triple</code> in Scala?</li> 
+      <li>What is the type of <code>5</code> in Scala?</li> 
+    </ol> 
+
+    <h1>Part 3: Functions as Parameters</h1> 
+    <ol class='la'>
+      <li>Type <code>1.to(10)</code>. What do you get?</li> 
+      <li>Type <code>1.to(10).map(triple)</code>. What do you get? Why? </li> 
+      <li>How do you get the cubes of the numbers from 1 to 10? </li> 
+      <li>How do you get the cubes of the numbers from 1 to 10 <em>without using </em><code>val</code>? Hint: Anonymous functions</li>
+    </ol>
+    <h1>Part 4: Quadratic Residues (Extra Credit)</h1>
+    <ol class='la'><li><p>Do you remember this?</p>
+        <pre>0.to(9).map(square).map(x =&gt; x % 10).distinct</pre>
+        <p>Try it out. What did you get?</p>       
+      </li>
+      <li>These are called the “quadratic residues modulo 10”—the values that are squares of some value in { 0...9 }.</li>
+      <li>What are the quadratic residues modulo 11? Modulo 16?</li>
+      <li>Modulo <code>n</code>? Write a function <code>val qres = (n: Int) =&gt; ... </code> that produces them. What is your function? What is <code>qres(20)</code>?</li>
+      <li>For <code>n</code> going from 2 to 20, how many quadratic residues are there?
+        <p>Hint: <code>2.to(20).map(...)</code> and <code>map(l -&gt; l.length)</code></p>
+      </li>
+      <li>Did you get it right? Check against the table in <a href='http://mathworld.wolfram.com/QuadraticResidue.html'>this page</a>. In that table, 0 is not considered a quadratic residue, so your counts should be one higher.</li>
+      <li>What would it have taken to do this in C++?</li>
+    </ol>
+  </body>
+</html>

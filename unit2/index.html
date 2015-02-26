@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 2</title> 
+    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
+    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
+    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script>
+  </head> 
+  <body>
+    <h1>Programmation appliquée en Scala</h1>
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p>
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2014 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a>
+      </p>
+    </div>
+    <h1>Conditional Expressions</h1>
+    <ul>
+      <li>
+        <pre>if (<var>booleanExpression</var>) <var>expression1</var> else <var>expression2</var></pre> 
+      </li> 
+      <li>if/else is an <var>expression</var>, not a statement. Can be used in other expressions: 
+        <pre>val y = (<strong>if (x &gt;= 0) 2 else 0</strong>) - 1</pre> 
+      </li> 
+      <li>Like <code>? :</code> in C++</li> 
+      <li>Type is the most specific supertype common to <var>expression1</var>, <var>expression2</var> 
+        <pre>val z = if (condition) 3 else "Hello"
+   // type is Any</pre> 
+      </li> 
+      <li>Omitting the <code>else</code> yields a value of type <code>Unit</code> if <code>condition</code> is <code>false</code> (like <code>void</code> in C++)</li> 
+    </ul> 
+
+    <h1>Vectors</h1>
+
+    <ul><li>Immutable array </li>
+      <li>Random access <code>v(i)</code></li>
+      <li><code>Vector.fill(n)(e)</code> yields a new vector with <code>n</code> copies of <code>e</code> <pre>val v = Vector.fill(10)("Bonjour")</pre></li>
+      <li><code>v.updated(i, e)</code> yields a new vector with <code>e</code> at position <code>i</code><pre>val v2 = v.updated(9, "Adieu")</pre></li>
+      <li>More common, bulk transformation with <code>map</code>
+      <pre>v2.map(s =&gt; s.toLowerCase)</pre></li>
+      <li>Can also pass expression yielding a value to <code>fill</code>
+      <pre>Vector.fill(10)(math.random)</pre></li>
+      <li><code>Vector.iterate(s, n)(f)</code> computes the vector with elements <code>s</code>, <code>f(s)</code>, <code>f(f(s))</code>, ...
+      <pre>Vector.iterate("Bonjour", 8)(s =&gt; s.drop(1))</pre></li>
+    </ul>
+
+    <h1>What is the Value of... </h1>
+    <pre>"Fred".toVector.map(c =&gt; 'a' &lt;= c &amp;&amp; c &lt;= 'z')</pre>
+    <ol class='clicker'><li><code>Vector('F', 'r', 'e', 'd')</code></li>
+      <li><code>Vector('r', 'e', 'd')</code></li>
+      <li><code>Vector(false, true, true, true)</code></li>
+      <li>Something else (other value, syntax error, ...)</li>
+    </ol>
+
+    <h1>Maps</h1>
+    <p class='sideimage'><img src='desert-island.jpg'/></p>
+
+    <ul><li><em>If I were stranded on a desert island and could only take one data structure with me, it would be the hash table.</em> — Peter van der Linden</li>
+      <li>Construct a map <pre>val scores = Map("Alice" -&gt; 10, "Bob" -&gt; 3, "Cindy" -&gt; 8)</pre></li>
+      <li>Access element
+      <pre>val alicesScore = scores("Alice")
+   // They don't call it a map for nothing
+val fredsScore = scores.getOrElse("Fred", 0)</pre></li>
+      <li>Update map (i.e. get new map with updates)
+<pre>val newScores = scores + ("Bob" -&gt; 10, "Fred" -&gt; 7)
+val newerScores = newScores - "Alice" // Remove key and value</pre>
+      </li>
+    </ul>
+   
+    <h1>Tuples</h1>
+
+
+    <ul><li>Heterogeneous sequence of elements
+      <pre>val myFirstTuple = (1, 3.14, "Fred")</pre></li>
+      <li>Tuple type <code>(Int, Double, String)</code></li>
+      <li>Access components with methods <code>_1</code> (!), <code>_2</code>, <code>_3</code>
+      <pre>val second = myFirstTuple._2</pre></li>
+      <li>Or with destructuring
+      <pre>val (first, second, _) = myFirstTuple</pre></li>
+      <li><code>-&gt;</code> operator makes pairs. <code>"Alice" -&gt; 10</code> is the same as <code>("Alice", 10)</code></li>
+      <li>A map is a collection of pairs.
+      <pre>scores.map(p =&gt; (p._2, p._1))
+scores.map(p =&gt; { val (x, y) = p; (y, x) })
+   // Can't destructure parameter directly
+</pre></li>
+      
+    </ul>
+
+    <h1>What is <code>result</code>...</h1>
+    <p>...where</p>
+    <pre>val words = "Mary had a little lamb".split(" ").toVector
+val result = words.map(w =&gt; w -&gt; w.length).toMap</pre>
+    <ol class='clicker'><li>A <code>Vector[(String, Int)]</code></li>
+      <li>A <code>Vector[String =&gt; Int]</code></li>      
+      <li>A <code>Map[String, Int]</code></li>
+      <li>Something else (other type, syntax error, ...)</li>
+    </ol>
+
+    <h1>Scaladoc</h1>
+    <p class='fullimage'><img src='scaladoc.png'/></p>
+
+    <h1>Scaladoc Tips</h1>
+
+    <ul><li>At <a href='http://www.scala-lang.org/api/2.11.4/'>http://www.scala-lang.org/api/2.11.4/</a></li>
+      <li>Tip: Download the docs from <a href='http://scala-lang.org/download/2.11.4.html'>the bottom of this site</a> and install on your laptop</li>
+      <li>Use the search filter in the top left corner</li>
+      <li>Whoa! So many methods!!! Just skip the ones that don't make sense</li>
+      <li>C = class (instance methods), O = object (like Java/C++ “static” methods)</li>
+      <li>Operators are at the top of each page. Exception: <code>apply</code> is the <code>()</code> operator, <code>unary_-</code> is what you think it is.</li>
+      <li><code>GenSeq</code>? <code>TraversableLike</code>? <code>FilterMonadic</code>??? Just think “some stuff for collections” and move on.</li>
+      <li><code>implicit</code> means there is an automatic conversion. Ignore.</li>
+      <li>Also look into <code>RichInt</code>, <code>RichDouble</code>, <code>StringOps</code> for numbers and strings</li>
+      <li>Math functions are in the <em>package</em> <code>scala.math</code></li>
+    </ul>
+
+    
+    <h1>Lab</h1> 
+    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <ul>
+      <li>Format of classes: approx. 20 minutes lecture, 40 minutes lab, 15 minute wrap-up </li> 
+      <li>You work with a buddy </li> 
+      <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+      <li>When you get stuck, ask your buddy first!</li> 
+      <li>Switch coder/scribe roles each lab</li> 
+      <li>The coder submits worksheet to Fatemeh.Borran@heig-vd.ch. Include the scribe's name in the worksheet!</li>
+      <li>The scribe submits answers to Fatemeh.Borran@heig-vd.ch. Include the coder's name in the report!</li> 
+    </ul> 
+
+    <h1>Part 1: If Expressions</h1>
+
+    <ol><li>Make a worksheet <code>Day2</code>. Paste in
+      <pre>if (math.random &gt; 0.5) "Bonjour" else "Adieu"</pre> and save. What do you get?</li>
+      <li>Paste it in a couple more times. What do you get?</li>
+      <li>Make a vector with ten results of that call. (Not by pasting it 10 times, of course.)</li>
+      <li>Given a sequence of integers, produce a sequence of tuples <code>(n, 0)</code> if <code>n</code> is positive and <code>(0, -n)</code> if <code>n</code> is negative. Test with <code>-10.to(10)</code>.</li>
+      <li>Write a function that yields 1 if <code>x &gt; 0</code> , 0 if <code>x</code> equals 0, and <code>-1</code> if <code>x &lt; 0</code>. Complete <code>val sign = ...</code> and then call <code>-10.to(10).map(sign)</code>.</li>
+      <li><strong>Do not use any constructs that weren't covered!</strong> For example, don't use <code>def</code> in the preceding assignment.</li>
+    </ol>
+
+    <h1>Part 2: Strings are Sequences Too</h1>
+
+    <ol class='la'><li>What is <code>"Fred"(2)</code>? Why?</li>
+      <li>How can you turn it into <code>"Free"</code>? That is, what call yields a new string with characters <code>'F' 'r' 'e' 'e'</code>? (Hint: Don't use <code>substring</code>, but look at the title of the slide.)</li>
+      <li>How can you reverse a string?       <strong>Tip:</strong> Don't hesitate to experiment in the worksheet. That's what it's there for. Type <code>"Bonjour".rev</code> and hit Ctrl Space. What happens?</li>
+      <li>Does that method work for other sequences too? Experiment with <code>1.to(10)</code>. What happens?</li>
+      <li>Does <code>distinct</code> work with strings? What does it do? Give an example.</li>
+      <li>What about <code>map</code>? Give an example.</li>
+      <li>How do you remove the last character of a string? Hint: You saw earlier how to drop the first character. Look up the Scaladoc of <code>StringOps</code>.</li>
+    </ol>
+    
+    
+
+    <h1>Part 3: Fun with Vectors</h1>
+
+    <ol class='la'><li>What is
+      <pre>val words = io.Source.fromFile("/usr/share/dict/words").getLines().toVector</pre>
+      (If you get an exception that you don't have <code>/usr/share/dict/words</code>, then first save the contents of <a href='https://raw.githubusercontent.com/eneko/data-repository/master/data/words.txt'>this link</a> somewhere and change the location to something like <code>"C:\\Users\\Yourname\\Downloads\\words.txt"</code>.)</li>
+      <li>How many words are in it? (Try out the obvious, or look into Scaladoc.)</li>
+      <li>What is the median entry? Or the two median ones if the length was even.</li>
+      <li>What are the distinct word lengths? (Go back to lab 1 if you need a hint.)</li>
+      <li>Which ones have maximum length? (Hint: Check out the Scaladoc for <code>filter</code>.) </li>
+      <li>More filtering. Find all palindromes (i.e. strings that equal their reverse). Hint: In Scala, you compare strings with <code>==</code>.</li>
+      </ol>
+
+    
+    <h1>Part 4: Misery with Tuples</h1> 
+    <ol class='la'><li>What is <code>1 -&gt; 2 -&gt; 3</code>? What is the type of the result?</li> 
+      <li>Write a function <code>flatten</code> that takes such a thing and turns it into an <code>(Int, Int, Int)</code>. Use <code>_1</code>, <code>_2</code></li>
+      <li>Repeat with destructuring.</li>
+      <li>What is the result of the following statement, and why?
+      <pre>val x,y,z = (1,2,3)</pre></li>
+    </ol>
+    <h1>Part 5: If I Had Just One Data Structure... </h1> 
+    <ol class='la'>
+      <li>And if I could just take one method, it would be <code>groupBy</code>. What is <code>words.groupBy(w =&gt; w.length)</code>?</li>
+      <li>Make a map so that <code>myMap('a')</code> yields all words that start with the letter a and so on.</li>
+      <li>How many words start with a given letter? Hint: <code>myMap.map(...)</code></li>
+      <li>Extra credit: Turn this into a list of tuples that is sorted by frequency. Hint: <code>sorted</code> doesn't work because Scala doesn't know how to sort the tuples. There are two other <code>sort</code> methods. One of them wants a function that maps into something that Scala does know how to sort—the easy choice for solving this exercise.</li>
+        <li>Extra credit: Now do it with the other method (and some tuple misery).</li>
+      </ol>
+      <h1>Homework</h1>
+      <p>Do this as <em>individual work</em>, not with your partner</p>
+      <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p>
+      <ul><li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw1a'>Problem 1</a></li>
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw1b'>Problem 2</a></li>
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw1c'>Problem 3</a></li>
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw1d'>Problem 4</a></li>
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw1e'>Problem 5</a></li>
+                <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw1f'>Problem 6</a></li>
+      </ul>
+  </body>
+</html>
