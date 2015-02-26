@@ -2,82 +2,93 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
     <title>Borran/Fatemi/Horstmann Scala Unit 3</title> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
-    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
   </head> 
   <body>
-    <h1>Programmation appliquée en Scala</h1>
-    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
-      <p>Copyright © Cay S. Horstmann 2014 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a>
-      </p>
-    </div>
-    <h1>Higher-Order Functions</h1>
-    <ul><li>In Scala, functions are values:
-        <pre>val triple = (x: Int) =&gt; 3 * x</pre></li>
-      <li>The type of <code>triple</code> is <code>Int =&gt; Int</code></li>
-      <li>You can pass <code>triple</code> to another function/method:
-<pre>1.to(10).map(<strong>triple</strong>)
-  // yields 3 6 9 12 ... 30</pre></li>
-        <li><code>map</code> is a <em>higher-order function</em>—it consumes a function</li>
-        <li>Another useful higher-order function is <code>filter</code>. It consumes a function <code>T =&gt; Boolean</code>
-          <pre>1.to(10).filter(<strong>(x: Int) =&gt; x % 2 == 0</strong>)
-  // yields 2 4 6 8 10</pre></li>
-      <li>Note that there was no need to store the function in a variable</li>
-      <li>We will soon see other higher-order functions that <em>produce</em> functions</li>        
-      </ul>
+      <p>Copyright © Cay S. Horstmann 2014 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
 
-    <h1>Parameter Type Inference</h1>
-    <ul><li>When you define a function, you normally need to specify the parameter types:
-      <pre>val triple = (x <strong>: Int</strong>) =&gt; 3 * x</pre></li>
-      <li>The return type is inferred. The type is <code>Int =&gt; <strong>Int</strong></code></li>
-      <li>The parameter type can often be inferred as well:
+    <h1>Higher-Order Functions</h1> 
+    <ul>
+      <li>In Scala, functions are values: 
+        <pre>val triple = (x: Int) =&gt; 3 * x</pre>
+      </li> 
+      <li>The type of <code>triple</code> is <code>Int =&gt; Int</code></li> 
+      <li>You can pass <code>triple</code> to another function/method: 
+        <pre>1.to(10).map(<strong>triple</strong>)
+  // yields 3 6 9 12 ... 30</pre>
+      </li> 
+      <li><code>map</code> is a <em>higher-order function</em>—it consumes a function</li> 
+      <li>Another useful higher-order function is <code>filter</code>. It consumes a function <code>T =&gt; Boolean</code> 
+        <pre>1.to(10).filter(<strong>(x: Int) =&gt; x % 2 == 0</strong>)
+  // yields 2 4 6 8 10</pre>
+      </li> 
+      <li>Note that there was no need to store the function in a variable</li> 
+      <li>We will soon see other higher-order functions that <em>produce</em> functions</li> 
+    </ul> 
+
+    <h1>Parameter Type Inference</h1> 
+    <ul>
+      <li>When you define a function, you normally need to specify the parameter types: 
+        <pre>val triple = (x <strong>: Int</strong>) =&gt; 3 * x</pre>
+      </li> 
+      <li>The return type is inferred. The type is <code>Int =&gt; <strong>Int</strong></code></li> 
+      <li>The parameter type can often be inferred as well: 
         <pre>1.to(10).map((x) =&gt; 3 * x)
-</pre></li>
-      <li>Since <code>1.to(10)</code> is a <code>Seq[<strong>Int</strong>]</code>, the type of <code>x</code> is inferred to be <code>Int</code></li>
-      <li>Bonus: You can drop the <code>()</code>
-        <pre>1.to(10).map(x =&gt; 3 * x)</pre></li>
-      <li>Super bonus: Since <code>x</code> occurs exactly once, can drop <code>x =&gt;</code> and use <code>_</code>:
-        <pre>1.to(10).map(3 * _)</pre></li>
-    </ul>
-
-    <h1><code>reduce</code></h1>
-
-    <ul><li><code>s.reduce(f)</code> computes <code>f(...f(f(s(0), s(1)), s(2))..., s(n-1))</code></li>
-      <li>Note that <code>f</code> is a function with two arguments</li>
-      <li><code>1.to(100).reduce(<strong>_ + _</strong>)</code> is 1 + 2 + 3 + 4 + ... + 100 = 5050</li>
-      <li><code>s.reduce(<strong>(a, b) =&gt; if (a &gt; b) a else b</strong>)</code> computes the maximum</li>
-    </ul>
-    <h1>What is the Value Of ...</h1>
-
-      <pre>1.to(100).map(_.toString).reduce(_ + _)
 </pre>
-      <ol class='clicker'><li>The string <code>"5050"</code></li>
-        <li>The string <code>"1 2 3 ... 98 99 100"</code></li>
-        <li>A string of length 192</li>
-        <li>Something else (syntax error, other value, etc.)</li>      
-      </ol>
+      </li> 
+      <li>Since <code>1.to(10)</code> is a <code>Seq[<strong>Int</strong>]</code>, the type of <code>x</code> is inferred to be <code>Int</code></li> 
+      <li>Bonus: You can drop the <code>()</code> 
+        <pre>1.to(10).map(x =&gt; 3 * x)</pre>
+      </li> 
+      <li>Super bonus: Since <code>x</code> occurs exactly once, can drop <code>x =&gt;</code> and use <code>_</code>: 
+        <pre>1.to(10).map(3 * _)</pre>
+      </li> 
+    </ul> 
 
-      <h1><code>flatMap</code></h1>
+    <h1><code>reduce</code></h1> 
+    <ul>
+      <li><code>s.reduce(f)</code> computes <code>f(...f(f(s(0), s(1)), s(2))..., s(n-1))</code></li> 
+      <li>Note that <code>f</code> is a function with two arguments</li> 
+      <li><code>1.to(100).reduce(<strong>_ + _</strong>)</code> is 1 + 2 + 3 + 4 + ... + 100 = 5050</li> 
+      <li><code>s.reduce(<strong>(a, b) =&gt; if (a &gt; b) a else b</strong>)</code> computes the maximum</li> 
+    </ul> 
 
-      <li>Given integer sequence <code>s</code>, easy to form all pairs (x, 0):
-        <pre>s.map(x =&gt; (x, 0))
-    // Vector((1, 0), (2, 0), (3, 0), (4, 0))</pre>
-      </li>
-      <li>What if we want to have all pairs (x, y) where x, y are elements of s?</li>
-      <li>Try it by calling <code>map</code> twice:
-        <pre>s.map(y =&gt; <strong>s.map(x =&gt; (x, y))</strong>)
+    <h1>What is the Value Of ...</h1> 
+    <pre>1.to(100).map(_.toString).reduce(_ + _)
+</pre> 
+    <ol class='clicker'>
+      <li>The string <code>"5050"</code></li> 
+      <li>The string <code>"1 2 3 ... 98 99 100"</code></li> 
+      <li>A string of length 192</li> 
+      <li>Something else (syntax error, other value, etc.)</li> 
+    </ol> 
+
+    <h1><code>flatMap</code></h1> 
+    <li>Given integer sequence <code>s</code>, easy to form all pairs (x, 0): 
+      <pre>s.map(x =&gt; (x, 0))
+    // Vector((1, 0), (2, 0), (3, 0), (4, 0))</pre> 
+    </li> 
+    <li>What if we want to have all pairs (x, y) where x, y are elements of s?</li> 
+    <li>Try it by calling <code>map</code> twice: 
+      <pre>s.map(y =&gt; <strong>s.map(x =&gt; (x, y))</strong>)
   // Vector(Vector((1,1), (2,1), (3,1), (4,1)),
   //        Vector((1,2), (2,2), (3,2), (4,2)),
   //        Vector((1,3), (2,3), (3,3), (4,3)),
-  //        Vector((1,4), (2,4), (3,4), (4,4)))</pre></li>
-      <li>Close, but not quite. To “flatten out” the result, use <code>flatMap</code> instead:
-        <pre>s.<strong>flatMap</strong>(y =&gt; s.map(x =&gt; (x, y)))
-  // Vector((1, 1), (1, 2), (1, 3), (1, 4), (2, 1), (2, 2), ..., (4, 4)) </pre></li>
-    
+  //        Vector((1,4), (2,4), (3,4), (4,4)))</pre>
+    </li> 
+    <li>Close, but not quite. To “flatten out” the result, use <code>flatMap</code> instead: 
+      <pre>s.<strong>flatMap</strong>(y =&gt; s.map(x =&gt; (x, y)))
+  // Vector((1, 1), (1, 2), (1, 3), (1, 4), (2, 1), (2, 2), ..., (4, 4)) </pre>
+    </li> 
 
     <h1>Capturing the Enclosing Environment</h1> 
     <ul>
@@ -98,68 +109,70 @@ val fun = (x : Int) =&gt; n * x
       </li> 
       <li>Each call to <code>mulBy</code> yields a different function.</li> 
       <li>Each function has a different value of <code>n</code></li> 
-      <li>Closure = function + binding of its free variables (i.e the variables that are not defined locally in the function)</li>
-    </ul>
+      <li>Closure = function + binding of its free variables (i.e the variables that are not defined locally in the function)</li> 
+    </ul> 
 
-    <h1>Where Did We Already Use Closures?</h1>
+    <h1>Where Did We Already Use Closures?</h1> 
+    <ol class='clicker'>
+      <li>In the <code>reduce</code> slide</li> 
+      <li>In the <code>flatMap</code> slide</li> 
+      <li>In both</li> 
+      <li>In neither</li> 
+    </ol> 
 
-    <ol class='clicker'><li>In the <code>reduce</code> slide</li>
-      <li>In the <code>flatMap</code> slide</li>
-      <li>In both</li>
-      <li>In neither</li>
-    </ol>
-    
-    <h1>Lab</h1>
-
-    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
     <ol>
       <li>You work with a buddy </li> 
       <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
       <li>When you get stuck, ask your buddy first!</li> 
       <li>Switch coder/scribe roles each lab</li> 
-      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li>
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
       <li>The scribe submits answers. Include the coder's name in the report!</li> 
     </ol> 
 
-    <h1>Part 1: Life without Loops</h1>
-
-    <ol class='la'><li>Make a worksheet <code>Day3</code>. Type in <pre>val zones = java.util.TimeZone.getAvailableIDs</pre>. What do you get?</li>
-      <li>We want to get rid of the continents. Try this:
+    <h1>Part 1: Life without Loops</h1> 
+    <ol class='la'>
+      <li>Make a worksheet <code>Day3</code>. Type in 
+        <pre>val zones = java.util.TimeZone.getAvailableIDs</pre>. What do you get?
+      </li> 
+      <li>We want to get rid of the continents. Try this: 
         <pre>zones.map(s =&gt; s.split("/"))
-</pre></li>
-      <li>Ok, halfway there. Add a map that takes an array and yields <code>a(1)</code>. What did you do? What happens?</li>
-      <li>Hmmm, that's weird. There seem to be arrays of length &lt; 2. How can you find them?</li>
-      <li>Ok, now get rid of them and try again. What did you do?</li>
-      <li>That's a lot of values. Can we get every tenth of them? (Hint: <code>grouped(10)</code>)</li>
-      </ol>
-
-      <h1>Part 2: Reductions</h1>
-
-    <ol class='la'><li>Evaluate
-      <pre>1.to(10).reduce(_ * _)</pre> What do you get?</li>
-      <li>Write a function that computes n! in this way.</li>
-      <li>Surely you have written a factorial function before. How did you used to do it? Which approach do you like better?</li>
-      <li>Now we'd like to compute 2<sup><var>n</var></sup> with the same trick. How can you get a sequence of <code>n</code> copies of the number 2? Hint: <code>map</code>.</li>
-      <li>What is your function that computes 2<sup><var>n</var></sup>?</li>
-      <li>Given a <code>Seq[String]</code>, how can you use <code>reduce</code> to concatenate them with spaces in between? Write a function <code>catSpace</code> that does this. For example, <code>catSpace(Vector("Mary", "had", "a", "lamb"))</code> should give a string <code>"Mary had a lamb"</code></li>
-      <li>What happens when you try <code>1.to(10).reduce(_ &lt; _)</code>? Why?</li>
-    </ol>
-
-
-    <h1>Part 3: Fun with <code>flatMap</code> and <code>reduce</code></h1>
-
-      <p class='sideimage'><img src='phonepad.jpg'/></p>
-      <p>Martin Odersky, the inventor of Scala (as well as the charming husband of one of your instructors) likes to show off the power of Scala with a solution of the “phone mnemonics” problem. Given a phone number, what word or word sequence spells it on a touch-tone pad? For example, given the phone number 435 569 6753, one should come up with the sequence <code>HELLO WORLD</code> (and maybe others).</p>
-      <p>We can do better than what he did in his presentations. We'll solve this problem with our very restricted subset of Scala.</p>
-    <ol><li>What interesting word can you make from the number 72252?</li>
-      <li>Declare a map that maps <code>'2'</code> to <code>"ABC"</code>, <code>'3'</code> to <code>"DEF"</code>, and so on. How do you do that? Pay attention that the keys should be characters and the values should be strings.</li>
-        <li>Actually, we want '2' to map to a <code>Vector</code> with three elements, <code>"A"</code>, <code>"B"</code>, <code>"C"</code>. But we don't want to type all that by hand. Transform your map by adding
-          <pre>.map(e =&gt; (e._1, e._2.map(c =&gt; c.toString)))
 </pre>
-          Call the result <code>letters</code>—we'll need it in the next step.</li>
-        <li>Now it's trivial to find out the words that one can make with one digit. It's just <code>letters(d)</code>. Let's move on to two digits. Write a function that given two digits produces the set of all words (whether or not they make sense) that you can make with both.
-          <pre>val wordsFor = (a: Char, b: Char) =&gt; ...</pre>
-          For example, <code>wordsFor('5', '9')</code> contains "JW", "JX", "JY", "KW", "KX", "KY", "LW", "LX", "LY". Hint: <code>flatMap</code></li>
-    </ol>
-  </body>
+      </li> 
+      <li>Ok, halfway there. Add a map that takes an array and yields <code>a(1)</code>. What did you do? What happens?</li> 
+      <li>Hmmm, that's weird. There seem to be arrays of length &lt; 2. How can you find them?</li> 
+      <li>Ok, now get rid of them and try again. What did you do?</li> 
+      <li>That's a lot of values. Can we get every tenth of them? (Hint: <code>grouped(10)</code>)</li> 
+    </ol> 
+
+    <h1>Part 2: Reductions</h1> 
+    <ol class='la'>
+      <li>Evaluate 
+        <pre>1.to(10).reduce(_ * _)</pre> What do you get?
+      </li> 
+      <li>Write a function that computes n! in this way.</li> 
+      <li>Surely you have written a factorial function before. How did you used to do it? Which approach do you like better?</li> 
+      <li>Now we'd like to compute 2<sup><var>n</var></sup> with the same trick. How can you get a sequence of <code>n</code> copies of the number 2? Hint: <code>map</code>.</li> 
+      <li>What is your function that computes 2<sup><var>n</var></sup>?</li> 
+      <li>Given a <code>Seq[String]</code>, how can you use <code>reduce</code> to concatenate them with spaces in between? Write a function <code>catSpace</code> that does this. For example, <code>catSpace(Vector("Mary", "had", "a", "lamb"))</code> should give a string <code>"Mary had a lamb"</code></li> 
+      <li>What happens when you try <code>1.to(10).reduce(_ &lt; _)</code>? Why?</li> 
+    </ol> 
+
+    <h1>Part 3: Fun with <code>flatMap</code> and <code>reduce</code></h1> 
+    <p class='sideimage'><img src='phonepad.jpg'/></p> 
+    <p>Martin Odersky, the inventor of Scala (as well as the charming husband of one of your instructors) likes to show off the power of Scala with a solution of the “phone mnemonics” problem. Given a phone number, what word or word sequence spells it on a touch-tone pad? For example, given the phone number 435 569 6753, one should come up with the sequence <code>HELLO WORLD</code> (and maybe others).</p> 
+    <p>We can do better than what he did in his presentations. Over the next three labs, we'll solve this problem with our very restricted subset of Scala.</p> 
+    <ol>
+      <li>What interesting word can you make from the number 72252?</li> 
+      <li>Declare a map that maps <code>'2'</code> to <code>"ABC"</code>, <code>'3'</code> to <code>"DEF"</code>, and so on. How do you do that? Pay attention that the keys should be characters and the values should be strings.</li> 
+      <li>Actually, we want '2' to map to a <code>Vector</code> with three elements, <code>"A"</code>, <code>"B"</code>, <code>"C"</code>. But we don't want to type all that by hand. Transform your map by adding 
+        <pre>.map(e =&gt; (e._1, e._2.map(c =&gt; c.toString)))
+</pre> Call the result <code>letters</code>—we'll need it in the next step.
+      </li> 
+      <li>Now it's trivial to find out the words that one can make with one digit. It's just <code>letters(d)</code>. Let's move on to two digits. Write a function that given two digits produces the set of all words (whether or not they make sense) that you can make with both. 
+        <pre>val wordsFor = (a: Char, b: Char) =&gt; ...</pre> For example, <code>wordsFor('5', '9')</code> contains "JW", "JX", "JY", "KW", "KX", "KY", "LW", "LX", "LY". Hint: <code>flatMap</code>
+      </li> 
+    </ol> 
+  </body> 
 </html>

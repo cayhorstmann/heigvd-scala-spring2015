@@ -2,208 +2,239 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
     <title>Borran/Fatemi/Horstmann Scala Unit 6</title> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
-    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
   </head> 
   <body>
-    <h1>Programmation appliquée en Scala</h1>
-    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
-      <p>Copyright © Cay S. Horstmann 2014 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a>
-      </p>
-    </div>
+      <p>Copyright © Cay S. Horstmann 2014 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
 
-    <h1><code>def</code></h1>
-
-    <ul><li>So far, we always used <code>val</code> to define functions
-      <pre>val triple = (x: Double) =&gt; 3 * x</pre></li>
-      <li>It is more common to use def:
-        <pre>def triple(x: Double) = 3 * x</pre>
-       </li>
-      <li>Caution: If <code>def</code> isn't followed by <code>=</code>, you are defining a function returning <code>()</code>
-      <pre>def triple(x: Double) { 3 * x } // Returns ()!
-</pre></li>
-      <li>With recursive functions, must specify return type
-      <pre>def fac(n: Int)<b>:Int</b> = ...</pre></li>
-    </ul>
-    
-    <h1>Laziness</h1> 
-    <p class='sideimage'><img src='couch-potato.jpg' alt=''/></p> 
+    <h1><code>def</code></h1> 
     <ul>
-      <li>Laziness = only doing what is necessary, at the latest possible moment</li>
-      <li>Example: “short-circuit evaluation” of <code>&amp;&amp;</code>, <code>||</code>
-      <pre>if (i &lt; s.length &amp;&amp; s(i) == '.')</pre></li>
-      <li>Can we write such an operation?
-      <pre>def and(a: Boolean, b: Boolean) = if (!a) false else b</pre></li>
-      <li>No, that doesn't work:
-      <pre>val s = "Hello"
+      <li>So far, we always used <code>val</code> to define functions 
+        <pre>val triple = (x: Double) =&gt; 3 * x</pre>
+      </li> 
+      <li>It is more common to use def: 
+        <pre>def triple(x: Double) = 3 * x</pre> 
+      </li> 
+      <li>Caution: If <code>def</code> isn't followed by <code>=</code>, you are defining a function returning <code>()</code> 
+        <pre>def triple(x: Double) { 3 * x } // Returns ()!
+</pre>
+      </li> 
+      <li>With recursive functions, must specify return type 
+        <pre>def fac(n: Int)<b>:Int</b> = ...</pre>
+      </li>
+      <li>Here is how you define a curried function:
+      <pre>def mul2(x : Int)(y : Int) = x * y</pre></li>
+    </ul> 
+
+    <h1>Laziness</h1> 
+    <p class='sideimage'><img alt='' src='couch-potato.jpg'/></p> 
+    <ul>
+      <li>Laziness = only doing what is necessary, at the latest possible moment</li> 
+      <li>Example: “short-circuit evaluation” of <code>&amp;&amp;</code>, <code>||</code> 
+        <pre>if (i &lt; s.length &amp;&amp; s(i) == '.')</pre>
+      </li> 
+      <li>Can we write such an operation? 
+        <pre>def and(a: Boolean, b: Boolean) = if (!a) false else b</pre>
+      </li> 
+      <li>No, that doesn't work: 
+        <pre>val s = "Hello"
 val i = 5
 if (and(i &lt; s.length, <b>s(i) == '.'</b>))
-  // Throws IndexOutOfBoundsException</pre></li>
-    </ul>
+  // Throws IndexOutOfBoundsException</pre>
+      </li> 
+    </ul> 
 
-    <h1>By-Name Parameters</h1>
+    <h1>By-Name Parameters</h1> 
+    <ul>
+      <li>When a parameter of a function (declared with <code>def</code>) is prefixed by <code>=&gt;</code>, it is not evaluated when the function is called. 
+        <pre>def and(a: <b>=&gt; </b>Boolean, b: <b>=&gt; </b>Boolean) = if (!a) false else b</pre>
+      </li> 
+      <li>When calling 
+        <pre>and(<b>i &lt; s.length</b>, <b>s(i) == '.'</b>)</pre> <code>and</code> receives two functions <code>() =&gt; { i &lt; s.length }</code>, <code>() =&gt; { s(i) == '.' }</code>
+      </li> 
+      <li>When the parameters <code>a</code> and <code>b</code> are evaluated, the functions are called 
+        <pre>if (!<b>a</b>) ... // Calls () =&gt; { i &lt; s.length }</pre>
+      </li> 
+    </ul> 
 
-    <ul><li>When a parameter of a function (declared with <code>def</code>) is prefixed by <code>=&gt;</code>, it is not evaluated when the function is called.
-      <pre>def and(a: <b>=&gt; </b>Boolean, b: <b>=&gt; </b>Boolean) = if (!a) false else b</pre></li>
-      <li>When calling
-      <pre>and(<b>i &lt; s.length</b>, <b>s(i) == '.'</b>)</pre>
-      <code>and</code> receives two functions <code>() =&gt; { i &lt; s.length }</code>, <code>() =&gt; { s(i) == '.' }</code></li>
-      <li>When the parameters <code>a</code> and <code>b</code> are evaluated, the functions are called
-      <pre>if (!<b>a</b>) ... // Calls () =&gt; { i &lt; s.length }</pre></li>
-    </ul>
-
-    <h1>Let's define if/else</h1>
-    <p>Which of these will work? We want to call
-    <pre>ifElse(i &lt; 5, println("Hi"), println("Bye"))</pre></p>
-    <ol class='clicker'><li><pre>def ifElse(c: Boolean, a: Unit, b: Unit) {
-  c &amp;&amp; { a; true } || { b; true } }</pre></li>
-      <li>     <pre>def ifElse(c: Boolean, a: =&gt; Unit, b: =&gt; Unit) {
-  c &amp;&amp; { a; true } || { b; true } }</pre></li>
+    <h1>Let's define if/else</h1> 
+    <p>Which of these will work? We want to call 
+      <pre>ifElse(i &lt; 5, println("Hi"), println("Bye"))</pre>
+    </p> 
+    <ol class='clicker'>
       <li>
-      <pre>def ifElse(c: =&gt; Boolean, a: =&gt; Unit, b: =&gt; Unit) {
-  c &amp;&amp; { a; true } || { b; true } }</pre></li>
-      <li>None of these will work</li>
-    </ol>
-    <h1><code>lazy val</code></h1>
-    <ul><li>When a <code>val</code> is declared <code>lazy</code>, its initialization is deferred until the first time it is used.
-      <pre>lazy val words = scala.io.Source.fromFile("/usr/share/dict/words").mkString
+        <pre>def ifElse(c: Boolean, a: Unit, b: Unit) {
+  c &amp;&amp; { a; true } || { b; true } }</pre>
+      </li> 
+      <li>
+        <pre>def ifElse(c: Boolean, a: =&gt; Unit, b: =&gt; Unit) {
+  c &amp;&amp; { a; true } || { b; true } }</pre>
+      </li> 
+      <li>
+        <pre>def ifElse(c: =&gt; Boolean, a: =&gt; Unit, b: =&gt; Unit) {
+  c &amp;&amp; { a; true } || { b; true } }</pre>
+      </li> 
+      <li>None of these will work</li> 
+    </ol> 
+
+    <h1><code>lazy val</code></h1> 
+    <ul>
+      <li>When a <code>val</code> is declared <code>lazy</code>, its initialization is deferred until the first time it is used. 
+        <pre>lazy val words = scala.io.Source.fromFile("/usr/share/dict/words").mkString
   // Evaluated the first time words is used
-</pre></li>
-      <li>If <code>words</code> is never used, the file is not opened.</li>
-      <li>Halfway between <code>val</code> and <code>def</code>:
-      <pre>val words = scala.io.Source.fromFile("/usr/share/dict/words").mkString
+</pre>
+      </li> 
+      <li>If <code>words</code> is never used, the file is not opened.</li> 
+      <li>Halfway between <code>val</code> and <code>def</code>: 
+        <pre>val words = scala.io.Source.fromFile("/usr/share/dict/words").mkString
   // Evaluated as soon as words is defined
 def words = scala.io.Source.fromFile("/usr/share/dict/words").mkString
   // Evaluated every time words is used
-</pre></li>
-      <li>Implemented with hidden flag that is tested whenever <code>words</code> is used</li>
-    </ul>
+</pre>
+      </li> 
+      <li>Implemented with hidden flag that is tested whenever <code>words</code> is used</li> 
+    </ul> 
 
-    <h1>Streams</h1>
-
-    <ul><li>A stream is an immutable list whose tail is computed lazily.
-      <pre>def numsFrom(n: Int): Stream[Int] = Stream.cons(n, numsFrom(n + 1))
-val ns = numsFrom(10) // Stream(10, ?)</pre></li>
-      <li>Already computed values are cached:
-      <pre>ns(3) // 13
-ns // Stream(10, 11, 12, ?)</pre></li>
-      <li><code>map</code> is lazy—can apply to infinite stream
-      <pre>val squares = numsFrom(0).map(x =&gt; x * x) // Stream(0, ?)
+    <h1>Streams</h1> 
+    <ul>
+      <li>A stream is an immutable list whose tail is computed lazily. 
+        <pre>def numsFrom(n: Int): Stream[Int] = Stream.cons(n, numsFrom(n + 1))
+val ns = numsFrom(10) // Stream(10, ?)</pre>
+      </li> 
+      <li>Already computed values are cached: 
+        <pre>ns(3) // 13
+ns // Stream(10, 11, 12, ?)</pre>
+      </li> 
+      <li><code>map</code> is lazy—can apply to infinite stream 
+        <pre>val squares = numsFrom(0).map(x =&gt; x * x) // Stream(0, ?)
 squares(1000) // 1000000
-</pre></li>
-      <li>Can get a stream for a file—only reads the lines that are needed:
-      <pre>val words = Source.fromFile("/usr/share/dict/words").getLines.toStream
+</pre>
+      </li> 
+      <li>Can get a stream for a file—only reads the lines that are needed: 
+        <pre>val words = Source.fromFile("/usr/share/dict/words").getLines.toStream
 words.find(s =&gt; s.length &gt;= 5 &amp;&amp; s == s.reverse) // civic
-</pre></li>
-    </ul>
+</pre>
+      </li> 
+    </ul> 
 
-    <h1>What Does This Stream Produce?</h1>
-    <pre>lazy val mystery: Stream[String] = Stream.cons("*", mystery.map(_ + "*"))</pre>
-    <ol class='clicker'><li><code>* * * * ...</code></li>
-      <li><code>* ** *** **** ...</code></li>
-      <li><code>* ** * ** * ** ...</code></li>
-      <li>Something else (syntax error, other result, ...)</li>
-    </ol>
+    <h1>What Does This Stream Produce?</h1> 
+    <pre>lazy val mystery: Stream[String] = Stream.cons("*", mystery.map(_ + "*"))</pre> 
+    <ol class='clicker'>
+      <li><code>* * * * ...</code></li> 
+      <li><code>* ** *** **** ...</code></li> 
+      <li><code>* ** * ** * ** ...</code></li> 
+      <li>Something else (syntax error, other result, ...)</li> 
+    </ol> 
 
-    <h1>Lazy Views</h1>
-
-    <ul><li>The <code>view</code> method makes any sequence lazy—subsequent operations are only executed as needed.
-      <pre>val squares = (0 until 1000).view.map(x =&gt; x * x)</pre></li>
-      <li>No squares are yet computed</li>
-      <li>Operations are executed as needed
-      <pre>val n = squares(100) // Now 100 * 100 is executed</pre></li>
-      <li>Unlike streams, views don't cache any results</li>
-      <li>Can cascade unevaluated operations
-      <pre>val palindromicSquares = (1 to 1000000).view
+    <h1>Lazy Views</h1> 
+    <ul>
+      <li>The <code>view</code> method makes any sequence lazy—subsequent operations are only executed as needed. 
+        <pre>val squares = (0 until 1000).view.map(x =&gt; x * x)</pre>
+      </li> 
+      <li>No squares are yet computed</li> 
+      <li>Operations are executed as needed 
+        <pre>val n = squares(100) // Now 100 * 100 is executed</pre>
+      </li> 
+      <li>Unlike streams, views don't cache any results</li> 
+      <li>Can cascade unevaluated operations 
+        <pre>val palindromicSquares = (1 to 1000000).view
   .map(x =&gt; x * x)
   .filter(x =&gt; x.toString == x.toString.reverse)
-</pre></li>
-      <li>Nothing is yet computed. Call <code>force</code> to force evaluation.
-      <pre>palindromicSquares.take(5).force
-  // Vector(1, 4, 9, 121, 484)</pre></li>
-    </ul>
-    
-    <h1>Lab</h1>
+</pre>
+      </li> 
+      <li>Nothing is yet computed. Call <code>force</code> to force evaluation. 
+        <pre>palindromicSquares.take(5).force
+  // Vector(1, 4, 9, 121, 484)</pre>
+      </li> 
+    </ul> 
 
-    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
     <ul>
       <li>You work with a buddy </li> 
       <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
       <li>When you get stuck, ask your buddy first!</li> 
       <li>Switch coder/scribe roles each lab</li> 
-      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li>
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
       <li>The scribe submits answers. Include the coder's name in the report!</li> 
-    </ul>
+    </ul> 
 
-    <h1>Part 1: Do-It-Yourself <code>while</code></h1>
-
-    <ol class='la'><li>You've seen how to implement an if/else statement in Scala. Now we want to do the same with <code>while</code>. We have two arguments, the condition and the body. For example,
-      <pre>val iter = Source.fromFile("/usr/share/dict/words").getLines.buffered
+    <h1>Part 1: Do-It-Yourself <code>while</code></h1> 
+    <ol class='la'>
+      <li>You've seen how to implement an if/else statement in Scala. Now we want to do the same with <code>while</code>. We have two arguments, the condition and the body. For example, 
+        <pre>val iter = Source.fromFile("/usr/share/dict/words").getLines.buffered
   // "buffered" gives you an iterator with a "head" method for lookahead
 While(<b>iter.head.length &lt; 15</b>, <b>iter.next</b>)
 val longWord = iter.head // The first word of length &gt;= 15
-</pre>
-How do you declare <code>While</code>? (Just the header, not the implementation.)</li>
-      <li>Now on with the implementation. If the condition is true, execute the body. Then call the function recursively. What do you get when running the code snippet above?</li>
-      <li>It's a little ugly. Make it so that you can call
-      <pre>While(iter.head.length &lt; 15) { iter.next }</pre>Hint: Curry</li>      
-    </ol>
+</pre> How do you declare <code>While</code>? (Just the header, not the implementation.)
+      </li> 
+      <li>Now on with the implementation. If the condition is true, execute the body. Then call the function recursively. What do you get when running the code snippet above?</li> 
+      <li>It's a little ugly. Make it so that you can call 
+        <pre>While(iter.head.length &lt; 15) { iter.next }</pre>Hint: Curry
+      </li> 
+    </ol> 
 
-    <h1>Part 2: How Lazy Is It?</h1>
-
-    <ol><li>Contrast
-      <pre>val bad1 = scala.io.Source.fromFile("/bad").mkString
+    <h1>Part 2: How Lazy Is It?</h1> 
+    <ol>
+      <li>Contrast 
+        <pre>val bad1 = scala.io.Source.fromFile("/bad").mkString
 lazy val bad2 = scala.io.Source.fromFile("/bad").mkString
 def bad3 = scala.io.Source.fromFile("/bad").mkString
-</pre> When does an exception occur in each of these three cases? (Assuming that you don't have a file <code>/bad</code>.)</li>
-      <li>Spy on the <code>squares</code> stream in the “Streams” slide by using the function
-      <pre>x =&gt; { println("Squaring " + x) ; x * x}</pre> in the call to <code>map</code>. What happens when you call <code>squares(10)</code>? What happens when you call it again?</li>
-      <li>Now do the same with the <code>squares</code> lazy view in the “Lazy Views” slide. What happens when you call <code>squares(10)</code>? What happens when you call it again?</li>
-      <li>Repeat for the <code>palindromicSquares</code> view. What happens when calling <code>palindromicSquares.take(4).force</code>? Why?</li>
-    </ol>
-    
-    
-    <h1>Part 3: Lazy Fib</h1>
+</pre> When does an exception occur in each of these three cases? (Assuming that you don't have a file <code>/bad</code>.)
+      </li> 
+      <li>Spy on the <code>squares</code> stream in the “Streams” slide by using the function 
+        <pre>x =&gt; { println("Squaring " + x) ; x * x}</pre> in the call to <code>map</code>. What happens when you call <code>squares(10)</code>? What happens when you call it again?
+      </li> 
+      <li>Now do the same with the <code>squares</code> lazy view in the “Lazy Views” slide. What happens when you call <code>squares(10)</code>? What happens when you call it again?</li> 
+      <li>Repeat for the <code>palindromicSquares</code> view. What happens when calling <code>palindromicSquares.take(4).force</code>? Why?</li> 
+    </ol> 
 
-    <ol><li>Write a function <code>sum</code> that computes a stream that is the sum of two <code>Stream[Int]</code>.
-      <pre>def sum(a: Stream[Int], b: Stream[Int]) ...</pre></li>
-      <li>What is <code>sum(numsFrom(0), numsFrom(1))</code>?</li>
-      
-      <li>Of course, you know the Fibonacci series
-      <pre>1 1 2 3 5 8 13 21 ...</pre> Now watch this:
-      <pre>  1
+    <h1>Part 3: Lazy Fib</h1> 
+    <ol>
+      <li>Write a function <code>sum</code> that computes a stream that is the sum of two <code>Stream[Int]</code>. 
+        <pre>def sum(a: Stream[Int], b: Stream[Int]) ...</pre>
+      </li> 
+      <li>What is <code>sum(numsFrom(0), numsFrom(1))</code>?</li> 
+      <li>Of course, you know the Fibonacci series 
+        <pre>1 1 2 3 5 8 13 21 ...</pre> Now watch this: 
+        <pre>  1
     1 1 2 3 5 8 13 21 ...
 +     1 1 2 3 5  8 13 ...
   =====================
   1 1 2 3 5 8 13 21 34 ... 
-</pre>
-      So, you can make a sequence fibs that starts with 1 1 and then yield the sum of fibs.tail and fibs. Do this with a stream:
-      <pre>lazy val fibs: Stream[Int] = Stream.cons(1, Stream.cons(..., ...))</pre>
-      What is <code>fibs(46)</code>?
-      </li>
-      <li>Now consider the more traditional definition
-      <pre>def fib(n: Int): Int = if (n &lt;= 2) 1 else fib(n - 1) + fib(n - 2)</pre>
-      What is <code>fib(46)</code>?</li>
-      <li>This function gives the time for executing a function call:
-      <pre>def time(t: =&gt; Unit) = { val start = System.nanoTime(); t; System.nanoTime() - start }</pre>
-        What exactly does the <code>time</code> function do?</li>
-      <li>What are
-      <pre>time(fib(46))   
-time(fibs(46))</pre>
-      Why is one of them a lot slower?</li>
-    </ol>
-    <h1>Homework</h1>
-      <p>Do this as <em>individual work</em>, not with your partner</p>
-      <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p>
-      <ul><li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3a'>Problem 1</a></li>
-        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3b'>Problem 2</a></li>
-        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3c'>Problem 3</a></li>
-        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3d'>Problem 4</a></li>
-        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3e'>Problem 5</a></li>
-    </ul>
-  </body>
+</pre> So, you can make a sequence fibs that starts with 1 1 and then yield the sum of fibs.tail and fibs. Do this with a stream: 
+        <pre>lazy val fibs: Stream[Int] = Stream.cons(1, Stream.cons(..., ...))</pre> What is <code>fibs(46)</code>? 
+      </li> 
+      <li>Now consider the more traditional definition 
+        <pre>def fib(n: Int): Int = if (n &lt;= 2) 1 else fib(n - 1) + fib(n - 2)</pre> What is <code>fib(46)</code>?
+      </li> 
+      <li>This function gives the time for executing a function call: 
+        <pre>def time(t: =&gt; Unit) = { val start = System.nanoTime(); t; System.nanoTime() - start }</pre> What exactly does the <code>time</code> function do?
+      </li> 
+      <li>What are 
+        <pre>time(fib(46))   
+time(fibs(46))</pre> Why is one of them a lot slower?
+      </li> 
+    </ol> 
+
+    <h1>Homework</h1> 
+    <p>Do this as <em>individual work</em>, not with your partner</p> 
+    <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
+    <ul>
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3a'>Problem 1</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3b'>Problem 2</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3c'>Problem 3</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3d'>Problem 4</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3e'>Problem 5</a></li> 
+    </ul> 
+  </body> 
 </html>

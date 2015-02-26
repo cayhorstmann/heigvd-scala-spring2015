@@ -2,84 +2,95 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
     <title>Borran/Fatemi/Horstmann Scala Unit 4</title> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
-    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
   </head> 
   <body>
-    <h1>Programmation appliquée en Scala</h1>
-    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
-      <p>Copyright © Cay S. Horstmann 2014 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a>
-      </p>
-    </div>
-    <h1>Writing a Higher-Order Function</h1>
+      <p>Copyright © Cay S. Horstmann 2014 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
 
-    <ul><li>Let's write a function that checks whether all elements of a <code>Seq[Int]</code> fulfill a condition.</li>
-      <li><pre>val forall = (s: Seq[Int], p: <strong>Int =&gt; Boolean</strong>) =&gt; ...</pre></li>
-      <li><code>p</code> is a function parameter</li>
-      <li><code>forall(1.to(10), _ &gt; 0)</code> should return <code>true</code></li>
-      <li><code>forall(1.to(10), _ % 2 == 0)</code> should return <code>false</code></li>
-      <li>We don't yet know how to do this efficiently, but we'll soldier on anyway:
-        <pre>... =&gt; s.map(p) ...</pre>
-        is a sequence of <code>true</code> or <code>false</code></li>
-      <li>We don't want any of them to be <code>false</code>:
-        <pre>....filter(_ == false).length == 0</pre></li>
-      <li>All together:
+    <h1>Writing a Higher-Order Function</h1> 
+    <ul>
+      <li>Let's write a function that checks whether all elements of a <code>Seq[Int]</code> fulfill a condition.</li> 
+      <li>
+        <pre>val forall = (s: Seq[Int], p: <strong>Int =&gt; Boolean</strong>) =&gt; ...</pre>
+      </li> 
+      <li><code>p</code> is a function parameter</li> 
+      <li><code>forall(1.to(10), _ &gt; 0)</code> should return <code>true</code></li> 
+      <li><code>forall(1.to(10), _ % 2 == 0)</code> should return <code>false</code></li> 
+      <li>We don't yet know how to do this efficiently, but we'll soldier on anyway: 
+        <pre>... =&gt; s.map(p) ...</pre> is a sequence of <code>true</code> or <code>false</code>
+      </li> 
+      <li>We don't want any of them to be <code>false</code>: 
+        <pre>....filter(_ == false).length == 0</pre>
+      </li> 
+      <li>All together: 
         <pre>val forall = (s: Seq[Int], p: Int =&gt; Boolean) =&gt;
-  s.map(p).filter(_ == false).length == 0</pre></li>
-    </ul>
+  s.map(p).filter(_ == false).length == 0</pre>
+      </li> 
+    </ul> 
 
-    <h1>What Does This Function Do?</h1>
-
+    <h1>What Does This Function Do?</h1> 
     <pre>val mystery = (s: Seq[Int], p: Int =&gt; Boolean) =&gt;
-  s.map(p).filter(_ != false).length &gt; 0</pre>
+  s.map(p).filter(_ != false).length &gt; 0</pre> 
+    <ol class='clicker'>
+      <li>It returns <code>true</code> if all elements of <code>s</code> fulfill the predicate <code>p</code> </li> 
+      <li>It returns <code>true</code> if at least one element of <code>s</code> fulfill the predicate <code>p</code> </li> 
+      <li>It returns <code>true</code> if no elements of <code>s</code> fulfill the predicate <code>p</code> </li> 
+      <li>Something else (none of the above, syntax error, etc.)</li> 
+    </ol> 
 
-    <ol class='clicker'><li>It returns <code>true</code> if all elements of <code>s</code> fulfill the predicate <code>p</code> </li>
-      <li>It returns <code>true</code> if somel elements of <code>s</code> fulfill the predicate <code>p</code> </li>
-      <li>It returns <code>true</code> if no elements of <code>s</code> fulfill the predicate <code>p</code> </li>
-      <li>Something else (none of the above, syntax error, etc.)</li>
-    </ol>
-    
-    
-    <h1>Background: Comparison Functions</h1>
-
-    <ul><li>To sort by a general criterion, specify how to compare elements</li>
-      <li>In Scala, use a function <code>comp(s, t)</code> that returns <code>true</code> if <code>s</code> should come before <code>t</code></li>
-      <li>Different from C/Java (where a comparison function returns a value &lt; 0, 0, &gt; 0)</li>
-      <li><pre>val words = "Maria had a little lamb".split(" ")
+    <h1>Background: Comparison Functions</h1> 
+    <ul>
+      <li>To sort by a general criterion, specify how to compare elements</li> 
+      <li>In Scala, use a function <code>comp(s, t)</code> that returns <code>true</code> if <code>s</code> should come before <code>t</code></li> 
+      <li>Different from C/Java (where a comparison function returns a value &lt; 0, 0, &gt; 0)</li> 
+      <li>
+        <pre>val words = "Maria had a little lamb".split(" ")
 words.sortWith(<strong>_ &lt; _</strong>) // Maria, a, had, lamb, little
 words.sortWith(<strong>(s, t) =&gt; s.length &lt; t.length</strong>) // a, had, lamb, Maria, little
-</pre></li>
-      <li>What if we want to sort by the number of vowels?
+</pre>
+      </li> 
+      <li>What if we want to sort by the number of vowels? 
         <pre>val isVowel = (c: Char) =&gt; "aeiouAEUOU".contains(c)
-val vowels = (s: String) =&gt; s.filter(isVowel).length</pre></li>
-      <li>No problem:
-        <pre>words.sortWith(<strong>(s, t) =&gt; vowels(s) &lt; vowels(t)</strong>)</pre></li>
-      <li>That looks so similar to sorting by length. Can one avoid the repetition?</li>
-    </ul>
+val vowels = (s: String) =&gt; s.filter(isVowel).length</pre>
+      </li> 
+      <li>No problem: 
+        <pre>words.sortWith(<strong>(s, t) =&gt; vowels(s) &lt; vowels(t)</strong>)</pre>
+      </li> 
+      <li>That looks so similar to sorting by length. Can one avoid the repetition?</li> 
+    </ul> 
 
-    <h1>Returning a Function</h1>
-
-      <ul><li>Define a function that generates a comparator from a measurement (length, number of vowels, ...)
-        <pre>val compareBy = (measure: String =&gt; Int) =&gt; ...</pre>
-      </li>
-      <li>Need to return a function <code>(s: String, t: String) =&gt; ...</code></li>
-      <li>...that checks that <code>measure(s) &lt; measure(t)</code></li>
-      <li>All together:
+    <h1>Returning a Function</h1> 
+    <ul>
+      <li>Define a function that generates a comparator from a measurement (length, number of vowels, ...) 
+        <pre>val compareBy = (measure: String =&gt; Int) =&gt; ...</pre> 
+      </li> 
+      <li>Need to return a function <code>(s: String, t: String) =&gt; ...</code></li> 
+      <li>...that checks that <code>measure(s) &lt; measure(t)</code></li> 
+      <li>All together: 
         <pre>val compareBy = (measure: String =&gt; Int) =&gt;
   (s: String, t: String) =&gt; measure(s) &lt; measure(t)
-</pre></li>
-      <li><pre>words.sortWith(<strong>compareBy(vowels)</strong>)
-  // had, a, lamb, little, Maria</pre></li>
-      <li><pre>words.sortWith(<strong>compareBy(_.length)</strong>)</pre></li>
-      <li><code>compareBy</code> consumes a function and produces a function</li>
-    </ul>
+</pre>
+      </li> 
+      <li>
+        <pre>words.sortWith(<strong>compareBy(vowels)</strong>)
+  // had, a, lamb, little, Maria</pre>
+      </li> 
+      <li>
+        <pre>words.sortWith(<strong>compareBy(_.length)</strong>)</pre>
+      </li> 
+      <li><code>compareBy</code> consumes a function and produces a function</li> 
+    </ul> 
 
-    <h1>What Does <code>mystery</code> Do?</h1>
-
+    <h1>What Does <code>mystery</code> Do?</h1> 
     <pre>val mystery = (
     comp1: (String, String) =&gt; Boolean,
     comp2: (String, String) =&gt; Boolean) =&gt;
@@ -89,119 +100,140 @@ val vowels = (s: String) =&gt; s.filter(isVowel).length</pre></li>
     else comp2(s, t)
 
 words.sortWith(mystery((s, t) =&gt; s.length &lt; t.length, _ &lt; _))
-</pre>
-    
-    <ol class='clicker'><li>It yields a comparison function that uses <code>comp2</code> to break ties if <code>comp1</code> doesn't distinguish between <code>s</code> and <code>t</code></li>
-      <li>It yields a comparison function that considers <code>s</code> less than <code>t</code> if both <code>comp1</code> and <code>comp2</code> do</li>
-      <li>It yields a comparison function that considers <code>s</code> less than <code>t</code> if either <code>comp1</code> or <code>comp2</code> do</li>      
-      <li>Something else (none of the above, syntax error, etc.)</li>
-    </ol>
-    
-    <h1>Lab</h1>
+</pre> 
+    <ol class='clicker'>
+      <li>It yields a comparison function that uses <code>comp2</code> to break ties if <code>comp1</code> doesn't distinguish between <code>s</code> and <code>t</code></li> 
+      <li>It yields a comparison function that considers <code>s</code> less than <code>t</code> if both <code>comp1</code> and <code>comp2</code> do</li> 
+      <li>It yields a comparison function that considers <code>s</code> less than <code>t</code> if either <code>comp1</code> or <code>comp2</code> do</li> 
+      <li>Something else (none of the above, syntax error, etc.)</li> 
+    </ol> 
 
-    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
     <ul>
       <li>You work with a buddy </li> 
       <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
       <li>When you get stuck, ask your buddy first!</li> 
       <li>Switch coder/scribe roles each lab</li> 
-      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li>
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
       <li>The scribe submits answers. Include the coder's name in the report!</li> 
-    </ul>
+    </ul> 
 
-      <h1>Part 1: Defining Higher-Order Functions</h1>
+    <h1>Part 1: Defining Higher-Order Functions</h1> 
+    <ol class='la'>
+      <li>Look up the Scaladoc for the <code>partition</code> method of <code>Seq</code>. You should implement an equivalent function that works for <code>Seq[Int]</code>.</li> 
+      <pre>val partition = (values: Seq[Int], p: Int =&gt; Boolean) =&gt; ...
+</pre> 
+      <li>What result do you get for <code>partition(1.to(10), _ % 3 == 1)</code>?</li> 
+      <li>Write a function <code>rev</code> that reverses a comparator , so that, for example, 
+        <pre>words.sortWith(<strong>rev(compareBy(vowels))</strong>) </pre> yields the words with the most vowels first: <code>Maria, little, lamb, had, a</code>. 
+        <pre>val rev = (comp: (String, String) =&gt; Boolean) =&gt; (s: String, t: String) =&gt; ...</pre> Hint: This is completely trivial, but it takes some practice to think about it. You can't write <code>t &lt; s</code> for <code>...</code> since that only works if <code>comp</code> happens to be <code>_ &lt; _</code>.  You need to express it in terms of <code>comp</code>.</li>
+      <li>Recall that
+      <pre>words.sortWith(compareBy(vowels))</pre> yields
+      <pre>had, a, lamb, little, Maria</pre> What you expect to get when calling
+      <pre>words.sortWith(rev(compareBy(vowels)))</pre></li>
+      <li>What did you actually get for <code>words.sortWith(rev(compareBy(vowels)))</code>? In which order did the strings with one vowel appear? Why didn't their positions get reversed?</li> 
+    </ol> 
 
-      <ol class='la'><li>Look up the Scaladoc for the <code>partition</code> method of <code>Seq</code>. You should implement an equivalent function that works for <code>Seq[Int]</code>.</li>
-        <pre>val partition = (values: Seq[Int], p: Int =&gt; Boolean) =&gt; ...
-</pre>
-        <li>What result do you get for <code>partition(1.to(10), _ % 3 == 1)</code>?</li>
-        <li>Write a function <code>rev</code> that reverses a comparator , so that, for example,
-          <pre>words.sortWith(<strong>rev(compareBy(vowels))</strong>) </pre>
-          yields the words with the most vowels first: <code>Maria, little, lamb, had, a</code>.
-          <pre>val rev = (comp: (String, String) =&gt; Boolean) =&gt; ...</pre>
-          Hint: This is completely trivial, but it takes some practice to think about it. If the resulting function is <code>rcomp</code>, what is <code>rcomp(s, t)</code>? <br/>Still too hard? If <code>comp(s, t) = s &lt; t</code>, what is <code>rcomp(s, t)</code>? (No, its not <code>s &gt; t</code> or <code>s &gt;= t</code> because in general, you can't peek into the body of the function.) </li>
-          <li>What did you actually get for <code>words.sortWith(rev(compareBy(vowels)))? </code> In which order did the strings with one vowel appear? Why didn't their positions get reversed?</li>
-      </ol>
-          
-    
     <h1>Part 2: Moving On with the Phone Mnemonics</h1> 
-    <p class='sideimage'><img src='../unit3/phonepad.jpg'/></p>
-    <p>We continue the “phone mnemonics” from Unit 3.</p>
-    <ol class='li'><li>Have a closer look at the implementation of <code>wordsFor</code>. Inside it, you should have code that solves a more general problem where you have two vectors of strings and get a sequence of all concatenations from both of them. Write a function
-        <pre>val cats = (s: Seq[String], t: Seq[String]) =&gt; ...</pre> that does this in general.
-      <br/>Test case:
-      <pre>cats(Vector("Hello", "World"), Vector("Mary", "had", "fun"))</pre></li>
-        <li>Now write a function <code>wordsForDigits</code> that takes a string of digits between '2' and '9' and produces all strings that they can encode.
-          <pre>val wordsForDigits = (digits: String) =&gt; ...</pre>
-          Hint: First map to a vector of strings for each digit. Then use reduce.<br/>
-      Test case: <code>wordsForDigits("72252")</code></li>      
-        <li>Read in all words from <code>/usr/share/dict/words</code>, as we did before. For efficiency, let's put them into a set though. And remove those that start with an uppercase letter (which include a bunch of junk) as well as those of length 1. And let's make them all uppercase. And let's add in "SCALA" which is weirdly missing.
-          <pre>val words = io.Source.fromFile("/usr/share/dict/words").getLines.filter(w =&gt; Character.isLowerCase(w(0)) &amp;&amp; w.length &gt; 1).map(_.toUpperCase).toSet + "SCALA"</pre>
-          Then improve the <code>wordsForDigits</code> function from the preceding step by filtering against the set.</li>
-        <li>Now when you run <code>wordsForDigits("72252")</code>, what do you get? What do you get for  <code>wordsForDigits("72253")</code>?</li>
-        </ol>
-    <h1>Part 3: Multiple Words</h1>
-        <ol class='la'><li><p>We've made a lot of progress, but we aren't quite there. The problem is a little harder. Given an arbitrary number like 7225247386, one is supposed to find the words "SCALA", "IS", "FUN" (and whatever other words there might be hidden).</p>
-            <p>Let's assume we have a particular way of breaking up the numbers, say into <code>Vector("72252", "47", "386")</code>. Using <code>wordsForDigits</code>, we get all the words for <code>"72252"</code>, <code>"47"</code>, and <code>"386"</code>. Now we want to concatenate them into a sentence.</p>
-            <p>We've <em>almost</em> solved that problem before, when <code>wordsForDigits</code> reduced with <code>cats</code> to glue together words. Give it a try:
-              <pre>val wordsForDigitsSequence = (seq: Vector[String]) =&gt;
-  seq.map(e =&gt; wordsForDigits(e)).reduce(cats)</pre>
-              <p>What do you get for <code>wordsForDigitsSequence(Vector("72252", "47", "386"))?</code></p>
-            </p>
-          </li>
-          <li><p>It would be easier to read the result if the words were separated by spaces. Make a copy of <code>cats</code>, call it <code>catsSpaces</code>, and make it separate the concatenated words by spaces. Then call <code>catsSpaces</code> instead of <code>cats</code> in <code>wordsForDigitsSequence</code>. What do you now get for <code>wordsForDigitsSequence(Vector("72252", "47", "386"))?</code></p>
-          </li>
-          <li><p>We are doing good. <em>If</em> we know how to break up a number (such as 7225247386) into all corresponding sequences (such as 72252 47 386), then we can find the corresponding words for each sequence.</p></li></ol>
+    <p class='sideimage'><img src='../unit3/phonepad.jpg'/></p> 
+    <p>We continue the “phone mnemonics” from Unit 3.</p> 
+    <ol class='li'>
+      <li>Have a closer look at the implementation of <code>wordsFor</code>. Inside it, you should have code that solves a more general problem where you have two vectors of strings and get a sequence of all concatenations from both of them. Write a function 
+        <pre>val cats = (s: Seq[String], t: Seq[String]) =&gt; ...</pre> that does this in general. <br/>Test case: 
+        <pre>cats(Vector("Hello", "World"), Vector("Mary", "had", "fun"))</pre>
+      </li> 
+      <li>Now write a function <code>wordsForDigits</code> that takes a string of digits between '2' and '9' and produces all strings that they can encode. 
+        <pre>val wordsForDigits = (digits: String) =&gt; ...</pre> Hint: First map to a vector of strings for each digit. Then use reduce.<br/> Test case: <code>wordsForDigits("72252")</code>
+      </li> 
+      <li>Read in all words from <code>/usr/share/dict/words</code>, as we did before. For efficiency, let's put them into a set though. And remove those that start with an uppercase letter (which include a bunch of junk) as well as those of length 1. And let's make them all uppercase. And let's add in "SCALA" which is weirdly missing. 
+        <pre>val words = io.Source.fromFile("/usr/share/dict/words").getLines.filter(w =&gt; Character.isLowerCase(w(0)) &amp;&amp; w.length &gt; 1).map(_.toUpperCase).toSet + "SCALA"</pre> Then improve the <code>wordsForDigits</code> function from the preceding step by filtering against the set.
+      </li> 
+      <li>Now when you run <code>wordsForDigits("72252")</code>, what do you get? What do you get for <code>wordsForDigits("72253")</code>?</li> 
+    </ol> 
 
-    <h1>Part 4: Breaking Up Is Hard to Do</h1>
-    <p class='sideimage'><img src='../unit3/breaking-up.jpg'/></p>
-    
-    <ol class='la'><li>      
-            <p>Let's find all ways that digits can be broken up into sequences. For example, the digits 1234 have 8 such decompositions: 1234, 12 34, 1 234, 1 2 34, 123 4, 12 3 4, 1 23 4, 1 2 3 4.</p>
-        <p>That looks pretty random, but it's not so bad. Suppose you knew how to break up 123 (into 123, 12 3, 1 23, 1 2 3). Now you augment that with 4. There are two things you can do:</p>
-          <ul><li>Add 4 all by itself: 123 <strong>4</strong>, 12 3 <strong>4</strong>, 1 23 <strong>4</strong>, 1 2 3 <strong>4</strong></li>
-            <li>Add 4 to the last element: 123<strong>4</strong>, 12 3<strong>4</strong>, 1 23<strong>4</strong>, 1 2 3<strong>4</strong></li>
-          </ul>
-        <p>Let's do the first part. </p>
-        <pre>val augment1 = (a: Vector[Vector[String]], t: Char) =&gt; ...</pre>
-        <p>For each sequence <code>s</code> in <code>a</code>, you concatenate  (with <code>++</code>) the sequence <code>Vector(t.toString)</code>. </p>
-        <p>Test case:</p>
+    <h1>Part 3: Multiple Words</h1> 
+    <ol class='la'>
+      <li>
+        <p>We've made a lot of progress, but we aren't quite there. The problem is a little harder. Given an arbitrary number like 7225247386, one is supposed to find the words "SCALA", "IS", "FUN" (and whatever other words there might be hidden).</p> 
+        <p>Let's assume we have a particular way of breaking up the numbers, say into <code>Vector("72252", "47", "386")</code>. Using <code>wordsForDigits</code>, we get all the words for <code>"72252"</code>, <code>"47"</code>, and <code>"386"</code>. Now we want to concatenate them into a sentence.</p> 
+        <p>We've <em>almost</em> solved that problem before, when <code>wordsForDigits</code> reduced with <code>cats</code> to glue together words. Give it a try: 
+          <pre>val wordsForDigitsSequence = (seq: Vector[String]) =&gt;
+  seq.map(e =&gt; wordsForDigits(e)).reduce(cats)</pre> 
+          <p>What do you get for <code>wordsForDigitsSequence(Vector("72252", "47", "386"))?</code></p> 
+        </p> 
+      </li> 
+      <li>
+        <p>It would be easier to read the result if the words were separated by spaces. Make a copy of <code>cats</code>, call it <code>catsSpaces</code>, and make it separate the concatenated words by spaces. Then call <code>catsSpaces</code> instead of <code>cats</code> in <code>wordsForDigitsSequence</code>. What do you now get for <code>wordsForDigitsSequence(Vector("72252", "47", "386"))?</code></p> 
+      </li> 
+      <li>
+        <p>We are doing good. <em>If</em> we know how to break up a number (such as 7225247386) into all corresponding sequences (such as 72252 47 386), then we can find the corresponding words for each sequence.</p>
+      </li>
+    </ol> 
+
+    <h1>Part 4: Breaking Up Is Hard to Do</h1> 
+    <p class='sideimage'><img src='../unit3/breaking-up.jpg'/></p> 
+    <ol class='la'>
+      <li>
+        <p>Let's find all ways that digits can be broken up into (non-empty) sequences. For example, the digits 1234 have 8 such decompositions: 1234, 12 34, 1 234, 1 2 34, 123 4, 12 3 4, 1 23 4, 1 2 3 4.</p> 
+        <p>That looks pretty random, but it's not so bad. Suppose you knew how to break up 123 (into 123, 12 3, 1 23, 1 2 3). Now you augment that with 4. There are two things you can do:</p> 
+        <ul>
+          <li>Add 4 all by itself: 123 <strong>4</strong>, 12 3 <strong>4</strong>, 1 23 <strong>4</strong>, 1 2 3 <strong>4</strong></li> 
+          <li>Add 4 to the last element: 123<strong>4</strong>, 12 3<strong>4</strong>, 1 23<strong>4</strong>, 1 2 3<strong>4</strong></li> 
+        </ul> 
+        <p>Let's do the first part. </p> 
+        <pre>val augment1 = (a: Vector[Vector[String]], t: Char) =&gt; ...</pre> 
+        <p>For each sequence <code>s</code> in <code>a</code>, you concatenate (with <code>++</code>) the sequence <code>Vector(t.toString)</code>. </p> 
+        <p>Test case:</p> 
         <pre>augment1(Vector(Vector("123"),
   Vector("12", "3"),
   Vector("1", "23"),
   Vector("1", "2", "3")),
-  '4')</pre></li>                
-      <li><p>On to <code>augment2</code>. There are two inputs: a <code>Vector[Vector[String]]</code> such as <code>Vector(Vector("123"), Vector("12", "3"), Vector("1", "23"), Vector("1", "2", "3"))</code>, and a character such as <code>'4'</code> to glue to the last element of each sequence.</p>
-        <pre>val augment2 = (a: Vector[Vector[String]], t: Char) =&gt; ...</pre>
-        <p>For each sequence <code>s</code> in <code>a</code>, you concatenate (with <code>++</code>) all but the last element, followed by a <code>Vector(s.last + t)</code>
-          <p>Test case: </p>
+  '4')</pre>
+      </li> 
+      <li>
+        <p>On to <code>augment2</code>. There are two inputs: a <code>Vector[Vector[String]]</code> such as <code>Vector(Vector("123"), Vector("12", "3"), Vector("1", "23"), Vector("1", "2", "3"))</code>, and a character such as <code>'4'</code> to glue to the last element of each sequence.</p> 
+        <pre>val augment2 = (a: Vector[Vector[String]], t: Char) =&gt; ...</pre> 
+        <p>For each sequence <code>s</code> in <code>a</code>, you concatenate (with <code>++</code>) all but the last element, followed by a <code>Vector(s.last + t)</code> 
+          <p>Test case: </p> 
           <pre>augment2(Vector(Vector("123"),
   Vector("12", "3"),
   Vector("1", "23"),
   Vector("1", "2", "3")),
-  '4')</pre></p></li>
-      <li><p>Now define</p>
-        <pre>val augment = (a: Vector[Vector[String]], t: Char) =&gt; ...</pre>
-        <p>to concatenate <code>augment1(a, t)</code> and <code>augment2(a, t)</code> (with <code>++</code>). </p>
-        <p>Test case: <pre>augment(Vector(Vector("123"),
+  '4')</pre>
+        </p>
+      </li> 
+      <li>
+        <p>Now define</p> 
+        <pre>val augment = (a: Vector[Vector[String]], t: Char) =&gt; ...</pre> 
+        <p>to concatenate <code>augment1(a, t)</code> and <code>augment2(a, t)</code> (with <code>++</code>). </p> 
+        <p>Test case: 
+          <pre>augment(Vector(Vector("123"),
   Vector("12", "3"),
   Vector("1", "23"),
   Vector("1", "2", "3")),
-    '4')</pre></p>
-      </li>
-      <li><p>What is the result of</p> <pre>augment(augment(augment(Vector(Vector("1")), '2'), '3'), '4')</pre></li>
-      <li><p>This looks <strong>so</strong> promising. But why can't use use <code>augment</code> with <code>reduce</code>?</p></li>
-    </ol>
-    <p>Breaking up is hard to do. You'll have to wait until the next lecture to complete this puzzle.</p>
+    '4')</pre>
+        </p> 
+      </li> 
+      <li>
+        <p>What is the result of</p> 
+        <pre>augment(augment(augment(Vector(Vector("1")), '2'), '3'), '4')</pre>
+      </li> 
+      <li>
+        <p>This looks <strong>so</strong> promising. But why can't you use <code>augment</code> with <code>reduce</code>?</p>
+      </li> 
+    </ol> 
+    <p>Breaking up is hard to do. You'll have to wait until the next lecture to complete this puzzle.</p> 
 
-      <h1>Homework</h1>
-      <p>Do this as <em>individual work</em>, not with your partner</p>
-      <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p>
-      <ul><li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2a'>Problem 1</a></li>
-        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2b'>Problem 2</a></li>
-        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2c'>Problem 3</a></li>
-        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2d'>Problem 4</a></li>
-        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2e'>Problem 5</a></li>
-      </ul>    
+    <h1>Homework</h1> 
+    <p>Do this as <em>individual work</em>, not with your partner</p> 
+    <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
+    <ul>
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2a'>Problem 1</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2b'>Problem 2</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2c'>Problem 3</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2d'>Problem 4</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw2e'>Problem 5</a></li> 
+    </ul> 
   </body> 
 </html>

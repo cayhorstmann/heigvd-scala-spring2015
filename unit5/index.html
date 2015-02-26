@@ -2,30 +2,30 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
     <title>Borran/Fatemi/Horstmann Scala Unit 5</title> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
-    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script> 
-    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full' type='text/javascript'></script>
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+    <script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full'></script> 
   </head> 
   <body>
-    <h1>Programmation appliquée en Scala</h1>
-    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
-      <p>Copyright © Cay S. Horstmann 2014 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a>
-      </p>
-    </div>
+      <p>Copyright © Cay S. Horstmann 2014 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
 
     <h1>Currying</h1> 
-    <p class='sideimage'><img src='haskell-curry.jpg' alt=''/></p> 
+    <p class='sideimage'><img alt='' src='haskell-curry.jpg'/></p> 
     <ul>
       <li>Currying = Turning a function that takes two arguments into a function that takes one argument. That function returns a function that consumes the second argument. (Named after the logician Haskell Brooks Curry)</li> 
       <li>Huh?</li> 
       <li>Simple example: 
-        <pre>def mul(x : Int, y : Int) = x * y
+        <pre>val mul = (x: Int, y: Int) =&gt; x * y
 mul(3, 4) is 12
-def mul2(x : Int)(y : Int) = x * y
+val mul2 = (x: Int) =&gt; (y: Int) =&gt; x * y
 mul2(3)(4) is 12</pre> 
       </li> 
       <li>What is <code>mul2(3)</code>? </li> 
@@ -33,35 +33,39 @@ mul2(3)(4) is 12</pre>
       <li><code>y : Int =&gt; 3 * y</code></li> 
     </ul> 
 
-    <h1>What Is ...</h1>
-    <pre>(1 to 10).map(mul2(5))</pre>
-    <ol class='clicker'><li>A syntax error—the argument to <code>map</code> must be a function</li>
-      <li>A <code>Range</code> containing <code>5 10 15 20 ... 50</code></li>
-      <li>A <code>Vector</code> containing <code>5 10 15 20 ... 50</code></li>
-      <li>A <code>Vector</code> containing <code>10 20 30 40 ... 100</code></li>
-    </ol>
+    <h1>What Is ...</h1> 
+    <pre>(1 to 10).map(mul2(5))</pre> 
+    <ol class='clicker'>
+      <li>A syntax error—the argument to <code>map</code> must be a function</li> 
+      <li>A <code>Range</code> containing <code>5 10 15 20 ... 50</code></li> 
+      <li>A <code>Vector</code> containing <code>5 10 15 20 ... 50</code></li> 
+      <li>A <code>Vector</code> containing <code>10 20 30 40 ... 100</code></li> 
+    </ol> 
 
-    <h1>Application of Currying: Type Inference</h1>
-
-    <ul><li><code>Seq[A].corresponds(t: Seq[B])(p: (A, B) =&gt; Boolean)</code> checks whether two sequences have “corresponding” elements, as defined by <code>p</code></li>
-      <li>For example,
-      <pre>val s = "Mary had a little lamb".split(" ")
+    <h1>Application of Currying: Type Inference</h1> 
+    <ul>
+      <li><code>Seq[A].corresponds(t: Seq[B])(p: (A, B) =&gt; Boolean)</code> checks whether two sequences have “corresponding” elements, as defined by <code>p</code></li> 
+      <li>For example, 
+        <pre>val s = "Mary had a little lamb".split(" ")
 val t = Array(4, 3, 1, 6, 4)
 s.corresponds(t)((a: String, b: Int) =&gt; a.length == b)
-</pre></li>
-      <li>Or more concisely
-      <pre>s.corresponds(t)(_.length == _)</pre></li>
-      <li>Why the currying
-      <pre>s.corresponds(t)<strong>(_.length == _)</strong></pre></li>
-      <li>Otherwise, type inference wouldn't work. The type of <code>t</code> is needed to infer the type <code>B</code></li>
-    </ul>
+</pre>
+      </li> 
+      <li>Or more concisely 
+        <pre>s.corresponds(t)(_.length == _)</pre>
+      </li> 
+      <li>Why the currying 
+        <pre>s.corresponds(t)<strong>(_.length == _)</strong></pre>
+      </li> 
+      <li>Otherwise, type inference wouldn't work. The type of <code>t</code> is needed to infer the type <code>B</code></li> 
+    </ul> 
 
     <h1>Folding</h1> 
     <ul>
       <li>The product of the elements in <code>Vector(a, b, c)</code> is 
         <p><code>a * b * c = 1 * a * b * c = ((1 * a) * b) * c</code></p> 
       </li> 
-      <li>Use <code>foldLeft</code>:
+      <li>Use <code>foldLeft</code>: 
         <pre>def prod(lst: Vector[Int]) = lst.foldLeft(1) (_ * _)</pre> 
         <pre>      *
      / \
@@ -72,51 +76,60 @@ s.corresponds(t)((a: String, b: Int) =&gt; a.length == b)
 1   a</pre> 
       </li> 
       <li>The first argument of the folding function is the partial answer; the second is the new list value to be considered</li> 
-      <li>The <code>foldRight</code> operator works right-to-left: <code>a * (b * (c * 1))</code>
-      <ul><li>That's useful for right-associative operators (e.g. list construction)</li>
-      </ul></li> 
+      <li>The <code>foldRight</code> operator works right-to-left: <code>a * (b * (c * 1))</code> 
+        <ul>
+          <li>That's useful for right-associative operators (e.g. list construction)</li> 
+        </ul>
+      </li> 
     </ul> 
 
-    <h1>What Is ...</h1>
-    <pre>(1 to 10).foldLeft("")(_ + _)</pre>
+    <h1>What Is ...</h1> 
+    <pre>(1 to 10).foldLeft("")(_ + _)</pre> 
+    <ol class='clicker'>
+      <li><code>"12345678910"</code></li> 
+      <li><code>"10987654321"</code></li> 
+      <li>55</li> 
+      <li>Something else (syntax error, other result, ...)</li> 
+    </ol> 
 
-    <ol class='clicker'><li><code>"12345678910"</code></li>
-      <li><code>"10987654321"</code></li>
-      <li>55</li>
-      <li>Something else (syntax error, other result, ...)</li>
-    </ol>
-    
-    <h1>More about Folding</h1>
+    <h1>More about Folding</h1> 
+    <ul>
+      <li>We could have computed a sum with <code>reduce</code></li> 
+      <li>But <code>reduce</code> only works with operators <code>(A, A) =&gt; A</code></li> 
+      <li><code>foldLeft</code> works with any operator <code>(B, A) =&gt; B</code></li> 
+      <li>Remember this from the last lab? 
+        <pre>augment(augment(augment(<strong>Vector(Vector("1"))</strong>, '2'), '3'), '4')</pre>
+      </li> 
+      <li>We couldn't use <code>reduce</code> because <code>augment</code> takes arguments of different types 
+        <pre>val augment = (a: Vector[Vector[String]], t: Char) =&gt; ...</pre>
+      </li> 
+      <li>It's easy with <code>foldLeft</code>—see lab</li> 
+    </ul> 
 
-    <ul><li>We could have computed a sum with <code>reduce</code></li>
-      <li>But <code>reduce</code> only works with operators <code>(A, A) =&gt; A</code></li>
-      <li><code>foldLeft</code> works with any operator <code>(B, A) =&gt; B</code></li>
-      <li>Remember this from the last lab?
-      <pre>augment(augment(augment(<strong>Vector(Vector("1"))</strong>, '2'), '3'), '4')</pre></li>
-      <li>We couldn't use <code>reduce</code> because <code>augment</code> takes arguments of different types
-      <pre>val augment = (a: Vector[Vector[String]], t: Char) =&gt; ...</pre></li>
-      <li>It's easy with <code>foldLeft</code>—see lab</li>
-    </ul>
-    <h1>Folding and Recursive Functions</h1>
-    <ul><li><em>Any</em> recursive definition of the form
-        <p>`f(n) = {(s , if n = 0),(t(f(n - 1), n) , if n &gt; 0):}`</p>
-      can be computed with a fold.
-      <pre>(1 to n).foldLeft(s)(t)</pre></li>
-      <li>Example: Factorial (`s = 1`, `t = \_ * \_`)
-      <p>`n! = {(1 , if n = 0),((n - 1)! * n , if n &gt; 0):}`</p></li>
-      <li>Example: Subsets of `{ 1 ... n }`
-      <p>`S(n) = {({} , if n = 0),(S(n - 1) ∪ { s ∪ {n} | s ∈ S(n - 1) } , if n &gt; 0):}`</p></li>
-    </ul>
+    <h1>Folding and Recursive Functions</h1> 
+    <ul>
+      <li><em>Any</em> recursive definition of the form 
+        <p>`f(n) = {(s , if n = 0),(t(f(n - 1), n) , if n &gt; 0):}`</p> can be computed with a fold. 
+        <pre>(1 to n).foldLeft(s)(t)</pre>
+      </li> 
+      <li>Example: Factorial (`s = 1`, `t = \_ * \_`) 
+        <p>`n! = {(1 , if n = 0),((n - 1)! * n , if n &gt; 0):}`</p>
+      </li> 
+      <li>Example: Subsets of `{ 1 ... n }` 
+        <p>`S(n) = {({} , if n = 0),(S(n - 1) ∪ { s ∪ {n} | s ∈ S(n - 1) } , if n &gt; 0):}`</p>
+      </li> 
+    </ul> 
 
-    <h1>Folding and Accumulation</h1>
-
-    <ul><li>Task: Get letter frequencies of a string
-
-      <ul><li>E.g. <code>"Mississippi"</code> → <code>Map(M -&gt; 1, i -&gt; 4, s -&gt; 4, p -&gt; 2)</code> </li>
-      </ul></li>
-      <li>Can update a mutable map of counters—but not with our Scala subset ☺</li>
-      <li>How about an immutable map? Produce a new map in each step
-      <pre>                .
+    <h1>Folding and Accumulation</h1> 
+    <ul>
+      <li>Task: Get letter frequencies of a string 
+        <ul>
+          <li>E.g. <code>"Mississippi"</code> → <code>Map(M -&gt; 1, i -&gt; 4, s -&gt; 4, p -&gt; 2)</code> </li> 
+        </ul>
+      </li> 
+      <li>Can update a mutable map of counters—but not with our Scala subset ☺</li> 
+      <li>How about an immutable map? Produce a new map in each step 
+        <pre>                .
                .
               .
              op
@@ -126,25 +139,27 @@ s.corresponds(t)((a: String, b: Int) =&gt; a.length == b)
          op 'i'
         / \
 empty map 'M'
-</pre></li>
-      <li>What is <code>op</code>?
-      <pre>(m, c) =&gt; m + (c -&gt; (m.getOrElse(c, 0) + 1))</pre></li>
-    </ul>
-    
-    <h1>Lab</h1>
+</pre>
+      </li> 
+      <li>What is <code>op</code>? 
+        <pre>(m, c) =&gt; m + (c -&gt; (m.getOrElse(c, 0) + 1))</pre>
+      </li> 
+    </ul> 
 
-    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
     <ul>
       <li>You work with a buddy </li> 
       <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
       <li>When you get stuck, ask your buddy first!</li> 
       <li>Switch coder/scribe roles each lab</li> 
-      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li>
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
       <li>The scribe submits answers. Include the coder's name in the report!</li> 
-    </ul>
+    </ul> 
 
     <h1>Part 1: Currying</h1> 
-    <ol class='la'><li>Here is a function of computing the “maximum” string in a list that works for any ordering. 
+    <ol class='la'>
+      <li>Here is a function of computing the “maximum” string in a list that works for any ordering. 
         <pre>def max(lst : Seq[String], less : (String, String) =&gt; Boolean) =
   lst.reduce((x, y) =&gt; if (less(x, y)) y else x)</pre> 
         <p>Make a call to <code>max</code> that yields the longest string in a sequence of strings. <em>Important: </em>Use <code>_</code> for the string parameters in your <code>less</code> function. </p> 
@@ -154,32 +169,34 @@ empty map 'M'
     lst.reduce((x, y) =&gt; if (less(x, y)) y else x)</pre> 
         <p>What happens when you call <code>max(lst, _ &lt; _)?</code></p> 
       </li> 
-      <li>Ok, that didn't work so well. Currying to the rescue. Curry the <code>max[T]</code> function, exactly like <code>mul2</code> above. What is the code for your revised function? What happens when you call <code>max2(lst)(_ &lt; _)</code>? 
-      </li>
-      <li>Why does the second approach work with <code>_</code> parameters?</li>
+      <li>Ok, that didn't work so well. Currying to the rescue. Curry the <code>max[T]</code> function, exactly like <code>mul2</code> above. What is the code for your revised function? What happens when you call <code>max2(lst)(_ &lt; _)</code>? </li> 
+      <li>Why does the second approach work with <code>_</code> parameters?</li> 
     </ol> 
 
-    <h1>Part 2. Known When To Fold</h1>
-    <ol class='la'><li>How do you compute `n!` with a fold?
-      <pre>val fac = (n: Int) =&gt; ...</pre></li>
-      <li>Now on to those subsets where your eyes probably glazed over. We want <code>subsets(2)</code> to be <code>Vector(Vector(), Vector(1), Vector(<b>2</b>), Vector(1, <b>2</b>))</code>. How do you get that out of <code>subsets(1)</code>, i.e. <code>Vector(Vector(), Vector(1))</code>?</li>
-      <li>Ok, what's that in Scala? You are given a vector of vectors <code>s</code> and an integer <code>n</code>, and you want <code>s</code> together with the sequence obtained by adding <code>n</code> to all elements of <code>s</code>. Write a function that does that, and test it.</li>
-      <li>Now write <code>subsets</code> by using <code>foldLeft</code>.</li>
-      <li>Complete and test the <code>letterFrequencies</code> function from the last slide before the lab. What do you get for <code>letterFrequencies("Mississippi")</code>?</li>
-    </ol>
-    
-    <h1>Part 3. Finish Phone Mnemonics </h1>
-    <p class='sideimage'><img src='../unit3/phonepad.jpg'/></p>
+    <h1>Part 2. Know When To Fold</h1> 
+    <ol class='la'>
+      <li>How do you compute `n!` with a fold? 
+        <pre>val fac = (n: Int) =&gt; ...</pre>
+      </li> 
+      <li>Now on to those subsets where your eyes probably glazed over. We want <code>subsets(2)</code> to be <code>Vector(Vector(), Vector(1), Vector(<b>2</b>), Vector(1, <b>2</b>))</code>. How do you get that out of <code>subsets(1)</code>, i.e. <code>Vector(Vector(), Vector(1))</code>?</li> 
+      <li>Ok, what's that in Scala? You are given a vector of vectors <code>s</code> and an integer <code>n</code>, and you want <code>s</code> together with the sequence obtained by adding <code>n</code> to all elements of <code>s</code>. Write a function that does that, and test it.</li> 
+      <li>Now write <code>subsets</code> by using <code>foldLeft</code>.</li> 
+      <li>Complete and test the <code>letterFrequencies</code> function from the last slide before the lab. What do you get for <code>letterFrequencies("Mississippi")</code>?</li> 
+    </ol> 
 
-    <ol class='la'><li>Last time, we got stuck with repeatedly calling <code>augment</code> to get all ways of breaking up a string into substrings. For example, here are all substrings of <code>"1234"</code>
-      <pre>augment(augment(augment(Vector(Vector("1")), '2'), '3'), '4')</pre>
-      Get last week's worksheet from your buddy and copy over all you need to today's worksheet.</li>
-      <li>Now we want this to work for arbitrary strings, not just <code>"1234"</code>. Of course, we want to use <code>foldLeft</code> with <code>augment</code>. What is the seed value? And to what sequence do you apply <code>foldLeft</code>?</li>
-      <li>Implement <code>val substrings = (s: String) =&gt; ...</code>. What is <code>substrings("2728")</code>?</li>
-      <li>Note that's a vector of <code>Vector[String]</code>. The shining achievement of last week's lab was the function <code>wordsForDigitSequence</code> that found all words for such a sequence. What do you get when you call
-      <pre>substrings("2728").map(wordsForDigitSequence)</pre></li>
-      <li>Ok, that's not quite what we want. How do you fix it?</li>
-      <li>Now implement <code>val phoneMnemonics = (digits: String) =&gt; ...</code> that does this for any string of digits, not just <code>"2728"</code>. What is <code>phoneMnemonics("7225247386")</code>? (You can change the cutoff limit of the worksheet in the preferences to see all solutions.)</li>
-    </ol>
-  </body>
+    <h1>Part 3. Finish Phone Mnemonics </h1> 
+    <p class='sideimage'><img src='../unit3/phonepad.jpg'/></p> 
+    <ol class='la'>
+      <li>Last time, we got stuck with repeatedly calling <code>augment</code> to get all ways of breaking up a string into substrings. For example, here are all substrings of <code>"1234"</code> 
+        <pre>augment(augment(augment(Vector(Vector("1")), '2'), '3'), '4')</pre> Get last week's worksheet from your buddy and copy over all you need to today's worksheet.
+      </li> 
+      <li>Now we want this to work for arbitrary strings, not just <code>"1234"</code>. Of course, we want to use <code>foldLeft</code> with <code>augment</code>. What is the seed value? And to what sequence do you apply <code>foldLeft</code>?</li> 
+      <li>Implement <code>val substrings = (s: String) =&gt; ...</code>. What is <code>substrings("2728")</code>?</li> 
+      <li>Note that's a vector of <code>Vector[String]</code>. The shining achievement of last week's lab was the function <code>wordsForDigitSequence</code> that found all words for such a sequence. What do you get when you call 
+        <pre>substrings("2728").map(wordsForDigitsSequence)</pre>
+      </li> 
+      <li>Ok, that's not quite what we want. How do you fix it?</li> 
+      <li>Now implement <code>val phoneMnemonics = (digits: String) =&gt; ...</code> that does this for any string of digits, not just <code>"2728"</code>. What is <code>phoneMnemonics("7225247386")</code>? (You can change the cutoff limit of the worksheet in the preferences to see all solutions.)</li> 
+    </ol> 
+  </body> 
 </html>
