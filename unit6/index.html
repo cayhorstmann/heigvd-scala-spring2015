@@ -117,10 +117,11 @@ ns // Stream(10, 11, 12, ?)</pre>
       <li><code>map</code> is lazy—can apply to infinite stream 
         <pre>val squares = numsFrom(0).map(x =&gt; x * x) // Stream(0, ?)
 squares(1000) // 1000000
+squares // Stream(0, 1, 4, 9, 16, 25, 36, ..., 1000, ?)
 </pre>
       </li> 
       <li>Can get a stream for a file—only reads the lines that are needed: 
-        <pre>val words = Source.fromFile("/usr/share/dict/words").getLines.toStream
+        <pre>val words = scala.io.Source.fromFile("/usr/share/dict/words").getLines.toStream
 words.find(s =&gt; s.length &gt;= 5 &amp;&amp; s == s.reverse) // civic
 </pre>
       </li> 
