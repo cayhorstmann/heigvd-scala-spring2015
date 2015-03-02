@@ -16,25 +16,6 @@
       <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
     </div> 
 
-    <h1><code>def</code></h1> 
-    <ul>
-      <li>So far, we always used <code>val</code> to define functions 
-        <pre>val triple = (x: Double) =&gt; 3 * x</pre>
-      </li> 
-      <li>It is more common to use def: 
-        <pre>def triple(x: Double) = 3 * x</pre> 
-      </li> 
-      <li>Caution: If <code>def</code> isn't followed by <code>=</code>, you are defining a function returning <code>()</code> 
-        <pre>def triple(x: Double) { 3 * x } // Returns ()!
-</pre>
-      </li> 
-      <li>With recursive functions, must specify return type 
-        <pre>def fac(n: Int)<b>:Int</b> = ...</pre>
-      </li>
-      <li>Here is how you define a curried function:
-      <pre>def mul2(x : Int)(y : Int) = x * y</pre></li>
-    </ul> 
-
     <h1>Laziness</h1> 
     <p class='sideimage'><img alt='' src='couch-potato.jpg'/></p> 
     <ul>
