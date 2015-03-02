@@ -13,7 +13,7 @@
     <h1>Programmation appliquée en Scala</h1> 
     <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
-      <p>Copyright © Cay S. Horstmann 2014 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
     </div> 
 
     <h1>Writing a Higher-Order Function</h1> 
@@ -28,18 +28,18 @@
       <li>We don't yet know how to do this efficiently, but we'll soldier on anyway: 
         <pre>... =&gt; s.map(p) ...</pre> is a sequence of <code>true</code> or <code>false</code>
       </li> 
-      <li>We don't want any of them to be <code>false</code>: 
-        <pre>....filter(_ == false).length == 0</pre>
+      <li>We want all of them to be true: 
+        <pre>....reduce(_ &amp;&amp; _)</pre>
       </li> 
       <li>All together: 
         <pre>val forall = (s: Seq[Int], p: Int =&gt; Boolean) =&gt;
-  s.map(p).filter(_ == false).length == 0</pre>
+  s.map(p).reduce(_ &amp;&amp; _)</pre>
       </li> 
     </ul> 
 
     <h1>What Does This Function Do?</h1> 
     <pre>val mystery = (s: Seq[Int], p: Int =&gt; Boolean) =&gt;
-  s.map(p).filter(_ != false).length &gt; 0</pre> 
+  s.map(p).filter(_ == false).length == 0</pre> 
     <ol class='clicker'>
       <li>It returns <code>true</code> if all elements of <code>s</code> fulfill the predicate <code>p</code> </li> 
       <li>It returns <code>true</code> if at least one element of <code>s</code> fulfill the predicate <code>p</code> </li> 
@@ -95,14 +95,12 @@ val vowels = (s: String) =&gt; s.filter(isVowel).length</pre>
     comp1: (String, String) =&gt; Boolean,
     comp2: (String, String) =&gt; Boolean) =&gt;
   (s: String, t: String) =&gt;
-    if (comp1(s, t)) true else
-    if (comp1(t, s)) false
-    else comp2(s, t)
-
-words.sortWith(mystery((s, t) =&gt; s.length &lt; t.length, _ &lt; _))
-</pre> 
+    comp1(s, t) || !comp1(t, s) &amp;&amp; comp2(s, t)
+</pre>
+    <p>Sample usage:</p>
+    <pre>words.sortWith(mystery((s, t) =&gt; s.length &lt; t.length, _ &lt; _))</pre>
     <ol class='clicker'>
-      <li>It yields a comparison function that uses <code>comp2</code> to break ties if <code>comp1</code> doesn't distinguish between <code>s</code> and <code>t</code></li> 
+      <li><code>mystery</code> yields a comparison function that uses <code>comp2</code> to break ties if <code>comp1</code> doesn't distinguish between <code>s</code> and <code>t</code></li> 
       <li>It yields a comparison function that considers <code>s</code> less than <code>t</code> if both <code>comp1</code> and <code>comp2</code> do</li> 
       <li>It yields a comparison function that considers <code>s</code> less than <code>t</code> if either <code>comp1</code> or <code>comp2</code> do</li> 
       <li>Something else (none of the above, syntax error, etc.)</li> 

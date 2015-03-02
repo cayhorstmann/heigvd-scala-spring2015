@@ -2,59 +2,59 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
     <title>Borran/Fatemi/Horstmann Scala Unit 1</title> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
-    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
   </head> 
   <body>
 
-    <h1>Programmation appliquée en Scala</h1>
-    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p>
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
-      <p>Copyright © Cay S. Horstmann 2014 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a>
-      </p>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
     </div> 
 
-    
     <h1>Why Scala?</h1> 
-    <p class='sideimage'><img src='scala_logo.png' alt=''/></p> 
+    <p class='sideimage'><img alt='' src='scala_logo.png'/></p> 
     <ul>
-      <li>Multi-paradigm language</li>
-      <li>Object-oriented and functional</li>
-      <li>Statically typed</li>
-      <li>Scalable from simple scripts to sophisticated (but still easy-to-use) libraries</li>
+      <li>Multi-paradigm language</li> 
+      <li>Object-oriented and functional</li> 
+      <li>Statically typed</li> 
+      <li>Scalable from simple scripts to sophisticated (but still easy-to-use) libraries</li> 
       <li>Invented by Martin Odersky at EPFL</li> 
-      <li>Works with Java VM tools/libraries/infrastructure</li>
-      <li>Used for big-iron projects in industry</li>
-      <li>Pragmatic choice as successor to Java (whose evolution has slowed to a crawl)</li>
-      <li>Expands your mind and makes you think differently about programming in any language</li>
-    </ul>
+      <li>Works with Java VM tools/libraries/infrastructure</li> 
+      <li>Used for big-iron projects in industry</li> 
+      <li>Pragmatic choice as successor to Java (whose evolution has slowed to a crawl)</li> 
+      <li>Expands your mind and makes you think differently about programming in any language</li> 
+    </ul> 
 
-    <h1>About the Course</h1>
+    <h1>About the Course</h1> 
+    <ul>
+      <li>Meets Monday 13:00 - 16:25</li> 
+      <li>Lecture/Lab/Break/Lecture/Lab</li> 
+      <li>Short lectures/long labs</li> 
+      <li>You can ask questions/write reports in English or French</li> 
+      <li>Course/exams: 40%, labs/homeworks: 30%, project: 30%</li> 
+    </ul> 
 
-    <ul><li>Meets Monday 13:00 - 16:25</li>
-      <li>Lecture/Lab/Break/Lecture/Lab</li>
-      <li>Short lectures/long labs</li>
-      <li>You can ask questions/write reports in English or French</li>
-      <li>Course/exams: 40%, labs/homeworks: 30%, project: 30%</li>
-    </ul>
+    <h1>What is the Most Important Skill...</h1> 
+    <p>...that HEIG-VD computer science graduates wish they had learned better in college?</p> 
+    <ol class='clicker'>
+      <li>Object-Oriented Programming</li> 
+      <li>Functional Programming</li> 
+      <li>Programming Projects</li> 
+      <li>Giving Presentations in English</li> 
+    </ol> 
 
-    <h1>What is the Most Important Skill...</h1>
-    <p>...that HEIG-VD computer science graduates wish they had learned better in college?</p>
-    <ol class='clicker'><li>Object-Oriented Programming</li>
-      <li>Functional Programming</li>
-      <li>Programming Projects</li>
-      <li>Giving Presentations in English</li>
-    </ol>
-    
-    <h1>Do You Already Know Some Scala?    </h1>
-      <ol class='clicker'><li>No</li>
-        <li>Just a little</li>
-        <li>I am reasonably fluent</li>
-        <li>I am an expert</li>
-      </ol>
+    <h1>Do You Already Know Some Scala? </h1> 
+    <ol class='clicker'>
+      <li>No</li> 
+      <li>Just a little</li> 
+      <li>I am reasonably fluent</li> 
+      <li>I am an expert</li> 
+    </ol> 
 
     <h1>Scala Basics</h1> 
     <ul>
@@ -73,21 +73,24 @@ val y = 2 + // end line with operator to indicate that there is more to come
       </li> 
       <li>Everything is an object 
         <pre>1.<strong>to</strong>(10) // Apply <strong>to</strong> method to 1, returns Range(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)</pre> 
-      </li>
-    </ul>
+      </li> 
+    </ul> 
 
-    <h1>Map</h1>
-    <ul><li><code>1.to(10)</code> yields a <code>Range</code></li>
+    <h1>Map</h1> 
+    <ul>
+      <li><code>1.to(10)</code> yields a <code>Range</code></li> 
       <li>Collections <code>List</code>, <code>Vector</code> (similar to C++), <code>Range</code>, many more</li> 
       <li><code>map</code> works on any collection 
         <pre>val square = (x: Int) =&gt; x * x 
 1.to(9).map(square)
-  // Yields 1 4 9 16 25 ... 81</pre></li>
-      <li>Applies function to all elements and yields collection of results</li>
-      <li><a href='http://mathworld.wolfram.com/QuadraticResidue.html'>What is</a>
-        <pre>1.to(9).map(square).map(x =&gt; x % 10).distinct</pre></li>
-      <li>No <code>()</code> behind <code>distinct</code>. Rule of thumb: no args and not mutating ⇒ no <code>()</code></li>
-      <li>How many lines of code would this take in C++?</li>
+  // Yields 1 4 9 16 25 ... 81</pre>
+      </li> 
+      <li>Applies function to all elements and yields collection of results</li> 
+      <li><a href='http://mathworld.wolfram.com/QuadraticResidue.html'>What is</a> 
+        <pre>1.to(9).map(square).map(x =&gt; x % 10).distinct</pre>
+      </li> 
+      <li>No <code>()</code> behind <code>distinct</code>. Rule of thumb: no args and not mutating ⇒ no <code>()</code></li> 
+      <li>How many lines of code would this take in C++?</li> 
     </ul> 
 
     <h1>Functional Programming</h1> 
@@ -176,14 +179,14 @@ num = 1.42 // Error</pre>
     </ul> 
 
     <h1>Lab</h1> 
-    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
     <ul>
       <li>Format of classes: approx. 20 minutes lecture, 40 minutes lab, 15 minutes wrap-up </li> 
       <li>You work with a buddy </li> 
       <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
       <li>When you get stuck, ask your buddy first!</li> 
-      <li>Switch coder/scribe roles each lab</li>
-      <li>The coder submits worksheet to Fatemeh.Borran@heig-vd.ch. Include the scribe's name in the worksheet!</li>
+      <li>Switch coder/scribe roles each lab</li> 
+      <li>The coder submits worksheet to Fatemeh.Borran@heig-vd.ch. Include the scribe's name in the worksheet!</li> 
       <li>The scribe submits answers to Fatemeh.Borran@heig-vd.ch. Include the coder's name in the report!</li> 
     </ul> 
 
@@ -194,8 +197,8 @@ num = 1.42 // Error</pre>
       <li>Edit the line to read <code>val a = 6 * 7</code> and save. What do you get?</li> 
       <li>Add <code>a</code>. What do you get? </li> 
       <li>Add <code>a = 43</code>. What do you get? Why?</li> 
-      <li>Remove that line and add <code>val b;</code> (This time with a semicolon.) What do you get? Why?</li>
-      <li>Now remove that line.</li>
+      <li>Remove that line and add <code>val b;</code> (This time with a semicolon.) What do you get? Why?</li> 
+      <li>Now remove that line.</li> 
     </ol> 
 
     <h1>Part 2: Functions are Values</h1> 
@@ -216,21 +219,24 @@ num = 1.42 // Error</pre>
       <li>Type <code>1.to(10)</code>. What do you get?</li> 
       <li>Type <code>1.to(10).map(triple)</code>. What do you get? Why? </li> 
       <li>How do you get the cubes of the numbers from 1 to 10? </li> 
-      <li>How do you get the cubes of the numbers from 1 to 10 <em>without using </em><code>val</code>? Hint: Anonymous functions</li>
-    </ol>
-    <h1>Part 4: Quadratic Residues (Extra Credit)</h1>
-    <ol class='la'><li><p>Do you remember this?</p>
-        <pre>0.to(9).map(square).map(x =&gt; x % 10).distinct</pre>
-        <p>Try it out. What did you get?</p>       
-      </li>
-      <li>These are called the “quadratic residues modulo 10”—the values that are squares of some value in { 0...9 }.</li>
-      <li>What are the quadratic residues modulo 11? Modulo 16?</li>
-      <li>Modulo <code>n</code>? Write a function <code>val qres = (n: Int) =&gt; ... </code> that produces them. What is your function? What is <code>qres(20)</code>?</li>
-      <li>For <code>n</code> going from 2 to 20, how many quadratic residues are there?
-        <p>Hint: <code>2.to(20).map(...)</code> and <code>map(l -&gt; l.length)</code></p>
-      </li>
-      <li>Did you get it right? Check against the table in <a href='http://mathworld.wolfram.com/QuadraticResidue.html'>this page</a>. In that table, 0 is not considered a quadratic residue, so your counts should be one higher.</li>
-      <li>What would it have taken to do this in C++?</li>
-    </ol>
-  </body>
+      <li>How do you get the cubes of the numbers from 1 to 10 <em>without using </em><code>val</code>? Hint: Anonymous functions</li> 
+    </ol> 
+
+    <h1>Part 4: Quadratic Residues (Extra Credit)</h1> 
+    <ol class='la'>
+      <li>
+        <p>Do you remember this?</p> 
+        <pre>0.to(9).map(square).map(x =&gt; x % 10).distinct</pre> 
+        <p>Try it out. What did you get?</p> 
+      </li> 
+      <li>These are called the “quadratic residues modulo 10”—the values that are squares of some value in { 0...9 }.</li> 
+      <li>What are the quadratic residues modulo 11? Modulo 16?</li> 
+      <li>Modulo <code>n</code>? Write a function <code>val qres = (n: Int) =&gt; ... </code> that produces them. What is your function? What is <code>qres(20)</code>?</li> 
+      <li>For <code>n</code> going from 2 to 20, how many quadratic residues are there? 
+        <p>Hint: <code>2.to(20).map(...)</code> and <code>map(l -&gt; l.length)</code></p> 
+      </li> 
+      <li>Did you get it right? Check against the table in <a href='http://mathworld.wolfram.com/QuadraticResidue.html'>this page</a>. In that table, 0 is not considered a quadratic residue, so your counts should be one higher.</li> 
+      <li>What would it have taken to do this in C++?</li> 
+    </ol> 
+  </body> 
 </html>
