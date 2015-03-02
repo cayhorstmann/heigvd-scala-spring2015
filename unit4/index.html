@@ -53,9 +53,9 @@
       <li>In Scala, use a function <code>comp(s, t)</code> that returns <code>true</code> if <code>s</code> should come before <code>t</code></li> 
       <li>Different from C/Java (where a comparison function returns a value &lt; 0, 0, &gt; 0)</li> 
       <li>
-        <pre>val words = "Maria had a little lamb".split(" ")
-words.sortWith(<strong>_ &lt; _</strong>) // Maria, a, had, lamb, little
-words.sortWith(<strong>(s, t) =&gt; s.length &lt; t.length</strong>) // a, had, lamb, Maria, little
+        <pre>val words = "Marianne had a little lamb".split(" ")
+words.sortWith(<strong>_ &lt; _</strong>) // Marianne, a, had, lamb, little
+words.sortWith(<strong>(s, t) =&gt; s.length &lt; t.length</strong>) // a, had, lamb, little, Marianne
 </pre>
       </li> 
       <li>What if we want to sort by the number of vowels? 
@@ -82,7 +82,7 @@ val vowels = (s: String) =&gt; s.filter(isVowel).length</pre>
       </li> 
       <li>
         <pre>words.sortWith(<strong>compareBy(vowels)</strong>)
-  // had, a, lamb, little, Maria</pre>
+  // had, a, lamb, little, Marianne</pre>
       </li> 
       <li>
         <pre>words.sortWith(<strong>compareBy(_.length)</strong>)</pre>
@@ -124,11 +124,11 @@ val vowels = (s: String) =&gt; s.filter(isVowel).length</pre>
 </pre> 
       <li>What result do you get for <code>partition(1.to(10), _ % 3 == 1)</code>?</li> 
       <li>Write a function <code>rev</code> that reverses a comparator , so that, for example, 
-        <pre>words.sortWith(<strong>rev(compareBy(vowels))</strong>) </pre> yields the words with the most vowels first: <code>Maria, little, lamb, had, a</code>. 
+        <pre>words.sortWith(<strong>rev(compareBy(vowels))</strong>) </pre> yields the words with the most vowels first: <code>Marianne, little, ...</code>. 
         <pre>val rev = (comp: (String, String) =&gt; Boolean) =&gt; (s: String, t: String) =&gt; ...</pre> Hint: This is completely trivial, but it takes some practice to think about it. You can't write <code>t &lt; s</code> for <code>...</code> since that only works if <code>comp</code> happens to be <code>_ &lt; _</code>.  You need to express it in terms of <code>comp</code>.</li>
       <li>Recall that
       <pre>words.sortWith(compareBy(vowels))</pre> yields
-      <pre>had, a, lamb, little, Maria</pre> What you expect to get when calling
+      <pre>had, a, lamb, little, Marianne</pre> What you expect to get when calling
       <pre>words.sortWith(rev(compareBy(vowels)))</pre></li>
       <li>What did you actually get for <code>words.sortWith(rev(compareBy(vowels)))</code>? In which order did the strings with one vowel appear? Why didn't their positions get reversed?</li> 
     </ol> 
