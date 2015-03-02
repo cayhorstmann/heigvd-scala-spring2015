@@ -34,7 +34,7 @@ mul2(3)(4) is 12</pre>
     </ul> 
 
     <h1>What Is ...</h1> 
-    <pre>(1 to 10).map(mul2(5))</pre> 
+    <pre>1.to(10).map(mul2(5))</pre> 
     <ol class='clicker'>
       <li>A syntax error—the argument to <code>map</code> must be a function</li> 
       <li>A <code>Range</code> containing <code>5 10 15 20 ... 50</code></li> 
@@ -84,7 +84,7 @@ s.corresponds(t)((a: String, b: Int) =&gt; a.length == b)
     </ul> 
 
     <h1>What Is ...</h1> 
-    <pre>(1 to 10).foldLeft("")(_ + _)</pre> 
+    <pre>1.to(10).foldLeft("")(_ + _)</pre> 
     <ol class='clicker'>
       <li><code>"12345678910"</code></li> 
       <li><code>"10987654321"</code></li> 
@@ -110,7 +110,7 @@ s.corresponds(t)((a: String, b: Int) =&gt; a.length == b)
     <ul>
       <li><em>Any</em> recursive definition of the form 
         <p>`f(n) = {(s , if n = 0),(t(f(n - 1), n) , if n &gt; 0):}`</p> can be computed with a fold. 
-        <pre>(1 to n).foldLeft(s)(t)</pre>
+        <pre>1.to(n).foldLeft(s)(t)</pre>
       </li> 
       <li>Example: Factorial (`s = 1`, `t = \_ * \_`) 
         <p>`n! = {(1 , if n = 0),((n - 1)! * n , if n &gt; 0):}`</p>

@@ -54,16 +54,16 @@
       </li> 
     </ul> 
 
-    <h1><code>reduce</code></h1> 
+    <h1><code>reduceLeft</code></h1> 
     <ul>
-      <li><code>s.reduce(f)</code> computes <code>f(...f(f(s(0), s(1)), s(2))..., s(n-1))</code></li> 
+      <li><code>s.reduceLeft(f)</code> computes <code>f(...f(f(s(0), s(1)), s(2))..., s(n-1))</code></li> 
       <li>Note that <code>f</code> is a function with two arguments</li> 
-      <li><code>1.to(100).reduce(<strong>_ + _</strong>)</code> is 1 + 2 + 3 + 4 + ... + 100 = 5050</li> 
-      <li><code>s.reduce(<strong>(a, b) =&gt; if (a &gt; b) a else b</strong>)</code> computes the maximum</li> 
+      <li><code>1.to(100).reduceLeft(<strong>_ + _</strong>)</code> is 1 + 2 + 3 + 4 + ... + 100 = 5050</li> 
+      <li><code>s.reduceLeft(<strong>(a, b) =&gt; if (a &gt; b) a else b</strong>)</code> computes the maximum</li> 
     </ul> 
 
     <h1>What is the Value Of ...</h1> 
-    <pre>1.to(100).map(_.toString).reduce(_ + _)
+    <pre>1.to(100).map(_.toString).reduceLeft(_ + _)
 </pre> 
     <ol class='clicker'>
       <li>The string <code>"5050"</code></li> 
@@ -114,7 +114,7 @@ val fun = (x : Int) =&gt; n * x
 
     <h1>Where Did We Already Use Closures?</h1> 
     <ol class='clicker'>
-      <li>In the <code>reduce</code> slide</li> 
+      <li>In the <code>reduceLeft</code> slide</li> 
       <li>In the <code>flatMap</code> slide</li> 
       <li>In both</li> 
       <li>In neither</li> 
@@ -149,17 +149,17 @@ val fun = (x : Int) =&gt; n * x
     <h1>Part 2: Reductions</h1> 
     <ol class='la'>
       <li>Evaluate 
-        <pre>1.to(10).reduce(_ * _)</pre> What do you get?
+        <pre>1.to(10).reduceLeft(_ * _)</pre> What do you get?
       </li> 
       <li>Write a function that computes n! in this way.</li> 
       <li>Surely you have written a factorial function before. How did you used to do it? Which approach do you like better?</li> 
       <li>Now we'd like to compute 2<sup><var>n</var></sup> with the same trick. How can you get a sequence of <code>n</code> copies of the number 2? Hint: <code>map</code>.</li> 
       <li>What is your function that computes 2<sup><var>n</var></sup>?</li> 
-      <li>Given a <code>Seq[String]</code>, how can you use <code>reduce</code> to concatenate them with spaces in between? Write a function <code>catSpace</code> that does this. For example, <code>catSpace(Vector("Mary", "had", "a", "lamb"))</code> should give a string <code>"Mary had a lamb"</code></li> 
-      <li>What happens when you try <code>1.to(10).reduce(_ &lt; _)</code>? Why?</li> 
+      <li>Given a <code>Seq[String]</code>, how can you use <code>reduceLeft</code> to concatenate them with spaces in between? Write a function <code>catSpace</code> that does this. For example, <code>catSpace(Vector("Mary", "had", "a", "lamb"))</code> should give a string <code>"Mary had a lamb"</code></li> 
+      <li>What happens when you try <code>1.to(10).reduceLeft(_ &lt; _)</code>? Why?</li> 
     </ol> 
 
-    <h1>Part 3: Fun with <code>flatMap</code> and <code>reduce</code></h1> 
+    <h1>Part 3: Fun with <code>flatMap</code> and <code>reduceLeft</code></h1> 
     <p class='sideimage'><img src='phonepad.jpg'/></p> 
     <p>Martin Odersky, the inventor of Scala (as well as the charming husband of one of your instructors) likes to show off the power of Scala with a solution of the “phone mnemonics” problem. Given a phone number, what word or word sequence spells it on a touch-tone pad? For example, given the phone number 435 569 6753, one should come up with the sequence <code>HELLO WORLD</code> (and maybe others).</p> 
     <p>We can do better than what he did in his presentations. Over the next three labs, we'll solve this problem with our very restricted subset of Scala.</p> 

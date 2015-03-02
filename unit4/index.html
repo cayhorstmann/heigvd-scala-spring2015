@@ -29,11 +29,11 @@
         <pre>... =&gt; s.map(p) ...</pre> is a sequence of <code>true</code> or <code>false</code>
       </li> 
       <li>We want all of them to be true: 
-        <pre>....reduce(_ &amp;&amp; _)</pre>
+        <pre>....reduceLeft(_ &amp;&amp; _)</pre>
       </li> 
       <li>All together: 
         <pre>val forall = (s: Seq[Int], p: Int =&gt; Boolean) =&gt;
-  s.map(p).reduce(_ &amp;&amp; _)</pre>
+  s.map(p).reduceLeft(_ &amp;&amp; _)</pre>
       </li> 
     </ul> 
 
@@ -142,7 +142,7 @@ val vowels = (s: String) =&gt; s.filter(isVowel).length</pre>
         <pre>cats(Vector("Hello", "World"), Vector("Mary", "had", "fun"))</pre>
       </li> 
       <li>Now write a function <code>wordsForDigits</code> that takes a string of digits between '2' and '9' and produces all strings that they can encode. 
-        <pre>val wordsForDigits = (digits: String) =&gt; ...</pre> Hint: First map to a vector of strings for each digit. Then use reduce.<br/> Test case: <code>wordsForDigits("72252")</code>
+        <pre>val wordsForDigits = (digits: String) =&gt; ...</pre> Hint: First map to a vector of strings for each digit. Then use <code>reduceLeft</code>.<br/> Test case: <code>wordsForDigits("72252")</code>
       </li> 
       <li>Read in all words from <code>/usr/share/dict/words</code>, as we did before. For efficiency, let's put them into a set though. And remove those that start with an uppercase letter (which include a bunch of junk) as well as those of length 1. And let's make them all uppercase. And let's add in "SCALA" which is weirdly missing. 
         <pre>val words = io.Source.fromFile("/usr/share/dict/words").getLines.filter(w =&gt; Character.isLowerCase(w(0)) &amp;&amp; w.length &gt; 1).map(_.toUpperCase).toSet + "SCALA"</pre> Then improve the <code>wordsForDigits</code> function from the preceding step by filtering against the set.
@@ -157,7 +157,7 @@ val vowels = (s: String) =&gt; s.filter(isVowel).length</pre>
         <p>Let's assume we have a particular way of breaking up the numbers, say into <code>Vector("72252", "47", "386")</code>. Using <code>wordsForDigits</code>, we get all the words for <code>"72252"</code>, <code>"47"</code>, and <code>"386"</code>. Now we want to concatenate them into a sentence.</p> 
         <p>We've <em>almost</em> solved that problem before, when <code>wordsForDigits</code> reduced with <code>cats</code> to glue together words. Give it a try: 
           <pre>val wordsForDigitsSequence = (seq: Vector[String]) =&gt;
-  seq.map(e =&gt; wordsForDigits(e)).reduce(cats)</pre> 
+  seq.map(e =&gt; wordsForDigits(e)).reduceLeft(cats)</pre> 
           <p>What do you get for <code>wordsForDigitsSequence(Vector("72252", "47", "386"))?</code></p> 
         </p> 
       </li> 
@@ -218,7 +218,7 @@ val vowels = (s: String) =&gt; s.filter(isVowel).length</pre>
         <pre>augment(augment(augment(Vector(Vector("1")), '2'), '3'), '4')</pre>
       </li> 
       <li>
-        <p>This looks <strong>so</strong> promising. But why can't you use <code>augment</code> with <code>reduce</code>?</p>
+        <p>This looks <strong>so</strong> promising. But why can't you use <code>augment</code> with <code>reduceLeft</code>?</p>
       </li> 
     </ol> 
     <p>Breaking up is hard to do. You'll have to wait until the next lecture to complete this puzzle.</p> 

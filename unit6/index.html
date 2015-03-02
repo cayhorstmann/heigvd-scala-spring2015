@@ -139,7 +139,7 @@ words.find(s =&gt; s.length &gt;= 5 &amp;&amp; s == s.reverse) // civic
     <h1>Lazy Views</h1> 
     <ul>
       <li>The <code>view</code> method makes any sequence lazy—subsequent operations are only executed as needed. 
-        <pre>val squares = (0 until 1000).view.map(x =&gt; x * x)</pre>
+        <pre>val squares = 1.to(1000).view.map(x =&gt; x * x)</pre>
       </li> 
       <li>No squares are yet computed</li> 
       <li>Operations are executed as needed 
@@ -147,14 +147,17 @@ words.find(s =&gt; s.length &gt;= 5 &amp;&amp; s == s.reverse) // civic
       </li> 
       <li>Unlike streams, views don't cache any results</li> 
       <li>Can cascade unevaluated operations 
-        <pre>val palindromicSquares = (1 to 1000000).view
+        <pre>val palindromicSquares = 1.to(10000).view
   .map(x =&gt; x * x)
   .filter(x =&gt; x.toString == x.toString.reverse)
 </pre>
       </li> 
-      <li>Nothing is yet computed. Call <code>force</code> to force evaluation. 
-        <pre>palindromicSquares.take(5).force
-  // Vector(1, 4, 9, 121, 484)</pre>
+      <li>Nothing is yet computed. But now try
+        <pre>palindromicSquares(4) // 484</pre>
+      </li>
+      <li>Or call <code>force</code> to force evaluation. 
+        <pre>palindromicSquares.force
+  // Vector(1, 4, 9, 121, 484, ..., 6948496)</pre>
       </li> 
     </ul> 
 
