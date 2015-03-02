@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 7</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+  </head> 
+  <body>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
+
+    <h1>Classes</h1>
+    <ul><li>A simple class:
+      <pre>class Point(val x: Double, val y: Double) {
+  this() { this(0, 0) }
+  def move(dx: Int, dy: Int) = new Point(x + dx, y + dy)
+  def distanceFromOrigin = math.sqrt(x * x + y * y)
+  override def toString = s"($x, $y)"
+}</pre></li>
+      <li>Three methods: <code>move</code>, <code>distanceFromOrigin</code>, <code>toString</code></li>
+      <li>Need <code>override</code> when overriding methods (here <code>Object.toString</code>)</li>
+      <li>No <code>()</code> for parameterless accessor methods</li>
+      <li>A “primary constructor” called as <code>new Point(3, 4)</code></li>
+      <li>An “auxiliary constructor” called as <code>new Point()</code></li>
+      <li>Could have eliminated the auxiliary constructor by using default args:
+      <pre>class Point(x: Double = 0, y: Double = 0</pre></li></ul>
+      <li>Two instance variables <code>x</code>, <code>y</code> with getters, call <code>p.x</code>, <code>p.y</code></li>
+      <li>This is an immutable class—<code>move</code> yields a new object!</li>
+    </body>
+    <h1>Classes—Differences from Java/C++</h1>
+
+    <ul><li>Prefer immutable classes</li>
+      <li>Use <code>var</code> for mutable instance variables
+      <pre>class Point(var x: Double, var y: Double)</pre></li>
+      <li>No fear of getters (and setters in mutable classes)</li>
+      <li>Can also have private <code>var</code> or <code>val</code>, without getter/setters
+      <pre>class BankAccount {
+  private val balance = 0.0
+  ...
+}</pre></li>
+      <li>A primary constructor parameter without <code>val</code>/<code>var</code> gives rise to a private instance variable:
+      <pre>class Point(x: Double, y: Double)
+  // No accessors for x, y</pre>
+      </li>
+      <li>“Uniform access principle:” In the expression <code>p.x</code>, you don't know whether <code>x</code> is a field or a method</li>
+    </ul>
+
+    <h1>Objects</h1>
+
+    <h1>More About Methods</h1>
+
+    
+
+    
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+    <ul>
+      <li>You work with a buddy </li> 
+      <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+      <li>When you get stuck, ask your buddy first!</li> 
+      <li>Switch coder/scribe roles each lab</li> 
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
+      <li>The scribe submits answers. Include the coder's name in the report!</li> 
+    </ul> 
+
+    <h1>Part 1: </h1> 
+    <ol class='la'>
+      <li>   </li>
+    </ol>
+
+    <!--
+
+Write a class Time with read-only properties hours and minutes and a method
+before(other: Time): Boolean that checks whether this time comes before the
+other. A Time object should be constructed as new Time(hrs, min), where hrs is in
+military time format (between 0 and 23).
+Reimplement the Time class from the preceding exercise so that the internal
+representation is the number of minutes since midnight (between 0 and
+24 × 60 – 1). Do not change the public interface. That is, client code should be
+unaffected by your change.
+
+Define a Point class with a companion object so that you can construct Point
+instances as Point(3, 4), without using new.
+
+-->
+  </html> 
