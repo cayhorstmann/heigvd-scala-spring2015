@@ -32,6 +32,22 @@ mul2(3)(4) is 12</pre>
       <li>A function that is capable of eating 4, thus yielding 12</li> 
       <li><code>y : Int =&gt; 3 * y</code></li> 
     </ul> 
+    
+    <h1>Currying2</h1> 
+    <p class='sideimage'><img alt='' src='haskell-curry.jpg'/></p> 
+    <ul>
+      <li>Currying = Turning a function that takes two arguments into a function that takes one argument. That function returns a function that consumes the second argument. (Named after the logician Haskell Brooks Curry)</li> 
+      <li>Huh?</li> 
+      <li>Simple example: 
+        <pre>val mul = (x: Int, y: Int) =&gt; x * y
+mul(3, 4) is 12
+val mul2 = (x: Int) =&gt; (y: Int) =&gt; x * y
+mul2(3)(4) is 12</pre> 
+      </li> 
+      <li>What is <code>mul2(3)</code>? </li> 
+      <li>A function that is capable of eating 4, thus yielding 12</li> 
+      <li><code>y : Int =&gt; 3 * y</code></li> 
+    </ul> 
 
     <h1>What Is ...</h1> 
     <pre>1.to(10).map(mul2(5))</pre> 
