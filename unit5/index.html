@@ -33,21 +33,6 @@ mul2(3)(4) is 12</pre>
       <li><code>y : Int =&gt; 3 * y</code></li> 
     </ul> 
     
-    <h1>Currying2</h1> 
-    <p class='sideimage'><img alt='' src='haskell-curry.jpg'/></p> 
-    <ul>
-      <li>Currying = Turning a function that takes two arguments into a function that takes one argument. That function returns a function that consumes the second argument. (Named after the logician Haskell Brooks Curry)</li> 
-      <li>Huh?</li> 
-      <li>Simple example: 
-        <pre>val mul = (x: Int, y: Int) =&gt; x * y
-mul(3, 4) is 12
-val mul2 = (x: Int) =&gt; (y: Int) =&gt; x * y
-mul2(3)(4) is 12</pre> 
-      </li> 
-      <li>What is <code>mul2(3)</code>? </li> 
-      <li>A function that is capable of eating 4, thus yielding 12</li> 
-      <li><code>y : Int =&gt; 3 * y</code></li> 
-    </ul> 
 
     <h1>What Is ...</h1> 
     <pre>1.to(10).map(mul2(5))</pre> 
@@ -110,7 +95,7 @@ s.corresponds(t)((a: String, b: Int) =&gt; a.length == b)
 
     <h1>More about Folding</h1> 
     <ul>
-      <li>We could have computed a sum with <code>reduce</code></li> 
+      <li>We could have computed the multiplication function with <code>reduce</code></li> 
       <li>But <code>reduce</code> only works with operators <code>(A, A) =&gt; A</code></li> 
       <li><code>foldLeft</code> works with any operator <code>(B, A) =&gt; B</code></li> 
       <li>Remember this from the last lab? 
@@ -216,7 +201,7 @@ empty map 'M'
       <li>Now on to those subsets where your eyes probably glazed over. We want <code>subsets(2)</code> to be <code>Vector(Vector(), Vector(1), Vector(<b>2</b>), Vector(1, <b>2</b>))</code>. How do you get that out of <code>subsets(1)</code>, i.e. <code>Vector(Vector(), Vector(1))</code>?</li> 
       <li>Ok, what's that in Scala? You are given a vector of vectors <code>s</code> and an integer <code>n</code>, and you want <code>s</code> together with the sequence obtained by adding <code>n</code> to all elements of <code>s</code>. Write a function that does that, and test it.</li> 
       <li>Now write <code>subsets</code> by using <code>foldLeft</code>.</li> 
-      <li>Complete and test the <code>letterFrequencies</code> function from the last slide before the lab. What do you get for <code>letterFrequencies("Mississippi")</code>?</li> 
+      <li>Complete and test the <code>letterFrequencies</code> function from the slide 10. What do you get for <code>letterFrequencies("Mississippi")</code>?</li> 
     </ol> 
 
     <h1>Part 3. Finish Phone Mnemonics </h1> 

@@ -37,7 +37,7 @@ if (and(i &lt; s.length, <b>s(i) == '.'</b>))
     <h1>By-Name Parameters</h1> 
     <ul>
       <li>When a parameter of a function (declared with <code>def</code>) is prefixed by <code>=&gt;</code>, it is not evaluated when the function is called. 
-        <pre>def and(a: <b>=&gt; </b>Boolean, b: <b>=&gt; </b>Boolean) = if (!a) false else b</pre>
+        <pre>def and(a: Boolean, b: <b>=&gt; </b>Boolean) = if (!a) false else b</pre>
       </li> 
       <li>When calling 
         <pre>and(<b>i &lt; s.length</b>, <b>s(i) == '.'</b>)</pre> <code>and</code> receives two functions <code>() =&gt; { i &lt; s.length }</code>, <code>() =&gt; { s(i) == '.' }</code>
