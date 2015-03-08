@@ -198,9 +198,12 @@ empty map 'M'
       <li>How do you compute `n!` with a fold? 
         <pre>val fac = (n: Int) =&gt; ...</pre>
       </li> 
+      <li>How do you compute `n!` with a reduce? </li> 
+      <li>How do you compute `n!` with a recursive function? </li> 
       <li>Now on to those subsets where your eyes probably glazed over. We want <code>subsets(2)</code> to be <code>Vector(Vector(), Vector(1), Vector(<b>2</b>), Vector(1, <b>2</b>))</code>. How do you get that out of <code>subsets(1)</code>, i.e. <code>Vector(Vector(), Vector(1))</code>?</li> 
       <li>Ok, what's that in Scala? You are given a vector of vectors <code>s</code> and an integer <code>n</code>, and you want <code>s</code> together with the sequence obtained by adding <code>n</code> to all elements of <code>s</code>. Write a function that does that, and test it.</li> 
       <li>Now write <code>subsets</code> by using <code>foldLeft</code>.</li> 
+      <li>It is also easy to write <code>subsets</code> as a recursive function. Try it!</li>
       <li>Complete and test the <code>letterFrequencies</code> function from the slide 10. What do you get for <code>letterFrequencies("Mississippi")</code>?</li> 
     </ol> 
 
