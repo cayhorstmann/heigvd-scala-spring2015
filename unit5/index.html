@@ -226,24 +226,6 @@ empty map 'M'
       </li> 
     </ul> 
 
-  <h1><code>def</code></h1> 
-    <ul>
-      <li>So far, we always used <code>val</code> to define functions 
-        <pre>val triple = (x: Double) =&gt; 3 * x</pre>
-      </li> 
-      <li>It is more common to use def: 
-        <pre>def triple(x: Double) = 3 * x</pre> 
-      </li> 
-      <li>Caution: If <code>def</code> isn't followed by <code>=</code>, you are defining a function returning <code>()</code> 
-        <pre>def triple(x: Double) { 3 * x } // Returns ()!
-</pre>
-      </li> 
-      <li>With recursive functions, must specify return type 
-        <pre>def fac(n: Int)<b>:Int</b> = ...</pre>
-      </li>
-      <li>Here is how you define a curried function:
-      <pre>def mul2(x : Int)(y : Int) = x * y</pre></li>
-    </ul> 
 
       <h1>Lab</h1> 
     <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
