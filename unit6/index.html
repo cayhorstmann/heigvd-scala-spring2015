@@ -84,7 +84,7 @@ def words = scala.io.Source.fromFile("/usr/share/dict/words").mkString
       </li> 
       <li>Implemented with hidden flag that is tested whenever <code>words</code> is used</li> 
     </ul> 
-
+<!--
     <h1>Streams</h1> 
     <ul>
       <li>A stream is an immutable list whose tail is computed lazily. 
@@ -141,7 +141,7 @@ words.find(s =&gt; s.length &gt;= 5 &amp;&amp; s == s.reverse) // civic
   // Vector(1, 4, 9, 121, 484, ..., 6948496)</pre>
       </li> 
     </ul> 
-
+-->
     <h1>Lab</h1> 
     <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
     <ul>
@@ -167,8 +167,7 @@ val longWord = iter.head // The first word of length &gt;= 15
         <pre>While(iter.head.length &lt; 15) { iter.next }</pre>Hint: Curry
       </li> 
     </ol> 
-
-    <h1>Part 2: How Lazy Is It?</h1> 
+<!--    <h1>Part 2: How Lazy Is It?</h1> 
     <ol>
       <li>Contrast 
         <pre>val bad1 = scala.io.Source.fromFile("/bad").mkString
@@ -210,7 +209,7 @@ def bad3 = scala.io.Source.fromFile("/bad").mkString
 time(fibs(46))</pre> Why is one of them a lot slower?
       </li> 
     </ol> 
-
+-->
     <h1>Homework</h1> 
     <p>Do this as <em>individual work</em>, not with your partner</p> 
     <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
@@ -219,7 +218,7 @@ time(fibs(46))</pre> Why is one of them a lot slower?
       <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3b'>Problem 2</a></li> 
       <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3c'>Problem 3</a></li> 
       <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3d'>Problem 4</a></li> 
-      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3e'>Problem 5</a></li> 
+  <!--    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw3e'>Problem 5</a></li> -->
     </ul> 
   </body> 
 </html>
