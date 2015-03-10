@@ -43,10 +43,12 @@
         <pre>def sumInts(a: Int, b: Int): Int = a.to(b).reduce(_+_)</pre> 
       </li> 
       <li>Take the sum of the squares of all the integers between a and b :
-        <pre>def square(x: Int): Int = x * x </br>def sumSquares(a: Int, b: Int): Int = a.to(b).map(square).reduce(_+_)</pre> 
+        <pre>def square(x: Int): Int = x * x 
+def sumSquares(a: Int, b: Int): Int = a.to(b).map(square).reduce(_+_)</pre> 
       </li> 
       <li>Take the sum of the cubes of all the integers between a and b :
-        <pre>def cube(x: Int): Int = x * x * x </br>def sumCubes(a: Int, b: Int): Int = a.to(b).map(cube).reduce(_+_)</pre> 
+        <pre>def cube(x: Int): Int = x * x * x 
+def sumCubes(a: Int, b: Int): Int = a.to(b).map(cube).reduce(_+_)</pre> 
       </li> 
       <li>We can factor out the common pattern of these three functions as following:
         <pre>def sum(f: Int => Int, a: Int, b: Int): Int = a.to(b).map(f).reduce(_+_)</pre>
@@ -58,11 +60,15 @@
     <ul	>
       <li>We use a function that takes another function as parameter.
       
-        <pre>def sumInts(a: Int, b: Int) = sum(id, a, b)</br>def sumSquares(a: Int, b: Int) = sum(squares, a, b)</br>def sumCubes(a: Int, b: Int) = sum(cube, a, b)</pre>
+        <pre>def sumInts(a: Int, b: Int) = sum(id, a, b)
+def sumSquares(a: Int, b: Int) = sum(squares, a, b)
+def sumCubes(a: Int, b: Int) = sum(cube, a, b)</pre>
       </li>
       <li>Where
       
-        <pre>def id(x: Int): Int = x</br>def square(x: Int): Int = x * x</br>def cube(x: Int): Int = x * x * x</pre>
+        <pre>def id(x: Int): Int = x
+def square(x: Int): Int = x * x
+def cube(x: Int): Int = x * x * x</pre>
       </li>
       <li>We can even be shorter by getting rid of these parameters:
          <pre>def sum(f: Int => Int): (Int, Int) => Int = (a: Int, b: Int) =>a.to(b).map(f).reduce(_+_) </pre>
@@ -78,10 +84,11 @@
       <li>Returns 30</li> 
     </ol> 
       
-       </ul>
     <h1>Currying</h1> 
+    <ul>
       <li>We can then define:
-         <pre>def sumInts = sum(id)</br>def sumSquares = sum(square)<br/>def sumCubes = sum(cube)</pre>
+         <pre>def sumInts = sum(id)
+def sumSquares = sum(square)<br/>def sumCubes = sum(cube)</pre>
       </li>
       <li>These functions can in turn be applied like any other function: 
          <pre>sumCubes(1, 10) + sumSquares(10, 20)</pre>
@@ -89,12 +96,10 @@
       <li>With the last definition of sum we can also call the functions as following
          <pre> sum (cube) (1, 10)</pre>
       </li>
-      <ul>
          <li>sum(cube) applies sum to cube and returns the sum of cubes function.</li>
          <li>sum(cube) is therefore equivalent to sumCubes.</li>
          <li>This function is next applied to the arguments (1, 10).</li>
-      </ul>
-      <li>Generally, function application associates to the left:
+    <li>Generally, function application associates to the left:
          <pre> sum(cube)(1, 10)   ==   (sum (cube)) (1, 10) </pre>
        </li>
        <li>This style of definition and function application is called currying, named for its instigator, Haskell Brooks Curry (1900-1982), a twentieth century logician.</li>
