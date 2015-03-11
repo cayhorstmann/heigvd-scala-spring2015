@@ -2,18 +2,18 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
     <title>Borran/Fatemi/Horstmann Scala Unit 7</title> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
-    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
   </head> 
   <body>
 
     <h1>Programmation appliquée en Scala</h1> 
     <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
-      <p>Copyright © Cay S. Horstmann 2015 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a> </p> 
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
     </div> 
 
     <h1>Classes</h1> 
@@ -24,35 +24,39 @@
   def move(dx: Double, dy: Double) = new Point(x + dx, y + dy)
   def distanceFromOrigin = math.sqrt(x * x + y * y)
   override def toString = s"(${x}, ${y})"
-}</pre>
+}</pre> 
       </li> 
       <li>Three methods: <code>move</code>, <code>distanceFromOrigin</code>, <code>toString</code></li> 
       <li>Need <code>override</code> when overriding methods (here <code>Object.toString</code>)</li> 
-      <li>No <code>()</code> for parameterless accessor methods</li>
+      <li>No <code>()</code> for parameterless accessor methods</li> 
       <li>Two instance variables <code>x</code>, <code>y</code> with getters, call <code>p.x</code>, <code>p.y</code></li> 
-      <li>This is an immutable class—<code>move</code> yields a new object!</li>
-      <li>Unrelated aside: string interpolation <pre>s"Hello, ${x}!"</pre> fills the value of the expression <code>{x}</code> into the string</li>
-    </ul>
-    <h1>Constructors</h1>
-    <ul><li>A “primary constructor” called as <code>new Point(3, 4)</code></li> 
+      <li>This is an immutable class—<code>move</code> yields a new object!</li> 
+      <li>Unrelated aside: string interpolation 
+        <pre>s"Hello, ${x}!"</pre> fills the value of the expression <code>{x}</code> into the string
+      </li> 
+    </ul> 
+
+    <h1>Constructors</h1> 
+    <ul>
+      <li>A “primary constructor” called as <code>new Point(3, 4)</code></li> 
       <li>An “auxiliary constructor” called as <code>new Point()</code></li> 
       <li>Could have eliminated the auxiliary constructor by using default args: 
-        <pre>class Point(x: Double = 0, y: Double = 0)</pre>
-      </li>
-      <li>Can have arbitrary code in class body—part of primary constructor
+        <pre>class Point(x: Double = 0, y: Double = 0)</pre> 
+      </li> 
+      <li>Can have arbitrary code in class body—part of primary constructor 
         <pre>class Point(x: Double, y: Double) {
   println(s"Welcome to (${x}, ${y})")
     // Printed whenever a new point is constructed
   ...
-}</pre></li>
+}</pre>
+      </li> 
     </ul> 
-    
 
     <h1>Classes—Differences from Java/C++</h1> 
     <ul>
       <li>Prefer immutable classes</li> 
       <li>Use <code>var</code> for mutable instance variables 
-        <pre>class Point(var x: Double, var y: Double)</pre>
+        <pre>class Point(var x: Double, var y: Double)</pre> 
       </li> 
       <li>“Uniform access principle:” In the expression <code>p.x</code>, you don't know whether <code>x</code> is a field or a method</li> 
       <li>No fear of getters/setters</li> 
@@ -60,7 +64,7 @@
         <pre>class BankAccount {
   private val balance = 0.0
   ...
-}</pre>
+}</pre> 
       </li> 
       <li>A primary constructor parameter without <code>val</code>/<code>var</code> gives rise to a private instance variable: 
         <pre>class Point(x: Double, y: Double)
@@ -68,101 +72,123 @@
       </li> 
     </ul> 
 
-    <h1>How Many Instance Variables?</h1>
+    <h1>How Many Instance Variables?</h1> 
     <pre>class Mystery(val x: Double, y: Double) {
   val z = x + y
   def foo = x + z
-}</pre>
-    <ol class='clicker'><li>1</li>
-      <li>2</li>
-      <li>3</li>
-      <li>Something else</li>
-    </ol>
-    
+}</pre> 
+    <ol class='clicker'>
+      <li>1</li> 
+      <li>2</li> 
+      <li>3</li> 
+      <li>Something else</li> 
+    </ol> 
+
     <h1>More About Methods</h1> 
-
-
-    <ul><li>Infix notation: <code>x op y</code> is the same as <code>x.op(y)</code></li>
-      <li>Example: <code>1 to 10 map (3 * _) filter (_ % 5 == 2)</code></li>
-      <li>Identifiers (method names, etc.) can be sequences of symbols
+    <ul>
+      <li>Infix notation: <code>x op y</code> is the same as <code>x.op(y)</code></li> 
+      <li>Example: <code>1 to 10 map (3 * _) filter (_ % 5 == 2)</code></li> 
+      <li>Identifiers (method names, etc.) can be sequences of symbols 
         <pre>class Point {
   ...
   def *(factor: Double) = new Point(x * factor, y * factor)
-}</pre>
-      </li>
-      <li><code>p.*(2)</code> or in infix <code>p * 2</code></li>
-      <li><code>apply</code> method can be invoked with <code>(...)</code> notation: <code>map(key)</code> is <code>map.apply(key)</code></li>
-    </ul>
+}</pre> 
+      </li> 
+      <li><code>p.*(2)</code> or in infix <code>p * 2</code></li> 
+      <li><code>apply</code> method can be invoked with <code>(...)</code> notation: <code>map(key)</code> is <code>map.apply(key)</code></li> 
+    </ul> 
 
-    <h1>Objects</h1>
-
-    <ol><li>Use <code>object</code> for singletons, static methods
+    <h1>Objects</h1> 
+    <ol>
+      <li>Use <code>object</code> for singletons, static methods 
         <pre>object Accounts {
   private var lastNumber = 0
   def newUniqueNumber() = { lastNumber += 1; lastNumber }
-}</pre></li>
-      <li>An object extending <code>App</code> is like <code>main</code>:
+}</pre>
+      </li> 
+      <li>An object extending <code>App</code> is like <code>main</code>: 
         <pre>object MyApp extends App {
    println(s"Hello, ${args(0)}!")
-}</pre></li></ol>
+}</pre>
+      </li>
+    </ol> 
 
-
-    <h1>Companion Objects</h1>
-
+    <h1>Companion Objects</h1> 
     <ul>
-      <li>“Companion object” of class = object with the same name in the same source file
+      <li>“Companion object” of class = object with the same name in the same source file 
         <pre>class Point { ... }
 object Point { ... }
-</pre></li>
-      <li>Have access to each other's private features</li>
-      <li>Common to have <code>apply</code> in companion object for factory methods  
+</pre>
+      </li> 
+      <li>Have access to each other's private features</li> 
+      <li>Common to have <code>apply</code> in companion object for factory methods 
         <pre>object Point {
   def apply(x: Double, y: Double) = new Point(x, y)
-}</pre></li>
-      <li>Client doesn't call <code>new</code>:
+}</pre>
+      </li> 
+      <li>Client doesn't call <code>new</code>: 
         <pre>val p = Point(3, 4) * factor
   // prettier than new Point(3, 4)
-</pre></li>
-    </ul>
+</pre>
+      </li> 
+    </ul> 
 
-    <h1>Extractors</h1>
+    <h1>Traits</h1>
 
-    <ul><li>In factory method, <code>apply</code> turns args into an object</li>
-      <li>Opposite: “Destructuring”—turning object into construction args
-        <pre>val p = new Point(...)
-val Point(x, y) = p * factor
-</pre></li>
-      <li>Doesn't construct a point!</li>
-      <li>Defines and initializes two val <code>x</code> and <code>y</code> that, when passed to <code>Point</code>, make the object on the right hand side</li>
-      <li>Define <code>unapply</code> method:
-        <pre>object Point {
-  def unapply(input: Point) = Some((input.x, input.y))
+    <ul><li>A class can extend multiple traits</li>
+      <li>Forces extending classes to provide certain features...</li>
+      <li>...which may have default implementations in the trait</li>
+      <li>Trait methods can invoke others in a prior layer</li>
+      <li>Traits cannot have construction parameters
+        <ul><li>Technically, this is the <em>only</em> difference between classes and traits</li>
+      </ul></li>
+      <li><pre>trait Logger {
+  def log(msg: String) { println(msg) }
+}
+
+class Point extends Logger {
+  def move(dx: Double, dy: Double) {
+    log(s"Moving ($x $y) by $dx $dy")
+    new Point(x + dy, y + dy)
+  }
   ...
 }
-</pre></li>
-      <li>Return a tuple ...</li>
-      <li>...wrapped into an <code>Option</code>, in case the match fails</li>
-      <li>More about <code>Option</code> in the next unit</li>
+
+trait TimestampLogger extends Logger {
+  override def log(msg: String) {
+    super.log(new java.util.Date() + " " + msg)
+  }
+}
+  
+trait ShortLogger extends Logger {
+  val maxLength = 15
+  override def log(msg: String) {
+    super.log(
+      if (msg.length &lt;= maxLength) msg 
+      else msg.substring(0, maxLength - 3) + "...")
+  }
+}
+  
+val pt = new Point(3, 4) with TimestampLogger with ShortLogger
+pt.move(5, 6) // Prints Wed Mar 11 20:17:01 CET 2015 Moving (3.0 ... <!-- ) -->
+</pre>
+      </li>
     </ul>
 
-    <h1>How Many Are Valid?</h1>
 
-    <pre>val t1 = Tuple2(3, 4)
-val t2 = new Tuple2(3, 4)
-val t3 = Tuple2.apply(3, 4)
-val t4 = new Tuple2.apply(3, 4)
-val Tuple2(x, y) = t1
-val Tuple2(a, b) = Tuple2.unapply(t1)
-val t5 = Tuple2.unapply(t1)</pre>
+    <h1>Reversing The Mixin Order</h1>
 
-    <ol class='clicker'><li>4</li>
-      <li>5</li>
-      <li>6</li>
-      <li>Something else</li>
+    <pre>val pt2 = new Point(3, 4) with ShortLogger with TimestampLogger {
+  override val maxLength = 20
+}</pre>
+    <p>What does it log?</p>
+    <ol class='clicker'><li><code>Wed Mar 11 20:17:01 CET 2015 Moving (3.0 ...<!-- ) --></code></li>
+      <li><code>Wed Mar 11 20:17:...</code></li>
+      <li><code>Wed Mar 11 20:17:01 CET 2015 Moving (3.0, 4.0 ...<!-- ) --></code></li>
+      <li><code>Wed Mar 11 2...</code></li>
     </ol>
-    
     <h1>Lab</h1> 
-    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
     <ul>
       <li>You work with a buddy </li> 
       <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
@@ -174,42 +200,41 @@ val t5 = Tuple2.unapply(t1)</pre>
 
     <h1>Part 1: It's About Time</h1> 
     <ol class='la'>
-      <li>Write a class <code>Time</code> with read-only fields <code>hours</code> and <code>minutes</code>, a method <code>toString</code>, and a method
-        <code>before(other: Time): Boolean</code> that checks whether this time comes before the
-        other. A <code>Time</code> object should be constructed as <code>new Time(h, m)</code>, where <code>h</code> is between 0 and 23 and <code>m</code> between 0 and 59. If they aren't, call <code>throw new IllegalArgumentException</code></li>
-      <li>Construct a couple of <code>Time</code> objects and test your <code>before</code> method.</li>
-      <li>Make it so that a full hour can be constructed as <code>new Time(hrs)</code>. There are two different ways—what are they?</li>
-    </ol>
-    <h1>Part 2: Uniform Access</h1>
+      <li>Write a class <code>Time</code> with read-only fields <code>hours</code> and <code>minutes</code>, a method <code>toString</code>, and a method <code>before(other: Time): Boolean</code> that checks whether this time comes before the other. A <code>Time</code> object should be constructed as <code>new Time(h, m)</code>, where <code>h</code> is between 0 and 23 and <code>m</code> between 0 and 59. If they aren't, call <code>throw new IllegalArgumentException</code></li> 
+      <li>Construct a couple of <code>Time</code> objects and test your <code>before</code> method.</li> 
+      <li>Make it so that a full hour can be constructed as <code>new Time(hrs)</code>. There are two different ways—what are they?</li> 
+    </ol> 
 
-    <ol class='la'><li><p>Reimplement the Time class from the preceding exercise so that the internal
-          representation is the number of minutes since midnight (between 0 and
-          24 × 60 – 1). Do not change the public interface. </p>
-        <p>Hint: Do <i>not</i> use <code>var</code> or <code>val</code> in the primary constructor!</p>
-        <p>Supply parameterless <i>methods</i> <code>hours</code>, <code>minutes</code></p>
-      </li>
-      <li>Now we'll make this a little harder. In the <em>original</em> class, make <code>hours</code> and <code>minutes</code> into mutable fields, so that the following is ok:
+    <h1>Part 2: Uniform Access</h1> 
+    <ol class='la'>
+      <li>
+        <p>Reimplement the Time class from the preceding exercise so that the internal representation is the number of minutes since midnight (between 0 and 24 × 60 – 1). Do not change the public interface. </p> 
+        <p>Hint: Do <i>not</i> use <code>var</code> or <code>val</code> in the primary constructor!</p> 
+        <p>Supply parameterless <i>methods</i> <code>hours</code>, <code>minutes</code></p> 
+      </li> 
+      <li>Now we'll make this a little harder. In the <em>original</em> class, make <code>hours</code> and <code>minutes</code> into mutable fields, so that the following is ok: 
         <pre>val start = new Time(13, 0)
 start.minutes = 15
-</pre> What did you have to do?</li>
-      <li>Do the same for the reimplemented class. You need to provide a setter method with the special name <var>property</var><code>_=</code>:
-        <pre>def minutes_=(newValue: Int) { ... }</pre></li>
-      <li>In the original implementation, as changed in part 2b, it would have been possible to corrupt the field values by calling
-        <pre>start.minutes = -100</pre> How can you avoid that in the modified implementation?</li>
-      <li>Explain what “uniform access” means in this context. What changes does a programmer using the <code>Time</code> class have to make when switching from the original to the reimplemented class?</li>
-      <li>Why are getters and setters less evil in Scala than in Java?</li>
-    </ol>
-    
-    <h1>Part 3: Operators</h1>
+</pre> What did you have to do?
+      </li> 
+      <li>Do the same for the reimplemented class. You need to provide a setter method with the special name <var>property</var><code>_=</code>: 
+        <pre>def minutes_=(newValue: Int) { ... }</pre>
+      </li> 
+      <li>In the original implementation, as changed in part 2b, it would have been possible to corrupt the field values by calling 
+        <pre>start.minutes = -100</pre> How can you avoid that in the modified implementation?
+      </li> 
+      <li>Explain what “uniform access” means in this context. What changes does a programmer using the <code>Time</code> class have to make when switching from the original to the reimplemented class?</li> 
+      <li>Why are getters and setters less evil in Scala than in Java?</li> 
+    </ol> 
 
-    <p>Do the following with either the original or the reimplemented <code>Time</code> class (your choice).</p>
-    <ul><li>Change the <code>before</code> method of part 1 so that one can call
-        <pre>if (t1 &lt; t2) ...</pre></li>
-      <li>Add a method <code>+</code> that adds a given number of minutes to a <code>Time</code> object, resulting in a new <code>Time</code>.</li>
+    <h1>Part 3: Operators</h1> 
+    <p>Do the following with either the original or the reimplemented <code>Time</code> class (your choice).</p> 
+    <ul>
+      <li>Change the <code>before</code> method of part 1 so that one can call 
+        <pre>if (t1 &lt; t2) ...</pre>
+      </li> 
+      <li>Add a method <code>-</code> that, given a  <code>Time</code> object, yields the number of minutes between them (between -1339 and 1339).</li>
       <li>Make it so that a <code>Time</code> object can be constructed without calling <code>new</code>.</li>
-      <li>Provide an extractor so that one can extract the hours and minutes of a <code>Time</code> object as
-        <pre>val t : Time = <var>some computation</var>
-val Time(h, m) = t </pre></li>
     </ul>
   </body>
 </html>

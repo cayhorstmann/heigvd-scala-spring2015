@@ -2,234 +2,251 @@
 
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
-    <meta content='text/html; charset=utf-8' http-equiv='content-type'/> 
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
     <title>Borran/Fatemi/Horstmann Scala Unit 8</title> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css'/> 
-    <link type='text/css' rel='stylesheet' media='screen, projection, print' href='../MySlidy/style.css'/> 
-    <script src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz' charset='utf-8' type='text/javascript'></script> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
   </head> 
   <body>
 
     <h1>Programmation appliquée en Scala</h1> 
     <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
-      <p>Copyright © Cay S. Horstmann 2015 <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'><img src='https://i.creativecommons.org/l/by/4.0/88x31.png' style='border-width:0' alt='Creative Commons License'/></a><br/>This work is licensed under a <a href='http://creativecommons.org/licenses/by/4.0/' rel='license'>Creative Commons Attribution 4.0 International License</a> </p> 
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
     </div> 
 
-    <h1>A Better <code>switch</code></h1>
-
-    <ul><li>Equivalent of <code>switch</code>
+    <h1>A Better <code>switch</code></h1> 
+    <ul>
+      <li>Equivalent of <code>switch</code> 
         <pre>val ch: Char = ...
 ch match {
   case '+' =&gt; println("Positive")
   case '-' =&gt; println("Negative")
   case _ =&gt; println("Zero")
-}</pre></li>
-      <li>No <code>break</code>, no fallthrough—only the first match is executed</li>
-      <li><code>case _</code> is equivalent of <code>default</code></li>
-      <li>Like <code>if</code>, <code>match</code> is an expression:
+}</pre>
+      </li> 
+      <li>No <code>break</code>, no fallthrough—only the first match is executed</li> 
+      <li><code>case _</code> is equivalent of <code>default</code></li> 
+      <li>Like <code>if</code>, <code>match</code> is an expression: 
         <pre>val sign = ch match {
   case '+' =&gt; 1
   case '-' =&gt; -1
   case _ =&gt; 0
-}</pre></li>
-    </ul>
+}</pre>
+      </li> 
+    </ul> 
 
-    <h1>Variables and Guards</h1>
-
-    <ul><li>Variables
-        <pre>case ch =&gt; <var>An expression using <code>ch</code></var></pre></li>
-      <li>Think of <code>case _</code> as a special case with unused variable</li>
-      <li>Guards
-        <pre>case ch <b>if</b> Character.isDigit(ch) =&gt; ...</pre></li>
-      <li>Caution: Variables must start with a lowercase letter.
+    <h1>Variables and Guards</h1> 
+    <ul>
+      <li>Variables 
+        <pre>case ch =&gt; <var>An expression using <code>ch</code></var></pre>
+      </li> 
+      <li>Think of <code>case _</code> as a special case with unused variable</li> 
+      <li>Guards 
+        <pre>case ch <b>if</b> Character.isDigit(ch) =&gt; ...</pre>
+      </li> 
+      <li>Caution: Variables must start with a lowercase letter. 
         <pre>case Pi =&gt; ... // Matches constant Pi
-case ch =&gt; ... // Matches variable ch</pre></li>
-    </ul>
+case ch =&gt; ... // Matches variable ch</pre>
+      </li> 
+    </ul> 
 
-    <h1>Type Patterns</h1>
-    <ul><li>Use <code>case</code> <var>variable</var> <code>:</code> <var>Type</var>
+    <h1>Type Patterns</h1> 
+    <ul>
+      <li>Use <code>case</code> <var>variable</var> <code>:</code> <var>Type</var> 
         <pre>obj match {
   case x: Int =&gt; x
   case s: String =&gt; Integer.parseInt(s)
   case _: BigInt =&gt; Int.MaxValue
   case _ =&gt; 0
-}</pre></li>
-      <li>Caution: If you omit the variable, you can match the <em>companion object</em>!
+}</pre>
+      </li> 
+      <li>Caution: If you omit the variable, you can match the <em>companion object</em>! 
         <pre>obj match {
   case _: BigInt =&gt; ... // Matches if obj is a BigInt instance
   case BigInt =&gt; ... // Matches if obj is the BigInt companion object
-</pre></li></ul>
-    </body>
+</pre>
+      </li>
+    </ul> 
+  </body> 
 
-    <h1>What Value Can <code>x</code> Never Be?</h1>
-    <pre>x match {
+  <h1>What Value Can <code>x</code> Never Be?</h1> 
+  <pre>x match {
   case Foo =&gt; 1
   case y: Foo =&gt; 2
   case foo =&gt; 3
   case _ =&gt; 4
 }
-</pre>
-    <ol class='clicker'><li>1</li>
-      <li>2</li>
-      <li>3</li>
-      <li>4</li>
-    </ol>
+</pre> 
+  <ol class='clicker'>
+    <li>1</li> 
+    <li>2</li> 
+    <li>3</li> 
+    <li>4</li> 
+  </ol> 
 
-    <h1>Extracting Matches</h1>
-
-    <ul><li>Can extract values into variables or test for values:
-        <pre>pair match {
-  case (x, 0) =&gt; ... // Matches if pair._1 is 0
-}</pre></li>
-      <li>Any type with <code>unapply</code> works:
-        <pre>point match {
-  case Point(x, 0) =&gt; ...
-}</pre></li>
-      <li>Use <code>_</code> if you just want to test for values:
-        <pre>case Point(x, _) =&gt; ...</pre></li>
-      <li>Use <code>_*</code> to match a sequence (such as the tail of an array):
-        <pre>case Array(0, _*) =&gt; ...
-case Array(1, x@_*) =&gt; ... // Binds x to tail</pre></li>
-    </ul>
-
-    <h1>Infix Extractors</h1>
-    <ul><li>Works when <code>unapply</code> yields a pair:
-        <pre>case x Point y =&gt; ...
-</pre></li>
-      <li>That's silly, of course. It's meant for lists and such:</li>
-      <pre>case head :: tail =&gt; ...
-</pre>
-      <li><code>::</code> is a class!</li>
-      <li>Particularly useful when matching more than one:
-        <pre>case first :: second :: rest =&gt; ...
-  // Same as case ::(first, ::(second, rest))</pre></li>
-    </ul>
-
-    <h1><code>for</code> Expressions</h1>
-    <ul><li>Syntactic sugar for <code>map</code>:
-        <pre>for (x &lt;- seq) yield <var>expr</var>(x)
-</pre> is the same as
-        <pre>seq.map(x =&gt; <var>expr</var>(x))</pre></li>
-      <ul>Extractors work like in patterns:
-        <pre>for (Point(x, y) &lt;- points) yield x * x + y * y</pre></ul>
-      <ul>Guards work too:
-        <pre>for (Point(x, y) &lt;- points if x &gt; 0) yield ...</pre></ul>
-      <ul>Match failures are skipped:
-        <pre>for (Point(x, 0) &lt;- points) yield ...</pre></ul>
-      <ul>Without <code>yield</code>, <code>for</code> expression calls <code>foreach</code>:
-        <pre>for (x &lt;- seq) println(x)</pre></ul>
-      <ul>Multiple <code>&lt;-</code> are translated into <code>map</code> and <code>flatMap</code>:</ul>
-      <pre>for (x &lt;- 1 to 10; y &lt;- 1 to 10) yield (x, y)
-</pre>
-    </ul>
-
-   <h1>What is the Equivalent?</h1>
-
-      <pre>for (x &lt;- 1 to 10; y &lt;- 1 to 10) yield x - y
-</pre>
-
-    <ol class='clicker'><li><code>(1 to 10).map(x =&gt; (1 to 10).flatMap(y =&gt; x - y))</code></li>
-      <li><code>(1 to 10).flatMap(x =&gt; (1 to 10).map(y =&gt; x - y))</code></li>
-      <li><code>(1 to 10).map(y =&gt; (1 to 10).flatMap(x =&gt; x - y))</code></li>
-      <li><code>(1 to 10).flatMap(y =&gt; (1 to 10).map(x =&gt; x - y))</code></li>
-    </ol>
-
-    
-    <h1>Case Classes</h1>
-    <ul><li>Optimized for pattern matching</li>
-      <li>Get automatic methods <code>apply</code>, <code>unapply</code>, <code>toString</code>, <code>equals</code>, <code>hashCode</code>, <code>copy</code></li>
-      <li>Each constructor parameter becomes a <code>val</code></li>
-      <li>Example:
-        <pre>abstract class Amount
+  <h1>Case Classes</h1> 
+  <ul>
+    <li>Optimized for pattern matching</li> 
+    <li>Get automatic methods <code>apply</code>, <code>unapply</code>, <code>toString</code>, <code>equals</code>, <code>hashCode</code>, <code>copy</code></li> 
+    <li>Each constructor parameter becomes a <code>val</code></li> 
+    <li>Example: 
+      <pre>abstract class Amount
 case class Dollar(value: Double) extends Amount
 case class Currency(value: Double, unit: String) extends Amount
 case object Nothing extends Amount
-</pre></li>
-      <li>Use in pattern match:
-        <pre>amt match {
+</pre>
+    </li> 
+    <li>Use in pattern match: 
+      <pre>amt match {
   case Dollar(v) =&gt; "$" + v
   case Currency(x, "CHF") =&gt; x + " swiss francs"
   case Nothing =&gt; ""
-}</pre></li>
-    </ul>
+}</pre>
+    </li> 
+  </ul>
 
+    <h1>Example: Option</h1>
+
+    <p class='todo'>TODO</p>
     
-    <h1>Lab</h1> 
-    <p class='sideimage'><img src='../images/lab.jpg' alt='Scary looking lab'/></p> 
+    <h1>Extracting Matches</h1> 
+  <ul>
+    <li>Can extract values into variables or test for values: 
+      <pre>pair match {
+  case (x, 0) =&gt; ... // Matches if pair._1 is 0
+}</pre>
+    </li> 
+    <li>Use <code>_</code> to match any value 
+      <pre>case Array(x, _) =&gt; ...</pre>
+    </li> 
+    <li>Use <code>_*</code> to match a sequence (such as the tail of an array): 
+      <pre>case Array(0, _*) =&gt; ...
+case Array(1, x@_*) =&gt; ... // Binds x to tail</pre>
+    </li> 
+  </ul>
+
+    <h1>Extractors</h1> 
     <ul>
-      <li>You work with a buddy </li> 
-      <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
-      <li>When you get stuck, ask your buddy first!</li> 
-      <li>Switch coder/scribe roles each lab</li> 
-      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
-      <li>The scribe submits answers. Include the coder's name in the report!</li> 
+      <li>In factory method, <code>apply</code> turns args into an object</li> 
+      <li>Opposite: “Destructuring”—turning object into construction args 
+        <pre>val p = ... // some Point
+val Point(x, y) = p
+</pre>
+      </li>
+          <li>Also in pattern matching: 
+      <pre>p match {
+  case Point(x, y) =&gt; ...
+}</pre>
+    </li> 
+      <li>Doesn't construct a point!</li> 
+      <li>Defines and initializes <code>x</code> and <code>y</code> that match the , when passed to <code>Point</code>, make the object on the right hand side</li> 
+      <li>Define <code>unapply</code> method: 
+        <pre>object Point {
+  def unapply(input: Point) = Some((input.x, input.y))
+  ...
+}
+</pre>
+      </li> 
+      <li>Return a tuple ...</li> 
+      <li>...wrapped into an <code>Option</code>, in case the match fails</li> 
     </ul> 
 
-    <h1>Part 1: Expressions</h1>
-    <ol class='la'><li>An expression is either a number or an operation. Make case classes <code>Num</code> and <code>Op</code> so that one can make expressions such as
-      <pre>Op("+", Op("*", Num(2), Num(3)), Num(4))</pre>
-        Hint: You need a common superclass, like this:
-        <pre>abstract class Expr
-case class Op(...) extends Expr</pre></li>
-      <li>Write a function <code>eval</code> that evaluates an expression such as the one given above. Use pattern matching and recursion:
-        <pre>def eval(e: Expr): Int = e match { ... }
-</pre></li>
-    </ol>
+    <h1>How Many Are Valid?</h1> 
+    <pre>val t1 = Tuple2(3, 4)
+val t2 = new Tuple2(3, 4)
+val t3 = Tuple2.apply(3, 4)
+val t4 = new Tuple2.apply(3, 4)
+val Tuple2(x, y) = t1
+val Tuple2(a, b) = Tuple2.unapply(t1)
+val t5 = Tuple2.unapply(t1)</pre> 
+    <ol class='clicker'>
+      <li>4</li> 
+      <li>5</li> 
+      <li>6</li> 
+      <li>Something else</li> 
+    </ol> 
 
-    <h1>Part 2: The <code>Option</code> Type</h1>
-    <ol class='la'><li><code>Option</code> is a type in the standard library, with a case class <code>Some</code> that wraps a value, and a case object <code>None</code> that indicates that there is a value. Use this type to write a method <code>max</code> that returns the largest of a <code>Seq[Int]</code> as an <code>Option[Int]</code>, returning <code>None</code> if the sequence is empty.</li>
-      <li>How can you get the unwrapped result of this function with a <code>match</code> expression? What will you do when the result was <code>None</code>?</li>
-      <li>What does
-        <pre>for (Some(x) &lt;- max(s)) println(x)</pre> do when <code>s</code> is non-empty, and when it is empty?</li>
-      <li>What does
-        <pre>for (x &lt;- max(s)) println(x)
-</pre> do when <code>s</code> is non-empty, and when it is empty? Why? Hint: What does <code>Option.foreach</code> do?</li>
-      <li>Now it's your turn to implement <code>Option</code>. Just do it for <code>Int</code>. Try out everything you did in this part with the standard library <code>Option[Int]</code>. Did you get Step 4 to work? How? </li>
-      <li>What happens when you use
-        <pre>for (x &lt;- max(s)) yield x * x</pre> with your <code>Option</code> class? Why?</li>
-    </ol>
+
     
-    <h1>Homework</h1> 
-    <p>Do this as <em>individual work</em>, not with your partner</p> 
-    <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
-    <ul>
-      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4a'>Problem 1</a></li> 
-      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4b'>Problem 2</a></li> 
-      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4c'>Problem 3</a></li> 
-      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4d'>Problem 4</a></li> 
-      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4e'>Problem 5</a></li> 
-    </ul>
-
-    <!--
-
-(a + b) * c -> a * c + b * c
-// ||
-  // Point - - Point
-  // Point *| Line
-  // slope/intercept
-  // unapply
-class Point(val x: Double, val y: Double) {
-    def this() { this(0, 0) }
-    def move(dx: Double, dy: Double) = new Point(x + dx, y + dy)
-    def distanceFromOrigin = math.sqrt(x * x + y * y)
-    override def toString = s"($x, $y)"
-    def *(factor: Double) = new Point(x * factor, y * factor)
-  }
-
-	// Apply for Point class
-
-  object Point {
-    def apply(x: Double, y: Double) = new Point(x, y)
-    def unapply(input: Point) = scala.Some((input.x, input.y))
-  }
-  
-  class Line(val p: Point, val angle: Double) {
-    def this(p: Point, q: Point) {
-    	this(p, math.atan2(q.x - p.x, q.y - p.y))
-    }
-  }
-
-
+    <!-- TODO: Change Point to Array in prior slide, add unapply here
+change end of first lab not to use unapply
 -->
-</html>
+
+  <h1>Infix Extractors</h1> 
+  <ul>
+    <li>Works when <code>unapply</code> yields a pair: 
+      <pre>case x Point y =&gt; ...
+</pre>
+    </li> 
+    <li>That's silly, of course. It's meant for lists and such:</li> 
+    <pre>case head :: tail =&gt; ...
+</pre> 
+    <li><code>::</code> is a class!</li> 
+    <li>Particularly useful when matching more than one: 
+      <pre>case first :: second :: rest =&gt; ...
+  // Same as case ::(first, ::(second, rest))</pre>
+    </li> 
+  </ul> 
+
+  <h1>Lab</h1> 
+  <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+  <ul>
+    <li>You work with a buddy </li> 
+    <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+    <li>When you get stuck, ask your buddy first!</li> 
+    <li>Switch coder/scribe roles each lab</li> 
+    <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
+    <li>The scribe submits answers. Include the coder's name in the report!</li> 
+  </ul> 
+
+  <h1>Part 1: Expressions</h1> 
+  <ol class='la'>
+    <li>An expression is either a number or an operation. Make case classes <code>Num</code> and <code>Op</code> so that one can make expressions such as 
+      <pre>Op("+", Op("*", Num(2), Num(3)), Num(4))</pre> Hint: You need a common superclass, like this: 
+      <pre>abstract class Expr
+case class Op(...) extends Expr</pre>
+    </li> 
+    <li>Write a function <code>eval</code> that evaluates an expression such as the one given above. Use pattern matching and recursion: 
+      <pre>def eval(e: Expr): Int = e match { ... }
+</pre>
+    </li> 
+  </ol> 
+
+
+          <li class='todo'>Provide an extractor so that one can extract the hours and minutes of a <code>Time</code> object as 
+        <pre>val t : Time = <var>some computation</var>
+val Time(h, m) = t </pre>
+      </li> 
+    </html> 
+
+  <h1>Part 2: The <code>Option</code> Type</h1> 
+  <ol class='la'>
+    <li><code>Option</code> is a type in the standard library, with a case class <code>Some</code> that wraps a value, and a case object <code>None</code> that indicates that there is a value. Use this type to write a method <code>max</code> that returns the largest of a <code>Seq[Int]</code> as an <code>Option[Int]</code>, returning <code>None</code> if the sequence is empty.</li> 
+    <li>How can you get the unwrapped result of this function with a <code>match</code> expression? What will you do when the result was <code>None</code>?</li> 
+    <li>What does 
+      <pre>for (Some(x) &lt;- max(s)) println(x)</pre> do when <code>s</code> is non-empty, and when it is empty?
+    </li> 
+    <li>What does 
+      <pre>for (x &lt;- max(s)) println(x)
+</pre> do when <code>s</code> is non-empty, and when it is empty? Why? Hint: What does <code>Option.foreach</code> do?
+    </li> 
+    <li>Now it's your turn to implement <code>Option</code>. Just do it for <code>Int</code>. Try out everything you did in this part with the standard library <code>Option[Int]</code>. Did you get Step 4 to work? How? </li> 
+    <li>What happens when you use 
+      <pre>for (x &lt;- max(s)) yield x * x</pre> with your <code>Option</code> class? Why?
+    </li> 
+  </ol> 
+
+  <!-- Derivatives -->
+
+  <h1>Homework</h1> 
+  <p>Do this as <em>individual work</em>, not with your partner</p> 
+  <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
+  <ul>
+    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4a'>Problem 1</a></li> 
+    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4b'>Problem 2</a></li> 
+    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4c'>Problem 3</a></li> 
+    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4d'>Problem 4</a></li> 
+    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4e'>Problem 5</a></li> 
+  </ul> 
