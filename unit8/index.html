@@ -67,65 +67,81 @@ case ch =&gt; ... // Matches variable ch</pre>
   case _: BigInt =&gt; ... // Matches if obj is a BigInt instance
   case BigInt =&gt; ... // Matches if obj is the BigInt companion object
 </pre>
-      </li>
-    </ul> 
-  </body> 
+    </li>
+      </ul> 
+    </body> 
 
-  <h1>What Value Can <code>x</code> Never Be?</h1> 
-  <pre>x match {
+    <h1>What Value Can <code>x</code> Never Be?</h1> 
+    <pre>x match {
   case Foo =&gt; 1
   case y: Foo =&gt; 2
   case foo =&gt; 3
   case _ =&gt; 4
 }
 </pre> 
-  <ol class='clicker'>
-    <li>1</li> 
-    <li>2</li> 
-    <li>3</li> 
-    <li>4</li> 
-  </ol> 
+    <ol class='clicker'>
+      <li>1</li> 
+      <li>2</li> 
+      <li>3</li> 
+      <li>4</li> 
+    </ol> 
 
-  <h1>Case Classes</h1> 
-  <ul>
-    <li>Optimized for pattern matching</li> 
-    <li>Get automatic methods <code>apply</code>, <code>unapply</code>, <code>toString</code>, <code>equals</code>, <code>hashCode</code>, <code>copy</code></li> 
-    <li>Each constructor parameter becomes a <code>val</code></li> 
-    <li>Example: 
-      <pre>abstract class Amount
+    <h1>Case Classes</h1> 
+    <ul>
+      <li>Optimized for pattern matching</li> 
+      <li>Get automatic methods <code>apply</code>, <code>unapply</code>, <code>toString</code>, <code>equals</code>, <code>hashCode</code>, <code>copy</code></li> 
+      <li>Each constructor parameter becomes a <code>val</code></li> 
+      <li>Example: 
+        <pre>abstract class Amount
 case class Dollar(value: Double) extends Amount
 case class Currency(value: Double, unit: String) extends Amount
 case object Nothing extends Amount
 </pre>
-    </li> 
-    <li>Use in pattern match: 
-      <pre>amt match {
+      </li> 
+      <li>Use in pattern match: 
+        <pre>amt match {
   case Dollar(v) =&gt; "$" + v
   case Currency(x, "CHF") =&gt; x + " swiss francs"
   case Nothing =&gt; ""
 }</pre>
-    </li> 
-  </ul>
+      </li> 
+    </ul>
 
     <h1>Example: Option</h1>
 
-    <p class='todo'>TODO</p>
+    <ul><li><code>Option[T]</code> is a safe alternative to “<code>T</code> or <code>null</code>”</li>
+      <li>Case class <code>Some[T]</code> that wraps a value</li>
+      <li>Case object <code>None</code> that indicates that there is no value.</li>
+      <li>Example: <code>Map[K, V].get</code> returns an <code>Option[V]</code>, either <code>Some(v)</code> or
+        <code>None</code></li>
+      <li>Can use pattern matching to process
+        <pre>scores.get("Alice") match {
+  case Some(score) =&gt; println(score)
+  case None =&gt; println("No score")
+}</pre></li>
+      <li>Or use <code>getOrElse</code>:
+        <pre>println(scores.get("Alice").getOrElse("No score"))
+</pre></li>
+      <li>For maps, it's simpler to use the <code>getOrElse</code> of the map:
+        <pre>println(scores.getOrElse("Alice", "No score"))
+</pre></li>
+    </ul>
     
     <h1>Extracting Matches</h1> 
-  <ul>
-    <li>Can extract values into variables or test for values: 
-      <pre>pair match {
+    <ul>
+      <li>Can extract values into variables or test for values: 
+        <pre>pair match {
   case (x, 0) =&gt; ... // Matches if pair._1 is 0
 }</pre>
-    </li> 
-    <li>Use <code>_</code> to match any value 
-      <pre>case Array(x, _) =&gt; ...</pre>
-    </li> 
-    <li>Use <code>_*</code> to match a sequence (such as the tail of an array): 
-      <pre>case Array(0, _*) =&gt; ...
-case Array(1, x@_*) =&gt; ... // Binds x to tail</pre>
-    </li> 
-  </ul>
+      </li> 
+      <li>Use <code>_</code> to match any value 
+        <pre>case Vector(x, _) =&gt; ...</pre>
+      </li> 
+      <li>Use <code>_*</code> to match a sequence (such as the tail of an array): 
+        <pre>case Vector(0, _*) =&gt; ...
+case Vector(1, x@_*) =&gt; ... // Binds x to tail</pre>
+      </li> 
+    </ul>
 
     <h1>Extractors</h1> 
     <ul>
@@ -135,11 +151,11 @@ case Array(1, x@_*) =&gt; ... // Binds x to tail</pre>
 val Point(x, y) = p
 </pre>
       </li>
-          <li>Also in pattern matching: 
-      <pre>p match {
+      <li>Also in pattern matching: 
+        <pre>p match {
   case Point(x, y) =&gt; ...
 }</pre>
-    </li> 
+      </li> 
       <li>Doesn't construct a point!</li> 
       <li>Defines and initializes <code>x</code> and <code>y</code> that match the , when passed to <code>Point</code>, make the object on the right hand side</li> 
       <li>Define <code>unapply</code> method: 
@@ -167,86 +183,75 @@ val t5 = Tuple2.unapply(t1)</pre>
       <li>6</li> 
       <li>Something else</li> 
     </ol> 
-
-
     
-    <!-- TODO: Change Point to Array in prior slide, add unapply here
-change end of first lab not to use unapply
--->
-
-  <h1>Infix Extractors</h1> 
-  <ul>
-    <li>Works when <code>unapply</code> yields a pair: 
-      <pre>case x Point y =&gt; ...
+    <h1>Infix Extractors</h1> 
+    <ul>
+      <li>Works when <code>unapply</code> yields a pair: 
+        <pre>case x Point y =&gt; ...
 </pre>
-    </li> 
-    <li>That's silly, of course. It's meant for lists and such:</li> 
-    <pre>case head :: tail =&gt; ...
-</pre> 
-    <li><code>::</code> is a class!</li> 
-    <li>Particularly useful when matching more than one: 
-      <pre>case first :: second :: rest =&gt; ...
-  // Same as case ::(first, ::(second, rest))</pre>
-    </li> 
-  </ul> 
-
-  <h1>Lab</h1> 
-  <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
-  <ul>
-    <li>You work with a buddy </li> 
-    <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
-    <li>When you get stuck, ask your buddy first!</li> 
-    <li>Switch coder/scribe roles each lab</li> 
-    <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
-    <li>The scribe submits answers. Include the coder's name in the report!</li> 
-  </ul> 
-
-  <h1>Part 1: Expressions</h1> 
-  <ol class='la'>
-    <li>An expression is either a number or an operation. Make case classes <code>Num</code> and <code>Op</code> so that one can make expressions such as 
-      <pre>Op("+", Op("*", Num(2), Num(3)), Num(4))</pre> Hint: You need a common superclass, like this: 
-      <pre>abstract class Expr
-case class Op(...) extends Expr</pre>
-    </li> 
-    <li>Write a function <code>eval</code> that evaluates an expression such as the one given above. Use pattern matching and recursion: 
-      <pre>def eval(e: Expr): Int = e match { ... }
-</pre>
-    </li> 
-  </ol> 
-
-
-          <li class='todo'>Provide an extractor so that one can extract the hours and minutes of a <code>Time</code> object as 
-        <pre>val t : Time = <var>some computation</var>
-val Time(h, m) = t </pre>
       </li> 
-    </html> 
+      <li>That's silly, of course. It's meant for lists and such:</li> 
+      <pre>case head :: tail =&gt; ...
+</pre> 
+      <li><code>::</code> is a class!</li> 
+      <li>Particularly useful when matching more than one: 
+        <pre>case first :: second :: rest =&gt; ...
+  // Same as case ::(first, ::(second, rest))</pre>
+      </li> 
+    </ul> 
 
-  <h1>Part 2: The <code>Option</code> Type</h1> 
-  <ol class='la'>
-    <li><code>Option</code> is a type in the standard library, with a case class <code>Some</code> that wraps a value, and a case object <code>None</code> that indicates that there is a value. Use this type to write a method <code>max</code> that returns the largest of a <code>Seq[Int]</code> as an <code>Option[Int]</code>, returning <code>None</code> if the sequence is empty.</li> 
-    <li>How can you get the unwrapped result of this function with a <code>match</code> expression? What will you do when the result was <code>None</code>?</li> 
-    <li>What does 
-      <pre>for (Some(x) &lt;- max(s)) println(x)</pre> do when <code>s</code> is non-empty, and when it is empty?
-    </li> 
-    <li>What does 
-      <pre>for (x &lt;- max(s)) println(x)
-</pre> do when <code>s</code> is non-empty, and when it is empty? Why? Hint: What does <code>Option.foreach</code> do?
-    </li> 
-    <li>Now it's your turn to implement <code>Option</code>. Just do it for <code>Int</code>. Try out everything you did in this part with the standard library <code>Option[Int]</code>. Did you get Step 4 to work? How? </li> 
-    <li>What happens when you use 
-      <pre>for (x &lt;- max(s)) yield x * x</pre> with your <code>Option</code> class? Why?
-    </li> 
-  </ol> 
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+    <ul>
+      <li>You work with a buddy </li> 
+      <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+      <li>When you get stuck, ask your buddy first!</li> 
+      <li>Switch coder/scribe roles each lab</li> 
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
+      <li>The scribe submits answers. Include the coder's name in the report!</li> 
+    </ul> 
 
-  <!-- Derivatives -->
+    <h1>Part 1: The <code>Option</code> Type</h1> 
+    <ol class='la'><li>In this part, you will reimplement the <code>Option</code> type for <code>Double</code> values. Provide <code>Option</code>, <code>Some</code>, and <code>None</code>. What are they?</li>
+      <li>Write a function <code>inv</code> that maps <var>x</var> into its inverse (1 / <var>x</var>), returning an <code>Option</code>. Return <code>None</code> when <var>x</var> is zero. What is your function? What happens when you call <code>inv(2)</code>? <code>inv(0)</code>?</li>
+      <li>Define a method <code>isEmpty</code> that returns <code>true</code> for <code>None</code> and <code>false</code> for <code>Some</code>.</li>      
+      <li>Now define a method <code>get</code> that returns the value wrapped in <code>Some</code> and throws a <code>NoSuchElementException</code> if there is no value. There are two ways of defining methods on an <code>Option</code>. You can either define a method in <code>Option</code>, using pattern matching. Or you can leave the method abstract in <code>Option</code> and override it in <code>Some</code> and <code>None</code>. In this step, use whichever approach you didn't use in the preceding step.</li>
+      <li>Define a method <code>getOrElse</code> that returns the value wrapped in <code>Some</code> and a default if there is no value. Do this by calling <code>isEmpty</code>/<code>get</code></li>      
+    </ol> 
 
-  <h1>Homework</h1> 
-  <p>Do this as <em>individual work</em>, not with your partner</p> 
-  <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
-  <ul>
-    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4a'>Problem 1</a></li> 
-    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4b'>Problem 2</a></li> 
-    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4c'>Problem 3</a></li> 
-    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4d'>Problem 4</a></li> 
-    <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4e'>Problem 5</a></li> 
-  </ul> 
+    <h1>Part 2: Lists</h1>
+    <ol class='la'><li>In this part, you will implement a <code>List</code> type for <code>Double</code> values. A list is either <code>Nil</code> or a node with a head that's a <code>Double</code> and a tail that's again a <code>List</code>. Such a node is traditionally called a <code>Cons</code> node. Define the types <code>List</code>, <code>Nil</code>, and <code>Cons</code>.</li>
+      <li>Now write a function (outside any of these classes) that computes the sum of all elements in a list, using recursion and pattern matching. Test it with <code>Cons(3, Cons(4, Cons(5, Nil)))</code>.</li>
+      <li>That's an ugly way of making lists. Instead, define a method of <code>List</code> called <code>::</code> that lets you make a list as <code>3 :: 4 :: 5 :: Nil</code>. What special rule for operators (briefly mentioned in Unit 7) makes this work?</li>
+      <li>Right now, to use pattern matching in lists, you write
+      <pre>case Cons(h, t) =&gt; ...</pre>
+      It would be prettier to write
+      <pre>case h :: t =&gt; </pre>
+        That's achieved by renaming the class <code>Cons</code> into <code>::</code>. Do that, and fix up the <code>sum</code> function to match. Don't change the name of the <code>::</code> method. There is both a <code>::</code> method (used for construction) and a <code>::</code> class (for extraction). You may run into a problem in your definition of the <code>::</code> method. If you do, fix it by adding <code>new</code>.
+      </li>
+    </ol>
+    
+    <h1>Part 3: Expressions</h1> 
+    <ol class='la'>
+      <li>An expression is either a number or an operation. Make case classes <code>Num</code> and <code>Op</code> so that one can make expressions such as 
+        <pre>Op("+", Op("*", Num(2), Num(3)), Num(4))</pre> Hint: You need a common superclass, like this: 
+        <pre>abstract class Expr
+case class Op(...) extends Expr</pre>
+      </li> 
+      <li>Write a function <code>eval</code> that evaluates an expression such as the one given above. Use pattern matching and recursion: 
+        <pre>def eval(e: Expr): Int = e match { ... }
+</pre>
+      </li> 
+    </ol> 
+
+    <h1>Homework</h1> 
+    <p>Do this as <em>individual work</em>, not with your partner</p> 
+    <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
+    <ul>
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4a'>Problem 1</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4b'>Problem 2</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4c'>Problem 3</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4d'>Problem 4</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw4e'>Problem 5</a></li> 
+    </ul> 
+  </html>

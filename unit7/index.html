@@ -94,7 +94,11 @@
   def *(factor: Double) = new Point(x * factor, y * factor)
 }</pre> 
       </li> 
-      <li><code>p.*(2)</code> or in infix <code>p * 2</code></li> 
+      <li><code>p.*(2)</code> or in infix <code>p * 2</code></li>
+      <li>If an operator ends in <code>:</code>, it is right-associative:
+      <pre>a **: b **: c </pre> is
+      <pre>a **: (b **: c)</pre>
+       See Unit 8 for a more natural example.</li>
       <li><code>apply</code> method can be invoked with <code>(...)</code> notation: <code>map(key)</code> is <code>map.apply(key)</code></li> 
     </ul> 
 
