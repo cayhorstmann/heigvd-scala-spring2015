@@ -223,12 +223,14 @@ val t5 = Tuple2.unapply(t1)</pre>
     <ol class='la'><li>In this part, you will implement a <code>List</code> type for <code>Double</code> values. A list is either <code>Nil</code> or a node with a head that's a <code>Double</code> and a tail that's again a <code>List</code>. Such a node is traditionally called a <code>Cons</code> node. Define the types <code>List</code>, <code>Nil</code>, and <code>Cons</code>.</li>
       <li>Now write a function (outside any of these classes) that computes the sum of all elements in a list, using recursion and pattern matching. Test it with <code>Cons(3, Cons(4, Cons(5, Nil)))</code>.</li>
       <li>That's an ugly way of making lists. Instead, define a method of <code>List</code> called <code>::</code> that lets you make a list as <code>3 :: 4 :: 5 :: Nil</code>. What special rule for operators (briefly mentioned in Unit 7) makes this work?</li>
+      <li>Have a close look how <code>3 :: 4 :: 5 :: Nil</code> is printed in the worksheet. Fix it by defining <code>toString</code> so that it shows up as <code>3 :: 4 :: 5 :: Nil</code>.</li>
       <li>Right now, to use pattern matching in lists, you write
       <pre>case Cons(h, t) =&gt; ...</pre>
       It would be prettier to write
-      <pre>case h :: t =&gt; </pre>
+      <pre>case h :: t =&gt; ...</pre>
         That's achieved by renaming the class <code>Cons</code> into <code>::</code>. Do that, and fix up the <code>sum</code> function to match. Don't change the name of the <code>::</code> method. There is both a <code>::</code> method (used for construction) and a <code>::</code> class (for extraction). You may run into a problem in your definition of the <code>::</code> method. If you do, fix it by adding <code>new</code>.
       </li>
+      <li>Why didn't you have to define an <code>unapply</code> method in the preceding step?</li>
     </ol>
     
     <h1>Part 3: Expressions</h1> 
