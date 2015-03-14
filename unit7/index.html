@@ -30,7 +30,9 @@
       <li>Need <code>override</code> when overriding methods (here <code>Object.toString</code>)</li> 
       <li>No <code>()</code> for parameterless accessor methods</li> 
       <li>Two instance variables <code>x</code>, <code>y</code> with getters, call <code>p.x</code>, <code>p.y</code></li> 
-      <li>This is an immutable class—<code>move</code> yields a new object!</li> 
+      <li>This is an immutable class—can't change the <code>val</code> fields
+      <ul><li><code>move</code> yields a new object!</li>
+      </ul></li> 
       <li>Unrelated aside: string interpolation 
         <pre>s"Hello, ${x}!"</pre> fills the value of the expression <code>{x}</code> into the string
       </li> 
@@ -41,10 +43,10 @@
       <li>A “primary constructor” called as <code>new Point(3, 4)</code></li> 
       <li>An “auxiliary constructor” called as <code>new Point()</code></li> 
       <li>Could have eliminated the auxiliary constructor by using default args: 
-        <pre>class Point(x: Double = 0, y: Double = 0)</pre> 
+        <pre>class Point(val x: Double = 0, val y: Double = 0)</pre> 
       </li> 
       <li>Can have arbitrary code in class body—part of primary constructor 
-        <pre>class Point(x: Double, y: Double) {
+        <pre>class Point(val x: Double, val y: Double) {
   println(s"Welcome to (${x}, ${y})")
     // Printed whenever a new point is constructed
   ...
@@ -89,17 +91,17 @@
       <li>Infix notation: <code>x op y</code> is the same as <code>x.op(y)</code></li> 
       <li>Example: <code>1 to 10 map (3 * _) filter (_ % 5 == 2)</code></li> 
       <li>Identifiers (method names, etc.) can be sequences of symbols 
-        <pre>class Point {
+        <pre>class Point(...) {
   ...
   def *(factor: Double) = new Point(x * factor, y * factor)
 }</pre> 
       </li> 
       <li><code>p.*(2)</code> or in infix <code>p * 2</code></li>
-      <li>If an operator ends in <code>:</code>, it is right-associative:
+      <li>If an operator ends in <code>:</code>, it is right-associative. E.g. if we want to define power operator <code>a<sup>b</sup></code>, use <code>a **: b</code>
       <pre>a **: b **: c </pre> is
       <pre>a **: (b **: c)</pre>
        See Unit 8 for a more natural example.</li>
-      <li><code>apply</code> method can be invoked with <code>(...)</code> notation: <code>map(key)</code> is <code>map.apply(key)</code></li> 
+      <li><code>apply</code> method can be invoked with <code>(...)</code> notation. We've seen this with maps. <code>map(key)</code> is <code>map.apply(key)</code></li> 
     </ul> 
 
     <h1>Objects</h1> 
@@ -108,6 +110,7 @@
         <pre>object Accounts {
   private var lastNumber = 0
   def newUniqueNumber() = { lastNumber += 1; lastNumber }
+    // <span class='rm'>Aside: Use <code>()</code> since it mutates state</span>
 }</pre>
       </li> 
       <li>An object extending <code>App</code> is like <code>main</code>: 
@@ -184,7 +187,8 @@ pt.move(5, 6) // Prints Wed Mar 11 20:17:01 CET 2015 Moving (3.0 ... <!-- ) -->
 
     <pre>val pt2 = new Point(3, 4) with ShortLogger with TimestampLogger {
   override val maxLength = 20
-}</pre>
+}
+pt2.move(5, 6)</pre>
     <p>What does it log?</p>
     <ol class='clicker'><li><code>Wed Mar 11 20:17:01 CET 2015 Moving (3.0 ...<!-- ) --></code></li>
       <li><code>Wed Mar 11 20:17:...</code></li>
@@ -212,8 +216,12 @@ pt.move(5, 6) // Prints Wed Mar 11 20:17:01 CET 2015 Moving (3.0 ... <!-- ) -->
     <h1>Part 2: Uniform Access</h1> 
     <ol class='la'>
       <li>
-        <p>Reimplement the Time class from the preceding exercise so that the internal representation is the number of minutes since midnight (between 0 and 24 × 60 – 1). Do not change the public interface. </p> 
-        <p>Hint: Do <i>not</i> use <code>var</code> or <code>val</code> in the primary constructor!</p> 
+        <p>In a new worksheet, reimplement the <code>Time</code> class from the preceding exercise so that the internal representation is the number of minutes since midnight (between 0 and 24 × 60 – 1). Do not change the public interface. </p> 
+        <p>Do <i>not</i> use <code>var</code> or <code>val</code> in the primary constructor!
+        <pre>class Time(hours: Int, minutes: Int) {
+  private val minutesSinceMidNight = ...
+  ...
+}</pre></p> 
         <p>Supply parameterless <i>methods</i> <code>hours</code>, <code>minutes</code></p> 
       </li> 
       <li>Now we'll make this a little harder. In the <em>original</em> class, make <code>hours</code> and <code>minutes</code> into mutable fields, so that the following is ok: 
@@ -237,7 +245,7 @@ start.minutes = 15
       <li>Change the <code>before</code> method of part 1 so that one can call 
         <pre>if (t1 &lt; t2) ...</pre>
       </li> 
-      <li>Add a method <code>-</code> that, given a  <code>Time</code> object, yields the number of minutes between them (between -1339 and 1339).</li>
+      <li>Add a method <code>-</code> that, given a  <code>Time</code> object, yields the number of minutes between them (between -1439 and 1439).</li>
       <li>Make it so that a <code>Time</code> object can be constructed without calling <code>new</code>.</li>
     </ul>
   </body>

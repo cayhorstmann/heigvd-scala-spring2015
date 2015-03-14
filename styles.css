@@ -210,9 +210,8 @@ pre em {
   font-family: serif;
 }
 
-.rm {
+.rm, .c {
   font-family: serif;
-  color: blue;
 }
 
 blockquote {

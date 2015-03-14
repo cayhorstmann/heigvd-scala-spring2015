@@ -131,7 +131,7 @@ case object Nothing extends Amount
     <ul>
       <li>Can extract values into variables or test for values: 
         <pre>pair match {
-  case (x, 0) =&gt; ... // Matches if pair._1 is 0
+  case (x, 0) =&gt; ... // <span class='c'>Matches if <code>pair._2</code> is 0</span>
 }</pre>
       </li> 
       <li>Use <code>_</code> to match any value 
@@ -139,14 +139,14 @@ case object Nothing extends Amount
       </li> 
       <li>Use <code>_*</code> to match a sequence (such as the tail of an array): 
         <pre>case Vector(0, _*) =&gt; ...
-case Vector(1, x@_*) =&gt; ... // Binds x to tail</pre>
+case Vector(1, x@_*) =&gt; ... // <span class='c'>Binds <code>x</code> to tail</span></pre>
       </li> 
     </ul>
 
     <h1>Extractors</h1> 
     <ul>
-      <li>In factory method, <code>apply</code> turns args into an object</li> 
-      <li>Opposite: “Destructuring”—turning object into construction args 
+      <li>In factory method <code>Classname(args)</code>, <code>apply</code> turns args into an object</li> 
+      <li>Opposite: extracting construction args 
         <pre>val p = ... // some Point
 val Point(x, y) = p
 </pre>
@@ -157,7 +157,7 @@ val Point(x, y) = p
 }</pre>
       </li> 
       <li>Doesn't construct a point!</li> 
-      <li>Defines and initializes <code>x</code> and <code>y</code> that match the , when passed to <code>Point</code>, make the object on the right hand side</li> 
+      <li>Defines <code>x</code> and <code>y</code> that, when passed to <code>Point</code>, make <code>p</code></li> 
       <li>Define <code>unapply</code> method: 
         <pre>object Point {
   def unapply(input: Point) = Some((input.x, input.y))
