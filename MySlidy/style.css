@@ -203,6 +203,10 @@ table.stack tr > td {
   list-style-type: lower-alpha;
 }
 
+.upper-alpha > li, .ua > li { 
+  list-style-type: upper-alpha;
+}
+
 .highlight { 
   background: lightsteelblue;
 }
