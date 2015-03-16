@@ -210,6 +210,10 @@ pre em {
   font-family: serif;
 }
 
+var code {
+  font-style: normal
+}
+
 .rm, .c {
   font-family: serif;
 }

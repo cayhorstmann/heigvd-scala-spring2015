@@ -66,7 +66,7 @@ h1, h2, h3, h4 {
   font-weight: bold;
 }
 
-pre .comment, pre cite, pre .rm { 
+pre .comment, pre cite, pre .rm, pre .c { 
   font-family: roman;
   font-style: normal;
   font-weight: normal;
@@ -78,6 +78,10 @@ pre .comment, pre cite, pre .rm {
   font-style: italic;
   font-weight: normal;
   color: black;
+}
+
+var code {
+  font-style: normal
 }
 
 pre {  

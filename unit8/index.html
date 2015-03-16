@@ -115,7 +115,8 @@ case object Nothing extends Amount
       <li>Example: <code>Map[K, V].get</code> returns an <code>Option[V]</code>, either <code>Some(v)</code> or
         <code>None</code></li>
       <li>Can use pattern matching to process
-        <pre>scores.get("Alice") match {
+        <pre>val scores = Map("Alice" -&gt; 1, "Bob" -&gt; 2)
+scores.get("Alice") match {
   case Some(score) =&gt; println(score)
   case None =&gt; println("No score")
 }</pre></li>
@@ -186,7 +187,7 @@ val t5 = Tuple2.unapply(t1)</pre>
     
     <h1>Infix Extractors</h1> 
     <ul>
-      <li>Works when <code>unapply</code> yields a pair: 
+      <li>Can use infix notation when <code>unapply</code> yields a pair: 
         <pre>case x Point y =&gt; ...
 </pre>
       </li> 
