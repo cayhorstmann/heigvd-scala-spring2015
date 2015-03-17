@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 10</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+  </head> 
+  <body>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
+
+    <h1>Variance</h1>
+    <p>Given classes <pre>class Pair[T](val first: T, val second: T)
+class Person(val name: String)
+class Student(name: String, val major: String) extends Person(name)
+</pre> and a method
+    <pre>def makeFriends(p: Pair[Person]) { ... }
+</pre> which of the following can be passed to <code>makeFriends</code>?</p>
+    <ol class='clicker'><li>Only a <code>Pair[Person]</code></li>
+      <li>A <code>Pair[Person]</code> and a <code>Pair[Student]</code></li>
+      <li>A <code>Pair[Person]</code> and a <code>Pair[Any]</code></li>
+      <li>Any <code>Pair[...]</code></li>
+    </ol>
+    
+    <h1>Covariance</h1>
+    <ul><li>By default, generic types are <em>invariant</em>. If <code>G</code> is a generic type, there is <em>no relationship</em> between <code>G[S]</code> and <code>G[T]</code>, no matter what the relationship between <code>S</code> and <code>T</code> may be.</li>
+      <li>Use <em>variance annotation</em> to have generic type follow relationships between type parameters.</li>
+      <li><em>Covariance</em>: Generic type follows in the same direction
+      <pre>class Pair[+T](val first: T, val second: T)</pre></li>
+      <li>Now <code>Pair[Student] &lt;: Pair[Person]</code></li>
+      <li>Good choice for immutable collections (e.g. <code>Seq[+A]</code>)</li>
+    </ul>
+
+    <h1>Contravariance</h1>
+
+    <p>A <code>Friend[T]</code> is willing to befriend anyone of type <code>T</code>.</p>
+      <pre>trait Friend[T] {
+def befriend(someone: T)
+}</pre>
+      <p>Suppose you have a function</p>
+      <pre>def makeFriendWith(s: Student, f: Friend[Student]) { f.befriend(s) }</pre>
+    <p>What should you be able to pass in for <code>f</code>?</p>
+    <ol class='clicker'><li>Only a <code>Friend[Student]</code></li>
+      <li>A <code>Friend[Person]</code> and a <code>Friend[Student]</code></li>
+      <li>A <code>Friend[GraduateStudent]</code> and a <code>Friend[Student]</code></li>
+      <li>Any <code>Friend[...]</code></li>
+    </ol>
+
+
+    <h1>Contravariance</h1>
+
+    <ol><li>A generic type <code>G</code> is <em>contravariant</em> if
+      <pre>S &lt;: T =&gt; G[T] &lt;: G[S]</pre></li>
+      <li>For example,
+      <pre>Student &lt;: Person =&gt; Friend[Person] &lt;: Friend[Student]</pre></li>
+      <li>Indicated with <code>-</code> annotation:
+        <pre>trait Friend[-T] {
+def befriend(someone: T)
+}</pre></li>
+      </ol>
+
+    <h1>Producers and Consumers</h1>
+    <ul><li>Can have both variance types in a single generic type:
+      <pre>trait Function1[-T, +R]</pre></li>
+      <li>Can you call
+      <pre>def friends(students: Vector[Student], find: Function1[Student, Person]) </pre> with <pre>def findStudent(p: Person) : Student
+</pre></li>
+      <li>Of course—it is willing to consume any person, so it will surely consume <code>Student</code> objects</li>
+      <li>And it produces <code>Student</code> objects, which are <code>Person</code> objects</li>
+      <li>Consumers are contravariant, producers covariant</li>
+    </ul>
+
+    <h1>Mutable Collections</h1>
+
+    <ul><li>Can you convert an <code>Array[Student]</code> to an <code>Array[Person]</code>?
+      </li>
+      <li>That would be bad:        
+      <pre>val students = Array(student1, student2)
+val people = students // <span class='c'>Not legal, but suppose it was...</span>
+people(0) = new Person("Fred")
+</pre>
+      Now <code>students(0)</code> is a <code>Person</code>, not a <code>Student</code>!</li>
+      <li>In Java, this is a run-time error (ArrayStoreException)</li>
+      <li>In Scala, the conversion is disallowed.</li>
+      <li>Mutable collections must be invariant.</li>
+    </ul>
+
+    <h1>Co- and Contravariant Positions</h1>
+    <ul><li>How can Scala tell what is a mutable collection?</li>
+      <li>It doesn't—it only looks at <em>positions</em></li>
+      <li>Example:
+      <pre>class Pair[+T](var first: T, var second: T)</pre></li>
+      <li>Error: “<code>T</code> occurs in <em>contravariant position</em> in <code>first_=(value: T)
+</code>”</li>
+      <li>Parameter positions are contravariant, return values covariant</li>
+      <li>Variance flips inside function parameters:
+      <pre>foldLeft[B](z: B)(op: (A, B) =&gt; B): B
+               -       +  +     -   +
+</pre></li>
+      <li><code>A</code> can be <code>+</code>, but <code>B</code> must be invariant</li>
+    </ul>
+
+    <h1>Position Workaround</h1>
+    <ul><li>Sometimes, position rules aren't good enough
+      <pre>class Pair[+T](val first: T, val second: T) {
+  def replaceFirst(newFirst: T) = new Pair[T](newFirst, second)
+}
+</pre></li>
+      <li>Rejected because <code>newFirst: T</code> is in contravariant position</li>
+      <li>Even though nothing dangerous can happen—no mutation</li>
+      <li>Remedy: Add type parameter to method
+      <pre>def replaceFirst[R &gt;: T](newFirst: R) = new Pair[R](newFirst, second)
+</pre></li>
+      <li><code>R</code> is invariant and can occur in a covariant position</li>
+    </ul>
+
+
+    
+    <h1>Objects Can't Be Generic</h1>
+
+    <ul><li>An object can't have a type parameter</li>
+      <li>There is only one, not one for each type</li>
+      <li>Need to be careful with empty objects:
+      <pre>abstract class List[+T]
+case class ::[T](val head: T, tail: List[T]) extends List[T]
+case object Nil extends List[<b>Nothing</b>]
+</pre></li>
+      <li><code>Nothing</code> is a subtype of all types</li>
+      <li>Therefore, <code>List[Nothing]</code> is a subtype of all <code>List[T]</code></li>
+      <li>Consider
+      <pre>val lst = new ::(42, Nil)</pre></li>
+      <li>Makes a <code>::[Int]</code>. </li>
+      <li>Second parameter needs to be a <code>List[Int]</code></li>
+      <li><code>List[Nothing] &lt;: List[Int]</code></li>
+    </ul>
+
+    <h1>Wildcards</h1>
+
+    <ul><li>Java has no “declaration-site” variance of generic types</li>
+      <li>Java has “use-site” variance: <code>? extends T, ? super T</code></li>
+      <li>You can do that in Scala too:
+      <pre>def process(people: Array[_ &lt;: Person])
+</pre></li>
+      <li>Can call <code>process</code> with <code>Array[Student]</code></li>
+      <li>Works with contravariance too:
+      <pre>def min[T](p: Pair[T])(comp: Comparator[_ &gt;: T])</pre></li>
+    </ul>
+
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+    <ul>
+      <li>You work with a buddy </li> 
+      <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+      <li>When you get stuck, ask your buddy first!</li> 
+      <li>Switch coder/scribe roles each lab</li> 
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
+      <li>The scribe submits answers. Include the coder's name in the report!</li> 
+    </ul> 
+
+    
+    <h1>Part 1: Co- and Contravariant Positions</h1> 
+    <ol class='la'><li>Look at the <code>count</code>, <code>groupBy</code>, and <code>aggregate</code> methods of the <code>Iterable[+A]</code> trait. Why is it in a covariant position in these methods?
+</li>
+      <li>In the “Position Workaround” slide, the
+<code>replaceFirst</code> method has a type bound. Why can’t you define an equivalent
+method on a mutable <code>Pair[T]</code>?
+<pre>def replaceFirst[R &gt;: T](newFirst: R) { first = newFirst } // <span class='c'>Error</span></pre>
+</li>
+      <li>It seems unintuitive to disallow the simple version of the <code>replaceFirst</code> method for an immutable <code>Pair[+T]</code>. But there is a reason. Suppose you could define
+      <pre>def replaceFirst(newFirst: T) = new Pair(newFirst, second)
+</pre>
+      Then you could also define
+        <pre>class NastyDoublePair(x: Double, y: Double) extends Pair[Double](x, y) {
+  override def replaceFirst(newFirst: Double)
+    = new Pair(math.sqrt(newFirst), second)
+}</pre>
+
+        Now what would happen with this call?
+        <pre>val p: Pair[Any] = new NastyDoublePair(3, 4)
+val q = p.replaceFirst("Hello")</pre>
+        Is the first line valid? That is, can you assign a <code>NastyDoublePair</code> to a <code>Pair[Any]</code>? </li>
+      <li>Is the second line valid? That is, can you call <code>Pair[Any].replaceFirst</code> with a <code>"String"</code> (assuming that it is defined as above?)</li>
+      <li>What is the problem?</li>
+      <li>What does Scala do to avoid the problem?</li>
+    </ol> 
+    <h1>Part 2: Designing With Variance</h1> 
+    <ol class='la'><li>Let's use the world's simplest map data structure:
+      <pre>class MyMap[K, V](entries: List[(K, V)]) {
+  def this() { this(Nil) }
+  def get(key: K) = entries.find(_._1 == key) match {
+  	case Some(e) =&gt; Some(e._2)
+  	case None =&gt; None
+  }
+  def put(key: K, value: V) = new MyMap((key, value) :: entries)
+}
+  </pre> Make an instance as
+      <pre>val mm = new MyMap[String, Int].put("Fred", 1).put("Wilma", 10).put("Fred", 5)</pre>
+      What do you get for <pre>mm.get("Fred")
+mm.get("Barney")</pre></li>
+      <li>Now let's say we have a function that needs to look up scores for students:
+      <pre>def total(students: List[Student], scores: MyMap[Student, Int]) =
+  students.map(scores.get(_).getOrElse(0)).sum
+</pre>
+      Should it be ok to pass it a <code>MyMap[Person, Int]</code>?</li>
+      <li>Adjust the code for <code>MyMap</code> to make that work. What did you do?</li>
+      <li>Now let's try this the other way around.
+      <pre>def findById(ids: List[Int], people: MyMap[Int, Person]) =
+  ids.flatMap(people.get(_))
+</pre> Should it be ok to pass it a <code>MyMap[Int, Student]</code>?</li>
+      <li>Make the same adjustment. What happens?</li>
+      <li>Using the position workaround, fix it so that it works. What did you do?</li>
+      <li>Why isn't <code>scala.collection.immutable.Map[A, +B]</code> contravariant in <code>A</code>?</li>
+    </ol> 
+    <h1>Part 3: Order in the Court!</h1> 
+    <ol class='la'><li>Let's order people by name:
+      <pre>class Person(val name: String) extends Ordered[Person] {
+    def compare(that: Person) = name.compareTo(that.name)
+}
+
+class Student(name: String, val major: String) extends Person(name)
+</pre>
+       Make a <code>Person</code> and a <code>Student</code> object. Can you call <code>person.compare(student)</code>? <code>student.compare(person)</code>?</li>
+      <li>Make a <code>Vector[Person]</code>, fill it with some people, and call <code>people.max</code>. What happens.</li>
+      <li>Repeat with a <code>Vector[Student]</code>. What happens?</li>
+      <li>Why can't it work? (Hint: Look carefully at the definition of <code>Ordered</code> in Scaladoc.)</li>
+      <li>How would <code>Ordered</code> have to be defined to make this work?</li>
+      <li>Locally define <code>Ordered</code> to be a generic trait with a single abstract method <code>compare(that: T) : Int</code>. Make it contravariant. Define <code>max[T &lt;: Ordered[T]](s: Seq[T]) = s.reduce(...)</code>. What is <code>max</code>?</li>
+      <li>What happens when you call <code>max(people)</code>? <code>max(students)</code>? </li>
+      <li>So why isn't <code>Ordered</code> contravariant? It's been discussed at great length <a href='https://groups.google.com/forum/#!topic/scala-language/ZE83TvSWpT4'>here</a>. Just have a glance at it and admire the complexity and the emotions <!-- ( -->:-)</li>
+      <li>So, what to do? First off, remove your definition of <code>Ordered</code>, or make <code>T</code> invariant. Your <code>max</code> method should no longer compile. In Java, you'd do this:
+        <pre>def max[T &lt;: Ordered[_ &gt;: T]]</pre>
+        Why does this solve the problem?
+      </li>
+      <li>What happens when you try it?</li>
+      <li>That's annoying, but there is a workaround. Define
+      <pre>type SuperOrdered[T] = Ordered[_ &gt;: T]
+def max[T &lt;: SuperOrdered[T]]</pre> Now what happens?</li>
+    </ol> 
+    <h1>Homework</h1> 
+    <p>Do this as <em>individual work</em>, not with your partner</p> 
+    <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
+    <ul>
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw5a'>Problem 1</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw5b'>Problem 2</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw5c'>Problem 3</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw5d'>Problem 4</a></li> 
+      <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw5e'>Problem 5</a></li> 
+    </ul> 
+  </body>
+</html>

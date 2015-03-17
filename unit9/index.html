@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 9</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+  </head> 
+  <body>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
+
+    <h1>Generic Types and Functions</h1> 
+    <ul>
+      <li>Generic type has <em>type parameters</em>. Example: <code>Map[K, V]</code></li>
+      <li>Instantions of type <code>Map[String, Int]</code>, <code>Map[Person, Person]</code>, ...</li>
+      <li>Classes and traits can be generic</li>
+      <li>Generic function has type parameters. Example:
+      <pre>def getMiddle[T](a: Vector[T]) = a(a.length / 2)
+</pre></li>
+      <li>Instantiations of function <code>getMiddle[Int]</code>, <code>getMiddle[String]</code>, ...</li>
+      <li>Functions and methods can be generic</li>
+    </ul> 
+
+  <h1>Upper Bounds</h1>
+
+  <ul><li>Consider <code>Pair</code> type where both components have the same type:
+    <pre>class Pair[T](val first: T, val second: T)
+</pre></li>
+    <li>Add method to produce the smaller value:
+
+      <pre>class Pair[T](val first: T, val second: T) {
+  def smaller = if (first.compareTo(second) &lt; 0) first else second // <span class='c'>Error</span>
+}
+</pre>
+    </li>
+    <li>That can't work—not every <code>T</code> has a <code>comparable</code> method</li>
+    <li>Remedy: Specify an “upper bound”
+    <pre>class Pair[T &lt;: Comparable[T]]</pre></li>
+    <li><code>T</code> must be a <em>subtype</em> of <code>Comparable[T]</code></li>
+  </ul>
+
+  <h1>Super- and Subtypes</h1>
+
+  <ul><li>In the theory of types, have relationships between types <var>S</var> and <var>T</var>. </li>
+    <li>Intuitively, <var>S</var> is a <em>subtype</em> of <var>T</var>, if you can provide a value of type <var>S</var> whenever a type <var>T</var> is expected. </li>
+    <li>Notation <var>S</var> <code>&lt;:</code> <var>T</var></li>
+    <li>Example: If the class <code>Student</code> extends <code>Person</code>, then <code>Student &lt;: Person</code></li>
+    <li>Example: <code>Vector[Int] &lt;: Seq[Int]</code></li>
+    <li>If <var>S</var> is a subtype of <var>T</var>, then <var>T</var> is a <em>supertype</em> of <var>S</var></li>
+    <li>Is <code>Int</code> a subtype of <code>Double</code>? Not in Scala—but there is an automatic conversion from <code>Int</code> to <code>Double</code>.</li>
+  </ul>
+
+  <h1>Scala Type Hierarchy</h1>
+
+  <p class='fullimage'><img src='types.png'/></p>
+
+
+  <h1>How Many Statements are Correct?</h1>
+
+  <ol><li><code>Null</code> is a subtype of all Scala types</li>
+    <li><code>Nothing</code> is a supertype of all Scala types</li>
+    <li><code>Unit</code> is a subype of all Scala types</li>
+    <li>An instance of any Scala type can be converted to <code>Unit</code></li>
+  </ol>
+
+  <ol class='clicker'><li>None of them is correct</li>
+    <li>One is correct of them is correct</li>
+    <li>Two are correct</li>
+    <li>All are correct</li>
+  </ol>
+  
+  <h1>Lower Bounds</h1>
+
+  <ul><li>Consider <code>Pair</code> class with <code>replaceFirst</code> method:
+    <pre>class Pair[T](val first: T, val second: T) {
+  def replaceFirst(newFirst: T) = new Pair[T](newFirst, second)
+}</pre>
+    Note that <code>replaceFirst</code> returns a new object—<code>Pair</code> is immutable</li>
+    <li>Suppose we have a <code>Pair[Student]</code> and a <code>Person</code> object. Can we call
+    <pre>students.replaceFirst(person)</pre></li>
+    <li>Sure, but the result should be a <code>Pair[Person]</code>.</li>
+    <li>In general, the replacement type can be a supertype of <code>T</code>.</li>
+    <li>Use lower bound:
+
+    <pre>def replaceFirst[R &gt;: T](newFirst: R) = new Pair[R](newFirst, second)
+</pre>
+    </li>
+    <li>Note: The return type can be inferred:
+    <pre>def replaceFirst[R &gt;: T](newFirst: R) = new Pair(newFirst, second)
+</pre></li>
+  </ul>
+
+  <h1>Context Bounds</h1>
+
+  <ul><li>A <em>context bound</em> requires that there is an “implicit value” for a type. For example,
+    <pre>class Pair[T : Ordering]</pre> requires an implicit value of type <code>Ordering[T]</code></li>
+    <li><code>Ordering[T]</code> defines a method <code>compare(T, T)</code></li>
+    <li>Suppose we want a <code>Pair[Int]</code></li>
+    <li>“Somewhere”, there must be a definition
+    <pre>implicit object NameDoesNotMatter extends Ordering[Int] {
+  def compare(a: Int, b: Int) = if (a &lt; b) -1 else if (a &gt; b) 1 else 0
+}</pre></li>
+    <li><code>implicitly</code> fetches implicit object:
+    <pre>class Pair[T : Ordering](val first: T, val second: T) {
+  def smaller =
+    if (implicitly[Ordering[T]].compare(first, second) &lt; 0) first else second
+}</pre></li>
+  </ul>
+
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+    <ul>
+      <li>You work with a buddy </li> 
+      <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+      <li>When you get stuck, ask your buddy first!</li> 
+      <li>Switch coder/scribe roles each lab</li> 
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
+      <li>The scribe submits answers. Include the coder's name in the report!</li> 
+    </ul> 
+
+    <h1>Part 1: Upper Bounds</h1>
+
+    <ol class='la'><li>Using classes
+        <pre>class Person(val name: String)
+class Student(name: String, val major: String) extends Person(name)
+</pre>
+        and the <code>Pair</code> class from the “Lower Bounds” slide
+        <pre>class Pair[T](val first: T, val second: T) {
+  def replaceFirst[R &gt;: T](newFirst: T) = new Pair(newFirst, second)
+}
+</pre>
+        <p>make a <code>Pair[Student]</code>, and then replace the first element with a <code>Person</code> object. What is the type of the result? Why?</p>
+      </li>
+      <li>Now do the opposite, making a <code>Pair[Person]</code>, and replacing the first element with a <code>Student</code> object. What is the type of the result? Why?</li>
+      <li>Now remove the upper bound in the <code>replaceFirst</code> method:
+      <pre>def replaceFirst[R](newFirst: T) = new Pair(newFirst, second)
+</pre>
+        Note that the method still compiles. Repeat the preceding experiments, replacing the first element in a <code>Pair[Student]</code> and <code>Pair[Person]</code>. Which of them still work? Pay close attention to the types of the returned pairs!
+      </li>
+    </ol>
+    <h1>Part 2: Generic Functions</h1> 
+    <ol class='la'><li>Define a generic function <code>swap</code> that swaps the components of a 2-tuple. For example, <code>swap((2, "Hi"))</code> should be <code>("Hi", 2)</code></li>
+      <li>Define a generic function <code>sort</code> that sorts the components of a 2-tuple of type <code>(T, T)</code> (where both components have the same type). Require the type to implement the <code>Comparable</code> interface. Hint: Swap them if they are not in order. For example, <code>sort(("Hi", "Bye"))</code> should be <code>("Bye", "Hi")</code>.</li>
+      <li>Define a generic function <code>sort</code> that sorts the components of a 2-tuple of type <code>(T, T)</code>, given a comparison function. For example,
+      <pre>sort(("Hi", "Bye"), (s: String, t: String) =&gt; s.length - t.length)</pre></li>
+      <li>What happens when you call
+      <pre>sort((4, 3), _ - _)</pre></li>
+      <li>Fix that with a curried <em>generic </em> function <code>csort</code> so that  <code>csort((4, 3))(_ - _)</code> works.</li>
+    </ol>
+
+    <h1>Part 3: View Bounds</h1>
+
+    <ol class='la'><li>What happens when you call the <code>sort</code> method from Part 2 with the pair <code>(4, 3)</code>? </li>
+      <li>The trouble is that <code>Int</code> does <em>not</em> implement <code>Comparable[Int]</code>. It's actually not easy to verify that. But try this:
+      <pre>val x1 = 3
+x1.getClass
+val x2: Comparable[Int] = 3
+x2.getClass
+</pre> What are the classes of <code>x1</code> and <code>x2</code>?</li>
+      <li>Integers are automatically converted to <code>RichInt</code> when needed. In the Scaladoc of <code>RichInt</code>, click on “Linear Supertypes”. Note that <code>Comparable[Int]</code> is a supertype. So, the following should work:
+      <pre>import scala.runtime.RichInt
+sort((new RichInt(4), new RichInt(3)))</pre>
+      But it doesn't. Why? (Hint: What is <code>T</code> in this case? What is <code>Comparable[T]</code>? Is <code>T</code> a subtype of <code>Comparable&lt;T&gt;</code>?)
+      </li>
+      <li>This is a common problem, caused by the multitude of automatic conversions that are needed to make Scala work with Java types. The remedy is to use a weaker relationship than subtyping, written as <var>S</var> <code>&lt;%</code> <var>T</var>, to indicate that <var>S</var> can be implicitly converted to a subtype of <var>T</var>. In the definition of <code>sort</code>, change <code>&lt;:</code> to <code>&lt;%</code>. Can you now sort a pair of <code>Int</code>? A pair of <code>RichInt</code>? Explain why.</li>
+      
+      <li>The <code>Comparable</code> interface is used in Java. In Scala, we prefer <code>Ordered</code>. Consider this method:
+    <pre>def osort[T &lt;: Ordered[T]](pair: (T, T)) =
+  if (pair._1 &lt; pair._2) pair else swap(pair)</pre>
+    What happens if you call <code>osort(("Hi", "Bye"))</code>?</li>
+      <li>Why does that happen? (Hint: Find out what a <code>java.lang.String</code> is automatically converted to when an <code>Ordered[String]</code> is needed.)</li>
+      <li>How do you fix it?</li>
+    </ol>
+    
+    <h1>Part 4: Context Bounds</h1>
+
+    <ol class='la'><li>The <code>&lt;%</code> trick is a bit icky, and it's no longer recommended. Instead, use a context bound. Complete the following function, using the same logic as in the “Context Bounds” slide.
+        <pre>def psort[T : Ordering](pair: (T, T)) = ...</pre>
+      </li>
+      <li>Verify that <code>psort</code> works for pairs of strings and integers. What did you try?</li>
+
+      <li>Now add this class to the worksheet:
+      <pre>class Point(val x: Double, val y: Double) {
+  override def toString = s"(${x},${y})"
+</pre></li>
+        What happens when you pass two <code>Point</code> objects to <code>psort</code>?
+    </ol>
+      <li>Add a definition
+      <pre>implicit object NameDoesNotMatter extends Ordering[Point] {
+    def compare(a: Point, b: Point) = ...</pre></li>
+        and define comparison of points in some way of your choice. What happens to the call to <code>psort</code> in the preceding step?        
+  </body> 
+</html>

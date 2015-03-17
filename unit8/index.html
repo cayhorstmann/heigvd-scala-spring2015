@@ -136,12 +136,14 @@ scores.get("Alice") match {
 }</pre>
       </li> 
       <li>Use <code>_</code> to match any value 
-        <pre>case Vector(x, _) =&gt; ...</pre>
+        <pre>case Array(x, _) =&gt; ...</pre>
       </li> 
       <li>Use <code>_*</code> to match a sequence (such as the tail of an array): 
-        <pre>case Vector(0, _*) =&gt; ...
-case Vector(1, x@_*) =&gt; ... // <span class='c'>Binds <code>x</code> to tail</span></pre>
-      </li> 
+        <pre>case Array(0, _*) =&gt; ...
+case Array(1, x@_*) =&gt; ... // <span class='c'>Binds <code>x</code> to tail</span></pre>
+      </li>
+      <li>For <code>Seq</code>, can instead use
+      <pre>case 0 +: x</pre></li>
     </ul>
 
     <h1>Extractors</h1> 

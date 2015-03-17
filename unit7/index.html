@@ -154,8 +154,8 @@ object Point { ... }
 }
 
 class Point extends Logger {
-  def move(dx: Double, dy: Double) {
-    log(s"Moving ($x $y) by $dx $dy")
+  def move(dx: Double, dy: Double) = {
+    log(s"Moving (${x} ${y}) by ${dx} ${dy}")
     new Point(x + dy, y + dy)
   }
   ...
@@ -163,7 +163,7 @@ class Point extends Logger {
 
 trait TimestampLogger extends Logger {
   override def log(msg: String) {
-    super.log(new java.util.Date() + " " + msg)
+    super.log(s"${new java.util.Date()} ${msg}")
   }
 }
   
