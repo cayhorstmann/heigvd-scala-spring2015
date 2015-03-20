@@ -21,7 +21,7 @@
 class Person(val name: String)
 class Student(name: String, val major: String) extends Person(name)
 </pre> and a method
-    <pre>def makeFriends(p: Pair[Person]) { ... }
+    <pre>def makeFriends(p: Pair[Person]): Unit = { ... }
 </pre> which of the following can be passed to <code>makeFriends</code>?</p>
     <ol class='clicker'><li>Only a <code>Pair[Person]</code></li>
       <li>A <code>Pair[Person]</code> and a <code>Pair[Student]</code></li>
@@ -45,7 +45,7 @@ class Student(name: String, val major: String) extends Person(name)
 def befriend(someone: T)
 }</pre>
       <p>Suppose you have a function</p>
-      <pre>def makeFriendWith(s: Student, f: Friend[Student]) { f.befriend(s) }</pre>
+      <pre>def makeFriendWith(s: Student, f: Friend[Student]): Unit = { f.befriend(s) }</pre>
     <p>What should you be able to pass in for <code>f</code>?</p>
     <ol class='clicker'><li>Only a <code>Friend[Student]</code></li>
       <li>A <code>Friend[Person]</code> and a <code>Friend[Student]</code></li>
@@ -62,7 +62,7 @@ def befriend(someone: T)
       <pre>Student &lt;: Person =&gt; Friend[Person] &lt;: Friend[Student]</pre></li>
       <li>Indicated with <code>-</code> annotation:
         <pre>trait Friend[-T] {
-def befriend(someone: T)
+  def befriend(someone: T)
 }</pre></li>
       </ol>
 
@@ -141,16 +141,23 @@ case object Nil extends List[<b>Nothing</b>]
       <li><code>List[Nothing] &lt;: List[Int]</code></li>
     </ul>
 
-    <h1>Wildcards</h1>
+    <h1>Declaration-Site vs. Use-Site Variance</h1>
 
     <ul><li>Java has no “declaration-site” variance of generic types</li>
       <li>Java has “use-site” variance: <code>? extends T, ? super T</code></li>
-      <li>You can do that in Scala too:
-      <pre>def process(people: Array[_ &lt;: Person])
-</pre></li>
-      <li>Can call <code>process</code> with <code>Array[Student]</code></li>
-      <li>Works with contravariance too:
-      <pre>def min[T](p: Pair[T])(comp: Comparator[_ &gt;: T])</pre></li>
+      <li>PECS: “producer extends, consumer super”</li>
+      <li>Java collections are mutable, so declaration-site variance is not useful. But use-case variance is:
+      <pre>public class Collections { // <span class='c'>This is Java</span>
+  public static &lt;T&gt; void copy(List&lt;? super T&gt; dest, List&lt;? extends T&gt; src) { ... }
+  ...
+}</pre></li>
+      <li>In Java, it's impossible to declare <code>Comparator</code> as contravariant—must provide variance with <em>every use</em>
+      <pre>public class Collections { // <span class='c'>This is Java</span>
+  public static &lt;T&gt; void sort(List&lt;T&gt; list, Comparator&lt;<b>? super T</b>&gt;&gt; c) { ... }
+  ...
+}  </pre></li>
+      <li>You can do use-site variance in Scala too:
+      <pre>def copy[T](dest: Array[_ &gt;: T], src: Array[_ &lt;: T])</pre></li>
     </ul>
 
     <h1>Lab</h1> 
@@ -230,8 +237,7 @@ class Student(name: String, val major: String) extends Person(name)
       <li>Make a <code>Vector[Person]</code>, fill it with some people, and call <code>people.max</code>. What happens.</li>
       <li>Repeat with a <code>Vector[Student]</code>. What happens?</li>
       <li>Why can't it work? (Hint: Look carefully at the definition of <code>Ordered</code> in Scaladoc.)</li>
-      <li>How would <code>Ordered</code> have to be defined to make this work?</li>
-      <li>Locally define <code>Ordered</code> to be a generic trait with a single abstract method <code>compare(that: T) : Int</code>. Make it contravariant. Define <code>max[T &lt;: Ordered[T]](s: Seq[T]) = s.reduce(...)</code>. What is <code>max</code>?</li>
+      <li>Locally define <code>Ordered</code> to be a generic trait with a single abstract method <code>compare(that: T) : Int</code>. Make it <em>contravariant</em> so that a <code>Comparator[Person]</code> is also a <code>Comparator[Student]</code>. Define <code>max[T &lt;: Ordered[T]](s: Seq[T]) = s.reduce(...)</code>. What is <code>max</code>?</li>
       <li>What happens when you call <code>max(people)</code>? <code>max(students)</code>? </li>
       <li>So why isn't <code>Ordered</code> contravariant? It's been discussed at great length <a href='https://groups.google.com/forum/#!topic/scala-language/ZE83TvSWpT4'>here</a>. Just have a glance at it and admire the complexity and the emotions <!-- ( -->:-)</li>
       <li>So, what to do? First off, remove your definition of <code>Ordered</code>, or make <code>T</code> invariant. Your <code>max</code> method should no longer compile. In Java, you'd do this:

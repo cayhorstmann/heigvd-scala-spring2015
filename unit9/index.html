@@ -66,7 +66,7 @@
 
   <ol><li><code>Null</code> is a subtype of all Scala types</li>
     <li><code>Nothing</code> is a supertype of all Scala types</li>
-    <li><code>Unit</code> is a subype of all Scala types</li>
+    <li><code>Unit</code> is a subtype of all Scala types</li>
     <li>An instance of any Scala type can be converted to <code>Unit</code></li>
   </ol>
 
@@ -133,14 +133,14 @@ class Student(name: String, val major: String) extends Person(name)
 </pre>
         and the <code>Pair</code> class from the “Lower Bounds” slide
         <pre>class Pair[T](val first: T, val second: T) {
-  def replaceFirst[R &gt;: T](newFirst: T) = new Pair(newFirst, second)
+  def replaceFirst[R &gt;: T](newFirst: R) = new Pair(newFirst, second)
 }
 </pre>
         <p>make a <code>Pair[Student]</code>, and then replace the first element with a <code>Person</code> object. What is the type of the result? Why?</p>
       </li>
       <li>Now do the opposite, making a <code>Pair[Person]</code>, and replacing the first element with a <code>Student</code> object. What is the type of the result? Why?</li>
       <li>Now remove the upper bound in the <code>replaceFirst</code> method:
-      <pre>def replaceFirst[R](newFirst: T) = new Pair(newFirst, second)
+      <pre>def replaceFirst[R](newFirst: R) = new Pair(newFirst, second)
 </pre>
         Note that the method still compiles. Repeat the preceding experiments, replacing the first element in a <code>Pair[Student]</code> and <code>Pair[Person]</code>. Which of them still work? Pay close attention to the types of the returned pairs!
       </li>
@@ -189,12 +189,13 @@ sort((new RichInt(4), new RichInt(3)))</pre>
       <li>Now add this class to the worksheet:
       <pre>class Point(val x: Double, val y: Double) {
   override def toString = s"(${x},${y})"
-</pre></li>
+}</pre></li>
         What happens when you pass two <code>Point</code> objects to <code>psort</code>?
     </ol>
       <li>Add a definition
       <pre>implicit object NameDoesNotMatter extends Ordering[Point] {
-    def compare(a: Point, b: Point) = ...</pre></li>
+    def compare(a: Point, b: Point) = ...
+}</pre></li>
         and define comparison of points in some way of your choice. What happens to the call to <code>psort</code> in the preceding step?        
   </body> 
 </html>
