@@ -68,9 +68,10 @@
   ...
 }</pre> 
       </li> 
-      <li>A primary constructor parameter without <code>val</code>/<code>var</code> gives rise to a private instance variable: 
+      <li>Primary constructor parameters don't require <code>val</code>/<code>var</code>: 
         <pre>class Point(x: Double, y: Double)
-  // No accessors for x, y</pre> 
+  // No accessors for x, y</pre>
+         If <code>x</code>, <code>y</code> are used beyond the constructor, they become private instance variables.
       </li> 
     </ul> 
 
