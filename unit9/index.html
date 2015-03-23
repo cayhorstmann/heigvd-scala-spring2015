@@ -191,11 +191,12 @@ sort((new RichInt(4), new RichInt(3)))</pre>
   override def toString = s"(${x},${y})"
 }</pre></li>
         What happens when you pass two <code>Point</code> objects to <code>psort</code>?
-    </ol>
+    
       <li>Add a definition
       <pre>implicit object NameDoesNotMatter extends Ordering[Point] {
     def compare(a: Point, b: Point) = ...
 }</pre></li>
-        and define comparison of points in some way of your choice. What happens to the call to <code>psort</code> in the preceding step?        
+        and define comparison of points in some way of your choice. What happens to the call to <code>psort</code> in the preceding step?
+      </ol>
   </body> 
 </html>
