@@ -241,6 +241,8 @@ class Student(name: String, val major: String) extends Person(name)
       <li>What happens when you call <code>max(people)</code>? <code>max(students)</code>? </li>
       <li>So why isn't <code>Ordered</code> contravariant? It's been discussed at great length <a href='https://groups.google.com/forum/#!topic/scala-language/ZE83TvSWpT4'>here</a>. Just have a glance at it and admire the complexity and the emotions <!-- ( -->:-)</li>
       <li>So, what to do? First off, remove your definition of <code>Ordered</code>, or make <code>T</code> invariant. The call <code>max(students)</code> should no longer compile. In Java, you'd do this:
+        <pre>&lt;T extends Comparable&lt;? super T&gt;&gt; max(Collection&lt;T&gt; coll)</pre>
+        or in Scala notation
         <pre>def max[T &lt;: Ordered[_ &gt;: T]]</pre>
         Why does this solve the problem?
       </li>

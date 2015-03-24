@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 11</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+  </head> 
+    <link href='mc.css' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' src='mc.js'></script> 
+   
+  <body>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div>
+
+    <h1>XML Literals</h1>
+
+    <ul><li>Simply use XML notation in Scala:
+      <pre>val head = &lt;head&gt;&lt;title&gt;Fred's Memoirs&lt;/title&gt;&lt;/head&gt;
+</pre>
+      Has type <code>scala.xml.Elem</code></li>
+      <li>Can have sequence of nodes
+        <pre>val items = &lt;li&gt;Fred&lt;/li&gt;&lt;li&gt;Wilma&lt;/li&gt;</pre>
+      Has type <code>scala.xml.NodeSeq</code></li>
+      <li>Caution: Sometimes, the compiler thinks you use XML when you don't intend to:
+        <pre>x &lt;y</pre></li>
+      <li>Note: A future version of Scala will use <code>xml"..."</code> instead.</li>
+    </ul>
+
+    <h1>XML Nodes</h1>
+
+    <ul><li><code>scala.xml.Node</code> superclass of all XML node types</li>
+      <li>Most important subclasses: <code>Elem</code> and <code>Text</code></li>
+      <li>If <code>e</code> is an <code>Elem</code>, <code>e.label</code> is the tag name</li>
+      <li><code>e.child</code> is the <code>NodeSeq</code> of children (it's child, not children, like in XPath)</li>
+      <li><code>NodeSeq</code> is a subtype of <code>Seq[Node]</code> with support for XPath-like ops</li>
+      <li>Caution: <code>Node</code> extends <code>NodeSeq</code> as a sequence of length 1</li>
+      <li>Can assemble nodes in <code>NodeBuffer</code>
+      <pre>val items = new NodeBuffer
+items += &lt;li&gt;Fred&lt;/li&gt;
+items += &lt;li&gt;Wilma&lt;/li&gt;</pre></li>
+      <li>Caution: When <code>NodeBuffer</code> is converted to <code>NodeSeq</code>, don't mutate it any more!</li>
+    </ul>
+
+    <h1>Attributes</h1>
+    <ul><li><code>e.attributes</code> gets a map-like key/value association
+      <pre>val e = &lt;img src="logo.jpg" alt="San Jos&amp;eacute; State University Logo"/&gt;
+val src = image.attributes("src")</pre></li>
+      <li>The result is a <code>NodeSeq</code> because it may contain <code>EntityRef</code></li>
+      <li>If not an issue for you, use <code>e.attributes.toAttrMap</code>, which yields a <code>Map[String, String]</code></li>      
+    </ul>
+
+    <h1>Embedded Expressions</h1>
+
+    <ul><li>Include Scala inside XML:
+      <pre>&lt;ul&gt;&lt;li&gt;{items(0)}&lt;/li&gt;&lt;li&gt;{items(1)}&lt;/li&gt;&lt;/ul&gt;</pre>
+      </li>
+      <li><code>NodeSeq</code> are spliced into the XML. Everything else wrapped into <code>Atom[T]</code></li>
+      <li>Caution: <code>String</code> becomes <code>Atom[String]</code>, not <code>Text</code></li>
+      <li>The nested Scala code can again contain XML nodes:
+      <pre>&lt;ul&gt;{items.map(i =&gt; &lt;li&gt;{i}&lt;/li&gt;)}&lt;/ul&gt;
+</pre></li>
+      <li>Note: To place <code>{ }</code> inside XML, double them:
+      <pre>&lt;h1&gt;The Natural Numbers {{1, 2, 3, ...}}&lt;/h1&gt;</pre></li>
+      <li>Can also have expressions in attributes:
+
+      <pre>&lt;img src={makeURL(fileName)}/&gt;</pre></li>
+      <li>Caution: Do <em>not</em> use quotes:
+      <pre>&lt;img src="{makeURL(fileName)}"/&gt;</pre>
+      does not execute the expression in <code>{ ... }</code></li>
+    </ul>
+
+    <h1>What is This?</h1>
+    <pre>&lt;table&gt;
+  {(1 to 10) map (i =&gt;
+  &lt;tr&gt;
+    {(1 to 10) map (j =&gt; &lt;td&gt;{ i * j }&lt;/td&gt;)}
+  &lt;/tr&gt;)}
+&lt;/table&gt;
+</pre>
+    <ol class='clicker'><li>A <code>NodeSeq</code> whose <code>child</code> contains 100 elements</li>
+      <li>An <code>Elem</code> whose <code>child</code> is a <code>NodeSeq</code> of length 10</li>
+      <li>An <code>Elem</code> whose <code>child</code> is a <code>NodeSeq</code> of length 100</li>
+      <li>An <code>Elem</code> whose descendants include 100 <code>Text</code> nodes</li>
+    </ol>
+
+    <h1>XPath-Like Expressions</h1>
+
+    <ul><li>Can use <code>\</code> and <code>\\</code> with <code>NodeSeq</code> like <code>/</code> and <code>//</code> in XPath
+        <pre>val list = &lt;dl&gt;&lt;dt&gt;Java&lt;/dt&gt;&lt;dd&gt;Gosling&lt;/dd&gt;
+  &lt;dt&gt;Scala&lt;/dt&gt;&lt;dd&gt;Odersky&lt;/dd&gt;&lt;/dl&gt;
+val languages = list \ "dt"
+  // <span class='c'>Yields a NodeSeq of <code>&lt;dt&gt;Java&lt;/dt&gt;</code> and <code>&lt;dt&gt;Scala&lt;/dt&gt;</code></span></pre>
+      </li>
+      <li>Wildcard locates any element:
+      <pre>doc \ "body" \ "_" \ "li"</pre></li>
+      <li><code>\\</code> locates descendants at any depth:
+      <pre>doc \\ "img"</pre></li>
+      <li>String starting with <code>@</code> locates attributes:
+      <pre>img \ "@alt"
+</pre></li>
+    </ul>
+
+    <h1>What is This?</h1>
+    <pre>(&lt;img src="hamster.jpg"/&gt;&lt;img src="frog.jpg"/&gt; \\ "@src).text</pre>
+    <ol class='clicker'><li><code>"hamster.jpgfrog.jpg"</code></li>
+      <li><code>&lt;src&gt;hamster.jpg&lt;/src&gt;&lt;src&gt;frog.jpg&lt;/src&gt;</code></li>
+      <li><code>NodeSeq("hamster.jpg", "frog.jpg")</code></li>
+      <li>Something else</li>
+    </ol>
+
+    <h1>Pattern Matching</h1>
+    <ul><li>Can use XML literals in match expressions:
+      <pre>n match {
+  case &lt;img/&gt; =&gt; ...
+}</pre></li>
+      <li>Matches a <code>img</code> with <em>any</em> attributes and <em>no</em> children</li>
+      <li>Match a single child:
+      <pre>  case &lt;li&gt;{_}&lt;/li&gt; =&gt; ...
+</pre></li>
+      <li>Match children:
+      <pre>  case &lt;li&gt;{_*}&lt;/li&gt; =&gt; ...
+</pre></li>
+      <li>Bind children to variables:
+      <pre>case &lt;li&gt;{child}&lt;/li&gt; =&gt; child.text
+case &lt;li&gt;{Text(item)}&lt;/li&gt; =&gt; item
+case &lt;li&gt;{children @ _*}&lt;/li&gt; =&gt; children.map(...)
+</pre></li>
+      <li>Caution: In the last example, <code>children</code> is a <code>Seq[Node]</code> and <em>not</em> a <code>NodeSeq</code></li>
+    </ul>
+    
+    <h1>Transforming XML</h1>
+
+    <ul><li>Rewrite tree to edit elements</li>
+      <li>Change all <code>ul</code> to <code>ol</code>:
+      <pre>val rule1 = new RewriteRule {
+  override def transform(n: Node) = n match {
+    case e @ &lt;ul&gt;{_*}&lt;/ul&gt; =&gt; e.asInstanceOf[Elem].copy(label = "ol")
+    case _ =&gt; n
+  }
+}</pre></li>
+      <li>Provide one or more rules to <code>RuleTransformer</code>:
+      <pre>val transformed = new RuleTransformer(rule1, rule2, rule3).transform(root);</pre></li>
+      <li><code>copy</code> makes a copy of an <code>Elem</code>, modifying the tag or children:
+      <pre>list.copy(child = list.child ++ &lt;li&gt;Another item&lt;/li&gt;)</pre></li>
+      <li>Use <code>%</code> to change an attribute:
+      <pre>image % Attribute(null, "alt", "An image of a hamster", Null)</pre></li>
+    </ul>
+
+    <h1>Loading and Saving XML</h1>
+
+    <ul><li>Loading with standard SAX parser:
+      <pre>val root = scala.xml.XML.loadFile("myfile.xml")</pre></li>
+      <li><code>ConstructingParser</code> preserves comments, CDATA sections, and optionally white space:
+      <pre>val parser = ConstructingParser.fromFile(new File("myfile.xml"), preserveWS = true)
+val root = parser.document.docElem
+</pre></li>
+      <li>And yet another parser for XHTML:
+      <pre>val parser = new XhtmlParser(scala.io.Source.fromFile("myfile.html"))
+val doc = parser.initialize.document</pre></li>
+      <li>Saving:
+      <pre>XML.save("myfile.xml", root)
+XML.write(writer, root)</pre>
+      Each has different options—check the <a href='http://www.scala-lang.org/api/2.11.6/scala-xml/index.html#scala.xml.XML$'>scaladoc</a></li>
+    </ul>
+    
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+    <ul>
+      <li>You work with a buddy </li> 
+      <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+      <li>When you get stuck, ask your buddy first!</li> 
+      <li>Switch coder/scribe roles each lab</li> 
+      <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
+      <li>The scribe submits answers. Include the coder's name in the report!</li> 
+    </ul> 
+
+    <!-- Quiz questions in Aiken format -->
+    <!-- Find images in HTML -->
+    <!-- Transform something??? -->
+    <h1>Part 1: Analyzing XML</h1>
+
+    <ol class='la'><li>In order to process XML, you have to add a library to your project. Make a project <code>unit11</code>. Right-click on the project in the tree display at the left, select Properties → Java Build Path → Libraries → Add External JARs, then locate to the directory where the Scala IDE is installed, go to its <code>plugins</code> directory, and pick <code>org.scala-lang.modules.scala-xml_1.0.2.jar</code>.</li>
+      <li>Unfortunately, we've reached the end of the rope with worksheets. They don't pick up the XML library. Instead, we'll make an application. Right-click on the project and select New → Scala Application. Call the application <code>Images</code>. Now read a web page:
+      <pre>val source = scala.io.Source.fromURL("http://horstmann.com/index.html")
+val parser = new XhtmlParser(source)
+val doc = parser.initialize.document
+</pre> Print the document. What do you get?</li>
+      <li>Using <code>\\</code>, find all <code>img</code> tags. How many are they?</li>
+      <li>Print their <code>src</code> attributes, one per line. How did you do that? (Hint: <code>\\</code> returns a <code>NodeSeq</code>.)</li>
+      <li>Repeat with the site http://heig-vd.ch. Why doesn't it work?</li>
+      <li>Repeat with the site http://www.yverdon-les-bains.ch/accueil/. How many images do you get?</li>
+      <li>Where does the image with source <code>null</code> come from? (If you can't find it, don't worry—there will be a homework assignment to help.)</li>
+    </ol>
+    
+    <h1>Part 2: Generating XML</h1>
+    <ol class='la'><li>When you need to enter a lot of quizzes, you'd like to use a simple format, like this:
+      <pre>What did the loop of the preceding problem do?
+
+Print all characters in the string s
+*Print the string s in reverse order
+Print every other character in the string s
+Count the number of characters in s
+</pre>
+    You'd like them to look like this:
+      <div class='mc'>What did the loop of the preceding problem do? 
+        <ol class='mc' onclick='mc.click(event)'> 
+          <li>Print all characters in the string s</li> 
+          <li class='correct'>Print the string s in reverse order</li> 
+          <li>Print every other character in the string s</li> 
+          <li>Count the number of characters in s</li> 
+        </ol>
+      </div>
+        Check out the HTML of this slide to see how this is done. What <code>class</code> and <code>onclick</code> attributes need to be put where?
+    </li>
+      <li>Now download the following files:  
+        <ul><li><a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/mc.js'>mc.js</a></li>
+          <li><a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/mc.css'>mc.css</a></li>
+          <li><a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box.png'>box.png</a>, <a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box_cross.png'>box_cross.png</a>, <a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box_tick.png'>box_tick.png</a></li>
+        </ul>
+        Also check out the <code>script</code> and <code>link</code> tags at the beginning of these slides to see how the JS/CSS are included.</li>
+      <li>Put a file <code>quiz.txt</code> into the <code>unit11</code> project with the sample question above.</li>
+      <li>In the <code>unit11</code> project, make a Scala app
+      <pre>import scala.xml._
+
+object QuizWriter extends App {
+  val source = scala.io.Source.fromFile("quiz.txt", "UTF-8")
+  val lines = source.getLines.toVector
+  val i = lines.lastIndexWhere(_.trim.length == 0)
+  val questionText = lines.take(i).map(l =&gt; &lt;p&gt;{l}&lt;/p&gt;)
+  ...
+  val doc = &lt;html&gt;...&lt;/html&gt;
+  XML.save("~/Downloads/quiz.html", doc)
+}</pre>
+      </li>
+      <li>Did you ever generate XML before? How did you do it? Was it easier/harder?</li>
+    </ol>
+    <h1>Part 3: Transforming XML</h1>
+
+    <ol class='la'><li>Up to HTML 4, headings were more decorative than structural. You were supposed to write
+      <pre>&lt;body&gt;
+  &lt;h1&gt;Main heading&lt;/h1&gt;
+  Introduction
+  &lt;h2&gt;Subheading&lt;/h2&gt;
+  Contents
+  &lt;h2&gt;Another Subheading&lt;/h2&gt;
+  More Contents
+&lt;/body&gt;
+</pre>
+      But the contents of a subsection was not nested in the contents of a section, unless you chose to include it in a <code>div</code>. HTML 5 <a href='http://www.w3.org/TR/2014/REC-html5-20141028/sections.html#headings-and-sections'>suggests</a> that you use the <code>section</code> element to mark the semantics:
+      <pre>&lt;body&gt;
+  &lt;h1&gt;Main heading&lt;/h1&gt;  
+  Introduction
+  &lt;section&gt;
+    &lt;h2&gt;Subheading&lt;/h2&gt;
+    Contents
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Another Subheading&lt;/h2&gt;
+    More Contents
+  &lt;/section&gt;
+&lt;/body&gt;
+</pre>
+        We'd like to achieve that transformation. Why is it harder than the example of replacing all <code>ul</code> with <code>ol</code>?
+      </li>
+      <li>Look at the <code>child</code> node sequence of <code>body</code>. We could loop over it, but that wouldn't be the functional way. Instead, we'd like to group it into a sequence of sequences:
+      <ul><li>the elements before the <code>h2</code></li>
+        <li>the elements from the first <code>h2</code> up to, but not including, the second</li>
+        <li>...</li>
+          <li>the elements from the last <code>h2</code> to the end</li>
+        </ul>
+        Then we can map over the sequence of sequences, and wrap each of them (except the first) in a <code>section</code>.
+        <br/>
+        It seems as there ought to be some standard function to do that. Look over all methods of <code>Seq</code>. Which ones produce a sequence, iterator, or map of sequences?
+      </li>
+      <li>None of those will work for us, though. What we want is a function
+      <pre>def splitWhere[T](xs: Seq[T])(p: (T) =&gt; Boolean): Seq[Seq[T]] 
+</pre> so we can call
+      <pre>val splits = splitWhere(body.child, ...)
+val intro = splits(0)</pre>
+        What do you need for the ...?<br/>
+Here is an icky implementation of <code>splitWhere</code> for testing. Don't code like that! You'll get to produce a nicer version in the homework.        
+      <pre>def splitWhere[T](xs: Seq[T])(p: (T) =&gt; Boolean): Seq[Seq[T]] = {
+  	// Don't code like this!
+  	val result = new scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[T]]()
+  	result += new scala.collection.mutable.ArrayBuffer[T]()
+  	for (x &lt;- xs) {
+  		if (p(x)) result += new scala.collection.mutable.ArrayBuffer[T]()
+  		result.last += x
+  	}
+  	result
+  }    </pre>
+        For testing, you'll also need to figure out how to get to the body. Remember that <code>doc \\ "body"</code> is a <code>NodeSeq</code>.
+      </li>
+      <li>
+        Now produce a rewritten body with the intro followed by the sections
+        <pre>val sections = splits.tail.map(s =&gt; ...)
+val newBody = ...</pre>
+</li>
+      <li>Now replace the body with the new body, using a transformer. Then write out the result. </li>
+    </ol>
+  </body>
+</html>

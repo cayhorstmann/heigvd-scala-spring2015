@@ -1,0 +1,20 @@
+div.mc {
+    padding: 1em;
+    border: thin solid black;
+}
+
+ol.mc > li {
+    list-style: none;
+    margin: 0;
+    padding: 7px 0px 3px 30px;
+    background: url("box.png") no-repeat left top;
+}
+
+ol.mc > li.correct.clicked {
+    background: url("box_tick.png") no-repeat left top;
+}
+
+ol.mc > li.clicked {
+    background: url("box_cross.png") no-repeat left top;
+}  
+
