@@ -283,7 +283,8 @@ object QuizWriter extends App {
       <pre>def splitWhere[T](xs: Seq[T])(p: (T) =&gt; Boolean): Seq[Seq[T]] 
 </pre> so we can call
       <pre>val splits = splitWhere(body.child, ...)
-val intro = splits(0)</pre>
+val intro = splits(0)
+val section1 = &lt;section&gt;{splits(1)}&lt;/section&gt;</pre>
         What do you need for the ...?<br/>
 Here is an icky implementation of <code>splitWhere</code> for testing. Don't code like that! You'll get to produce a nicer version in the homework.        
       <pre>def splitWhere[T](xs: Seq[T])(p: (T) =&gt; Boolean): Seq[Seq[T]] = {
