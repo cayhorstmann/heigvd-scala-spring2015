@@ -187,13 +187,16 @@ XML.write(writer, root)</pre>
     <h1>Part 1: Analyzing XML</h1>
 
     <ol class='la'><li>In order to process XML, you have to add a library to your project. Make a project <code>unit11</code>. Right-click on the project in the tree display at the left, select Properties → Java Build Path → Libraries → Add External JARs, then locate to the directory where the Scala IDE is installed, go to its <code>plugins</code> directory, and pick <code>org.scala-lang.modules.scala-xml_1.0.2.jar</code>.</li>
-      <li>Unfortunately, we've reached the end of the rope with worksheets. They don't pick up the XML library. Instead, we'll make an application. Right-click on the project and select New → Scala Application. Call the application <code>Images</code>. Now read a web page:
-      <pre>val source = scala.io.Source.fromURL("http://horstmann.com/index.html")
+      <li>Then <em>restart</em> the Scala IDE.</li>
+      <li>Make a worksheet <code>images.sc</code>. Now read a web page:
+      <pre>import scala.xml._
+import scala.xml.parsing._
+val source = scala.io.Source.fromURL("http://horstmann.com/index.html")
 val parser = new XhtmlParser(source)
 val doc = parser.initialize.document
-</pre> Print the document. What do you get?</li>
+</pre> What do you get?</li>
       <li>Using <code>\\</code>, find all <code>img</code> tags. How many are they?</li>
-      <li>Print their <code>src</code> attributes, one per line. How did you do that? (Hint: <code>\\</code> returns a <code>NodeSeq</code>.)</li>
+      <li>Make a sequence of their <code>src</code> attributes. (Hint: <code>\\</code> returns a <code>NodeSeq</code>.)</li>
       <li>Repeat with the site http://heig-vd.ch. Why doesn't it work?</li>
       <li>Repeat with the site http://www.yverdon-les-bains.ch/accueil/. How many images do you get?</li>
       <li>Where does the image with source <code>null</code> come from? (If you can't find it, don't worry—there will be a homework assignment to help.)</li>
@@ -226,19 +229,21 @@ Count the number of characters in s
         </ul>
         Also check out the <code>script</code> and <code>link</code> tags at the beginning of these slides to see how the JS/CSS are included.</li>
       <li>Put a file <code>quiz.txt</code> into the <code>unit11</code> project with the sample question above.</li>
-      <li>In the <code>unit11</code> project, make a Scala app
+      <li>In the <code>unit11</code> project, make a worksheet <code>quizwriter.sc</code>:
       <pre>import scala.xml._
 
-object QuizWriter extends App {
-  val source = scala.io.Source.fromFile("quiz.txt", "UTF-8")
-  val lines = source.getLines.toVector
-  val i = lines.lastIndexWhere(_.trim.length == 0)
-  val questionText = lines.take(i).map(l =&gt; &lt;p&gt;{l}&lt;/p&gt;)
-  ...
-  val doc = &lt;html&gt;...&lt;/html&gt;
-  XML.save("~/Downloads/quiz.html", doc)
-}</pre>
+val source = scala.io.Source.fromFile("quiz.txt", "UTF-8")
+val lines = source.getLines.toVector
+val i = lines.lastIndexWhere(_.trim.length == 0)
+val questionText = lines.take(i).map(l =&gt; &lt;p&gt;{l}&lt;/p&gt;)
+val doc = &lt;html&gt;...&lt;/html&gt;
+</pre>
       </li>
+      <li>Now get the question choices to work.</li>
+      <li>Don't forget the heading.</li>
+      <li>When you are done, save your work:
+      <pre>XML.save("~/Downloads/quiz.html", doc)</pre>
+     Look at the file in the browser. Does it work? </li>
       <li>Did you ever generate XML before? How did you do it? Was it easier/harder?</li>
     </ol>
     <h1>Part 3: Transforming XML</h1>
