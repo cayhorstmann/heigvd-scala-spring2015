@@ -42,18 +42,18 @@
       <li><code>NodeSeq</code> is a subtype of <code>Seq[Node]</code> with support for XPath-like ops</li>
       <li>Caution: <code>Node</code> extends <code>NodeSeq</code> as a sequence of length 1</li>
       <li>Can assemble nodes in <code>NodeBuffer</code>
-      <pre>val items = new NodeBuffer
+      <pre>val items = new scala.xml.NodeBuffer
 items += &lt;li&gt;Fred&lt;/li&gt;
 items += &lt;li&gt;Wilma&lt;/li&gt;</pre></li>
       <li>Caution: When <code>NodeBuffer</code> is converted to <code>NodeSeq</code>, don't mutate it any more!</li>
     </ul>
 
     <h1>Attributes</h1>
-    <ul><li><code>e.attributes</code> gets a map-like key/value association
-      <pre>val e = &lt;img src="logo.jpg" alt="San Jos&amp;eacute; State University Logo"/&gt;
+    <ul><li><code>image.attributes</code> gets a map-like key/value association
+      <pre>val image = &lt;img src="logo.jpg" alt="San Jos&amp;eacute; State University Logo"/&gt;
 val src = image.attributes("src")</pre></li>
       <li>The result is a <code>NodeSeq</code> because it may contain <code>EntityRef</code></li>
-      <li>If not an issue for you, use <code>e.attributes.toAttrMap</code>, which yields a <code>Map[String, String]</code></li>      
+      <li>If not an issue for you, use <code>image.attributes.toAttrMap</code>, which yields a <code>Map[String, String]</code></li>      
     </ul>
 
     <h1>Embedded Expressions</h1>
@@ -108,7 +108,7 @@ val languages = list \ "dt"
     </ul>
 
     <h1>What is This?</h1>
-    <pre>(&lt;img src="hamster.jpg"/&gt;&lt;img src="frog.jpg"/&gt; \\ "@src).text</pre>
+    <pre>(&lt;img src="hamster.jpg"/&gt;&lt;img src="frog.jpg"/&gt; \\ "@src").text</pre>
     <ol class='clicker'><li><code>"hamster.jpgfrog.jpg"</code></li>
       <li><code>&lt;src&gt;hamster.jpg&lt;/src&gt;&lt;src&gt;frog.jpg&lt;/src&gt;</code></li>
       <li><code>NodeSeq("hamster.jpg", "frog.jpg")</code></li>
@@ -223,9 +223,9 @@ Count the number of characters in s
         Check out the HTML of this slide to see how this is done. What <code>class</code> and <code>onclick</code> attributes need to be put where?
     </li>
       <li>Now download the following files:  
-        <ul><li><a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/mc.js'>mc.js</a></li>
-          <li><a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/mc.css'>mc.css</a></li>
-          <li><a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box.png'>box.png</a>, <a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box_cross.png'>box_cross.png</a>, <a href='cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box_tick.png'>box_tick.png</a></li>
+        <ul><li><a href='http://cayhorstmann.github.io/heigvd-scala-spring2015/unit11/mc.js'>mc.js</a></li>
+          <li><a href='http://cayhorstmann.github.io/heigvd-scala-spring2015/unit11/mc.css'>mc.css</a></li>
+          <li><a href='http://cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box.png'>box.png</a>, <a href='http://cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box_cross.png'>box_cross.png</a>, <a href='http://cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box_tick.png'>box_tick.png</a></li>
         </ul>
         Also check out the <code>script</code> and <code>link</code> tags at the beginning of these slides to see how the JS/CSS are included.</li>
       <li>Put a file <code>quiz.txt</code> into the <code>unit11</code> project with the sample question above.</li>

@@ -91,7 +91,7 @@ val result = parser.parse(parser.expr, "3 - 4 * 5")</pre>
   }</pre> 
       </li> 
       <li>Use <code>~&gt;</code>, <code>&lt;~</code> to discard tokens 
-        <pre>def factor: Parser[Double] = wholeNumber ^^ (_.toInt) |
+        <pre>def factor: Parser[Double] = wholeNumber ^^ (_.toDouble) |
    <strong>"(" ~&gt; expr &lt;~ ")"</strong></pre> 
       </li> 
       <li>The <code>Parser[...]</code> type must match the return type of the transforms (here, <code>Double</code>)</li> 
@@ -182,7 +182,7 @@ case (x, "-" ~ y) =&gt; Difference(x, y)</pre>
       </li> 
       <li>Now everything together: 
         <pre>def expr: Parser[Expr] = (term ~ rep(("+" | "-") ~ term)) ^^ { 
-    case a ~ lst =&gt;  (a /: lst) { 
+    case a ~ lst =&gt;  a.foldLeft(lst) { 
       case (x, "+" ~ y) =&gt; Sum(x, y)
       case (x, "-" ~ y) =&gt; Difference(x, y)
     }</pre> 
@@ -252,7 +252,7 @@ case class Product(left : Expr, right : Expr) extends Expr
 </pre>
           Now we want to make a <code>Parser[Expr]</code>, not a <code>Parser[Int]</code>. So, change all the return types and change the <code>^^</code> expressions to yield instances of <code>Expr</code> subclasses. I'll give you one:
           <pre>...factor ~ rep("*" ~&gt; factor) ^^ {
-  case f ~ r =&gt; (f /: r)(Product(_, _))
+  case f ~ r =&gt; f.foldLeft(r)(Product(_, _))
 }
 </pre></li>
           <li>Now what do you get for
