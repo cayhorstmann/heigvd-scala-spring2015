@@ -27,7 +27,7 @@
       Has type <code>scala.xml.Elem</code></li>
       <li>Can have sequence of nodes
         <pre>val items = &lt;li&gt;Fred&lt;/li&gt;&lt;li&gt;Wilma&lt;/li&gt;</pre>
-      Has type <code>scala.xml.NodeSeq</code></li>
+      Is a <code>scala.xml.NodeSeq</code></li>
       <li>Caution: Sometimes, the compiler thinks you use XML when you don't intend to:
         <pre>x &lt;y</pre></li>
       <li>Note: A future version of Scala will use <code>xml"..."</code> instead.</li>
@@ -48,6 +48,9 @@ items += &lt;li&gt;Wilma&lt;/li&gt;</pre></li>
       <li>Caution: When <code>NodeBuffer</code> is converted to <code>NodeSeq</code>, don't mutate it any more!</li>
     </ul>
 
+    <h1>XML Nodes</h1>
+
+    <p><img src='hierarchy.png'/></p>
     <h1>Attributes</h1>
     <ul><li><code>image.attributes</code> gets a map-like key/value association
       <pre>val image = &lt;img src="logo.jpg" alt="San Jos&amp;eacute; State University Logo"/&gt;
@@ -139,7 +142,9 @@ case &lt;li&gt;{children @ _*}&lt;/li&gt; =&gt; children.map(...)
 
     <ul><li>Rewrite tree to edit elements</li>
       <li>Change all <code>ul</code> to <code>ol</code>:
-      <pre>val rule1 = new RewriteRule {
+      <pre>import scala.xml._
+import scala.xml.transform._
+val rule1 = new RewriteRule {
   override def transform(n: Node) = n match {
     case e @ &lt;ul&gt;{_*}&lt;/ul&gt; =&gt; e.asInstanceOf[Elem].copy(label = "ol")
     case _ =&gt; n
@@ -158,7 +163,8 @@ case &lt;li&gt;{children @ _*}&lt;/li&gt; =&gt; children.map(...)
     <ul><li>Loading with standard SAX parser:
       <pre>val root = scala.xml.XML.loadFile("myfile.xml")</pre></li>
       <li><code>ConstructingParser</code> preserves comments, CDATA sections, and optionally white space:
-      <pre>val parser = ConstructingParser.fromFile(new File("myfile.xml"), preserveWS = true)
+      <pre>import scala.xml.parsing._
+val parser = ConstructingParser.fromFile(new File("myfile.xml"), preserveWS = true)
 val root = parser.document.docElem
 </pre></li>
       <li>And yet another parser for XHTML:

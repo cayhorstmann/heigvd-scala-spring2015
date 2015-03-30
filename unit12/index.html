@@ -221,7 +221,8 @@ bound = "[" ~&gt; wholeNumber &lt;~ "]" ^^ { _.toInt } </pre>
       <ol class='la'><li>Make a new project <code>unit12</code>. Right-click on the project in the tree display at the left, select Properties → Java Build Path → Libraries → Add External JARs, then locate to the directory where the Scala IDE is installed, go to its <code>plugins</code> directory, and pick <code>org.scala-lang.modules.scala-parser-combinators_1.0.1.jar</code>.</li>
         <li>Then <em>restart</em> the Scala IDE.</li>
         <li>Make a worksheet <code>expr.sc</code>. Paste in this code:
-        <pre>class ExprParser extends JavaTokenParsers {
+        <pre>import scala.util.parsing.combinator._
+class ExprParser extends JavaTokenParsers {
 	def expr: Parser[Any] = term ~ opt(("+" | "-") ~ expr)
 	def term: Parser[Any] = factor ~ rep("*" ~&gt; factor)
 	def factor: Parser[Any] = wholeNumber | "(" ~ expr ~ ")"
