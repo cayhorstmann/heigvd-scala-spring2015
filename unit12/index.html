@@ -253,7 +253,7 @@ case class Product(left : Expr, right : Expr) extends Expr
 </pre>
           Now we want to make a <code>Parser[Expr]</code>, not a <code>Parser[Int]</code>. So, change all the return types and change the <code>^^</code> expressions to yield instances of <code>Expr</code> subclasses. I'll give you one:
           <pre>...factor ~ rep("*" ~&gt; factor) ^^ {
-  case f ~ r =&gt; f.foldLeft(r)(Product(_, _))
+  case f ~ r =&gt; r.foldLeft(f)(Product(_, _))
 }
 </pre></li>
           <li>Now what do you get for
