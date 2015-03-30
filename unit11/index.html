@@ -234,11 +234,11 @@ Count the number of characters in s
           <li><a href='http://cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box.png'>box.png</a>, <a href='http://cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box_cross.png'>box_cross.png</a>, <a href='http://cayhorstmann.github.io/heigvd-scala-spring2015/unit11/box_tick.png'>box_tick.png</a></li>
         </ul>
         Also check out the <code>script</code> and <code>link</code> tags at the beginning of these slides to see how the JS/CSS are included.</li>
-      <li>Put a file <code>quiz.txt</code> into the <code>unit11</code> project with the sample question above.</li>
+      <li>Put a file <code>quiz.txt</code> into some known location, such as <code>~/Downloads</code>  with the sample question above.</li>
       <li>In the <code>unit11</code> project, make a worksheet <code>quizwriter.sc</code>:
       <pre>import scala.xml._
 
-val source = scala.io.Source.fromFile("quiz.txt", "UTF-8")
+val source = scala.io.Source.fromFile("~/Downloads/quiz.txt", "UTF-8")
 val lines = source.getLines.toVector
 val i = lines.lastIndexWhere(_.trim.length == 0)
 val questionText = lines.take(i).map(l =&gt; &lt;p&gt;{l}&lt;/p&gt;)
