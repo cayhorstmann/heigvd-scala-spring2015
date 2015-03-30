@@ -223,7 +223,7 @@ bound = "[" ~&gt; wholeNumber &lt;~ "]" ^^ { _.toInt } </pre>
         <li>Make a worksheet <code>expr.sc</code>. Paste in this code:
         <pre>import scala.util.parsing.combinator._
 class ExprParser extends JavaTokenParsers {
-	def expr: Parser[Any] = term ~ opt(("+" | "-") ~ expr)
+	def expr: Parser[Any] = term ~ rep(("+" | "-") ~ term)
 	def term: Parser[Any] = factor ~ rep("*" ~&gt; factor)
 	def factor: Parser[Any] = wholeNumber | "(" ~ expr ~ ")"
 }
@@ -232,11 +232,11 @@ val parser = new ExprParser
 parser.parseAll(parser.expr, "3-4*5")</pre>
           What do you get?</li>
         <li>That's not so instructive. Make a copy of the <code>ExprParser</code> class and call it <code>ExprParser2</code>. Change all the <code>Parser[Any]</code> to <code>Parser[Int]</code>. Now you need to put <code>^^</code> transforms behind each result. I'll give you two of them:
-        <pre>... term ~ opt(("+" | "-") ~ expr) ^^ {
-	case t ~ None =&gt; t
-	case t ~ Some("+" ~ e) =&gt; t + e
-	case t ~ Some("-" ~ e) =&gt; t - e
-}
+        <pre>... (term ~ rep(("+" | "-") ~ term)) ^^ { 
+    case a ~ lst =&gt;  a.foldLeft(lst) { 
+      case (x, "+" ~ y) =&gt; x + y
+      case (x, "-" ~ y) =&gt; x - y
+    }
 
 ... wholeNumber ^^ { _.toInt }
 </pre> Figure out the other two.</li>
