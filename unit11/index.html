@@ -296,8 +296,9 @@ val doc = &lt;html&gt;...&lt;/html&gt;
       <pre>val splits = splitWhere(body.child, ...)
 val intro = splits(0)
 val section1 = &lt;section&gt;{splits(1)}&lt;/section&gt;</pre>
-        What do you need for the ...?<br/>
-Here is an icky implementation of <code>splitWhere</code> for testing. Don't code like that! You'll get to produce a nicer version in the homework.        
+        What do you need for the ...?
+      </li>
+      <li>Here is an icky implementation of <code>splitWhere</code> for testing. Don't code like that! You'll get to produce a nicer version in the homework.        
       <pre>def splitWhere[T](xs: Seq[T])(p: (T) =&gt; Boolean): Seq[Seq[T]] = {
   	// Don't code like this!
   	val result = new scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[T]]()
@@ -308,9 +309,8 @@ Here is an icky implementation of <code>splitWhere</code> for testing. Don't cod
   	}
   	result
   }    </pre>
-        For testing, you'll also need to figure out how to get to the body. Remember that <code>doc \\ "body"</code> is a <code>NodeSeq</code>.
-      </li>
-      <li>
+        You'll also need to figure out how to get to the body. Remember that <code>doc \\ "body"</code> is a <code>NodeSeq</code>.
+        </li><li>
         Now produce a rewritten body with the intro followed by the sections
         <pre>val sections = splits.tail.map(s =&gt; ...)
 val newBody = ...</pre>
