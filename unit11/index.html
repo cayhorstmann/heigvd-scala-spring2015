@@ -293,7 +293,7 @@ val doc = &lt;html&gt;...&lt;/html&gt;
       <li>None of those will work for us, though. What we want is a function
       <pre>def splitWhere[T](xs: Seq[T])(p: (T) =&gt; Boolean): Seq[Seq[T]] 
 </pre> so we can call
-      <pre>val splits = splitWhere(body.child, ...)
+      <pre>val splits = splitWhere(body.child)(...)
 val intro = splits(0)
 val section1 = &lt;section&gt;{splits(1)}&lt;/section&gt;</pre>
         What do you need for the ...?
