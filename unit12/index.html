@@ -182,7 +182,7 @@ case (x, "-" ~ y) =&gt; Difference(x, y)</pre>
       </li> 
       <li>Now everything together: 
         <pre>def expr: Parser[Expr] = (term ~ rep(("+" | "-") ~ term)) ^^ { 
-    case a ~ lst =&gt;  a.foldLeft(lst) { 
+    case a ~ lst =&gt;  lst.foldLeft(a) { 
       case (x, "+" ~ y) =&gt; Sum(x, y)
       case (x, "-" ~ y) =&gt; Difference(x, y)
     }</pre> 
