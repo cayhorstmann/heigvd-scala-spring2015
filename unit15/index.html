@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 15/16</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+  </head> 
+  <body>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
+
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+    <ul><li>What? The lab first???</li>
+      <li>You've got to experience this; otherwise talking about it makes no sense</li>
+    </ul> 
+    
+    <h1>Part 1: Getting Started with Play </h1> 
+    <ol class='la'><li>Download the “Typesafe Activator” from <a href='https://typesafe.com/get-started'>this site</a></li>
+      <li>Unzip into your home directory</li>
+      <li>Make sure <code>java</code> is on the <code>PATH</code>. Open a command shell. Type
+        <pre>javac -version</pre>
+        You should be getting something like <code>javac 1.8.0_31</code>. If not, follow <a href='http://docs.oracle.com/javase/tutorial/essential/environment/paths.html'></a> these directions. </li>
+      <p>In a command shell, type
+        <pre>activator-1.3.2/activator new</pre>
+        (adjusting the directory path and version number if necessary)
+        Select the <code>play-scala</code> option from the menu, then give <code>unit15</code> as application name.</p>
+      <li>Type
+        <pre>cd unit15
+activator-1.3.2/activator</pre>
+        (without <code>new</code>)! You are now getting a prompt in the Activator shell. Type
+
+        <pre>~run</pre>
+        Point your browser to localhost:9000. What happens?</li>     
+    </ol>
+
+    <h1>Part 2: The App Layout</h1>
+
+    <ol class='la'><li>In the Activator shell window, hit Ctrl+D to get back to the prompt. Type
+        <pre>eclipse</pre>
+      </li>
+      <li>Start the Scala IDE. Select File → Import → Existing Projects into Workspace, and navigate to the <code>unit15</code> directory. Select Finish.</li>
+      <li>In the Activator shell window, type
+        <pre>~run</pre>
+        (note the ~).</li>
+      <li>If you get an error in Application.scala, select Project -&gt; Properties -&gt; Java Build Path -&gt; Source and add the directories <code>unit15/target/scala-2.11/src_managed/main</code> and <code>unit15/target/scala-2.11/twirl/main</code> to the source folders (see <a href='http://stackoverflow.com/questions/28458597/object-index-is-not-a-member-of-package-views-html-when-opening-scala-play-pro'>this post</a>)</li>
+      <li>In <code>index.scala.html</code>, replace the code inside <code>{ }</code> with
+        <pre>Hello @message</pre>
+        Save and reload the localhost:9000 page. What happened?</li>
+      <li>Go to <code>Application.scala</code> and change <code>"Your application is ready"</code> to <code>"Unit 15"</code>. 
+        Save and reload the localhost:9000 page. What happened?</li>
+      <li>Point your browser to http://localhost:9000/assets/images/favicon.png. What happens? Why? (Hint: <code>conf/routes</code>)</li>
+      <li>Ok, now we are ready for the lecture.</li>
+    </ol>
+
+    <h1>Web Applications</h1> 
+    <ul>
+      <li>Client-server architecture</li> 
+      <li>Client sends request to web server</li> 
+      <li>Uses HTTP protocol 
+        <ul>
+          <li>GET url</li> 
+          <li>POST url 
+            <p>data</p> 
+          </li> 
+          <li>Also PUT, DELETE</li> 
+        </ul> 
+      </li> 
+      <li>Server returns HTML</li> 
+      <li>Inversion of control</li> 
+    </ul> 
+
+    <h1>Web Application Frameworks</h1> 
+    <ul>
+      <li>Rendering HTML 
+        <ul>
+          <li>Components (e.g. JSF, GWT, ASP.NET)</li> 
+          <li>Templates, mixing HTML and code that generates HTML (e.g. PHP)</li> 
+        </ul> 
+      </li> 
+      <li>Routing requests to actions (server-side code)</li> 
+      <li>Database persistence</li> 
+      <li>Factoring out common/repetitive code</li> 
+      <li>Internationalization</li> 
+      <li>Security</li> 
+    </ul> 
+    
+    <h1>Web Application Framework Trends</h1> 
+    <ul>
+      <li>Classic framework: JSF, ASP.NET 
+        <ul>
+          <li>Components and events (somewhat like Swing)</li> 
+          <li>Separation of markup and code</li> 
+          <li>(Almost) everything is a POST</li> 
+        </ul> 
+      </li> 
+      <li>REST 
+        <ul>
+          <li>Use GET for non-mutating actions (can be cached)</li> 
+          <li>Optionally, use PUT and DELETE</li> 
+          <li>Use meaningful URLs, not session state</li> 
+        </ul> 
+      </li> 
+      <li>Convention over Configuration 
+        <ul>
+          <li>Avoiding XML hell</li> 
+          <li>Poster child: Ruby on Rails</li> 
+        </ul> 
+      </li> 
+      <li>AJAX 
+        <ul>
+          <li>Client in JavaScript (can be "single page")</li> 
+          <li>Communicates with server over AJAX channel</li> 
+        </ul> 
+      </li> 
+    </ul> 
+
+    <h1>Play Framework</h1> 
+    <ul>
+      <li>Scala or Java</li> 
+      <li>Typesafe</li> 
+      <li>Stateless, REST-friendly</li> 
+      <li>Non-blocking, highly scalable</li> 
+      <li>Convention over configuration</li> 
+      <li>Build system with hot deployment</li> 
+      <li>Datastore-agnostic</li> 
+    </ul>
+
+    <h1>Controllers</h1>
+    <ul><li>Action turns HTTP request into HTTP response
+        <pre>val hello = Action { request =&gt;
+  Ok(s"Hello $request")
+}</pre></li>
+      <li>Controllers have methods that yield actions
+        <pre>object Application extends Controller {
+  def hello(name: String) = Action { Ok(s"Hello $name") }
+  def goodbye(name: String) = Action { NotFound(&lt;h1&gt;Page not found&lt;/h1&gt;) }
+  def index(name: String) = TODO
+}
+</pre></li>
+    </ul>
+
+    <h1>Futures</h1>
+    <ul><li>Play is designed for asynchronous request processing</li>
+      <li><em>Not</em> one thread per request</li>
+      <li>For all computationally intensive work, return a <code>Future</code>
+        <pre>val futurePiValue: Future[Double] = computePiAsync()
+val futureResult: Future[Result] = futurePiValue.map(res =&gt;
+  Ok(res))</pre></li>
+      <li>Use <code>Action.async</code> instead of <code>Action.apply</code>:
+        <pre>def pi = Action.async { computePiAsync().map(res =&gt; Ok(res)) }</pre></li>
+    </ul>
+
+    <h1>Routes</h1>
+    <ul><li>In <code>conf/routes</code></li>
+      <li>Static path:
+        <pre>GET   /tasks/all          controllers.Tasks.list()
+GET   /tasks/find         controllers.Tasks.list(id: Long)
+  // id must be in query string /tasks/find?id=...</pre></li>
+      <li>Dynamic parts:
+        <pre>GET   /task/:id   controllers.Tasks.find(id: Long)</pre> </li>
+      <li>Multipart match:
+        <pre>GET   /assets/*file           controllers.Assets.at(path="/public", file)</pre>
+        <li>Routes are compiled—you see route errors at compile time</li>
+      </li>
+    </ul>
+
+    <h1>Templates</h1>
+    <ul><li>“Twirl” template engine for HTML, CSS, other text files (e.g. CSV)</li>
+      <li>Template compiled into Scala function</li>
+      <li>Use <code>@</code> to inject Scala expressions
+        <pre>&lt;ul&gt;@for (task &lt;- tasks) { &lt;li&gt;@task.label&lt;/li&gt; }&lt;/ul&gt;</pre></li>
+      <li>First line has parameters:
+        <pre>@(title: String, tasks: List[Task])</pre></li>
+    </ul>
+
+    <h1>Forms</h1>
+
+    <ul><li>Play has a<a href='https://www.playframework.com/documentation/2.0/ScalaForms'>Forms API</a> to minimize the tedium of building HTML forms</li>
+      <li><code>Form[T]</code> object converts between form contents and objects of type <code>T</code>
+      <pre>val loginForm = Form(
+  tuple(
+    "name" -&gt; text,
+    "age" -&gt; number
+  )
+)</pre>
+      Result object has type <code>(String, Int)</code></li>
+      <li>Can supply functions to convert to and from objects
+      <pre>case class User(name: String, age: Int)
+
+val userForm = Form(
+  mapping(
+    "name" -&gt; text,
+    "age" -&gt; number
+  )(User.apply)(User.unapply)
+)</pre></li>
+      <li>Can add constraints, handle errors—see the docs</li>
+    </ul>
+
+    <h1>Form Helpers</h1>
+
+    <ul><li>In HTML template,
+      <pre>@import helper._</pre></li>
+      <li><code>@form</code> generates HTML <code>form</code> tag
+      <pre> @form(routes.Application.deleteTask(task.id)) {
+  &lt;input type="submit" value="Delete"&gt;
+}
+</pre></li>
+      <li><code>action</code> attribute taken from route argument (“reverse routing”)</li>
+      <li>Convenience functions for generating input elements
+      <pre>@form(routes.Application.newTask) {        
+  @inputText(taskForm("label"))         
+  ...
+}</pre></li>
+      <li>Form object must be passed to page:
+      <pre>@(tasks: List[Task], <b>taskForm: Form[String]</b>)</pre></li>
+    </ul>
+
+    <h1>Persistence</h1>
+    <ul><li>Play can support different database persistence layers</li>
+      <li>Today, we use <a href='https://www.playframework.com/documentation/2.0/ScalaAnorm'>Anorm</a></li>
+      <li>Not an ORM, just JDBC and SQL
+      <pre>SQL("INSERT INTO Task (label) VALUES ({label})").on(
+      "label" -&gt; label).executeUpdate()</pre>
+       Here, <code>label</code> is
+      <ol><li>The database column</li>
+        <li>a variable part of the SQL statement</li>
+        <li>a map key</li>
+        <li>a Scala variable (holding the value for the column)</li>
+        </ol></li>
+      <li>Need <code>Connection</code> object—best passed “implicitly” (see lab)
+      <pre> DB.withConnection { implicit c =&gt; SQL(...).on(...).executeUpdate() }</pre></li>
+    </ul>
+
+    <h1>Anorm Result Set Parsing</h1>
+
+    <ul><li>Consider query <code>"SELECT * FROM Task"</code></li>
+      <li>Returns sequence of rows</li>
+      <li>Want to turn each row into an object</li>
+      <li>Can parse column as <code>get[<var>Type</var>]("<var>name</var>")</code></li>
+      <li>Combine parsers with <code>~</code>, <code>*</code>, like in Unit 12</li>
+      <li>Parser for row:
+        <pre>val task = {
+  get[Long]("id") ~ get[String]("label") map {
+    case id ~ label =&gt; Task(id, label)
+  }
+}</pre></li>
+      <li>Apply to all rows:
+      <pre>val result: List[Task] = SQL("SELECT * FROM Task").as(task *)</pre></li>
+    </ul>
+
+    <h1>Lab</h1>
+
+    <ol class='la'><li>We'll set up a very simple to do list, following <a href='https://www.playframework.com/documentation/2.0.2/ScalaTodoList'>this tutorial</a>. Play has changed a little since then, so the first part no longer applies. Instead, we continue with the lab, as set up in the first part, and join the tutorial at the section "Preparing the application" </li>
+      <li>Go ahead and edit <code>conf/routes</code> and described, and check the compile-time error that tells you the routes error.</li>
+      <li>Add the definitions to <code>Application</code> and verify the TODO behavior.</li></ol>
+    <h1>Forms</h1>
+    <ol class='la'><li>Make a package <code>models</code> inside <code>app</code> and define the <code>Task</code> class as specified.</li>
+      <li>Set up the <code>index.scala.html</code> page, task form, and the <code>tasks</code> action as described. Make sure that  http://localhost:9000/tasks looks like in the tutorial in the section "Rendering the first page". <br/>Then look at the <code>index.scala.html</code> page. What parameters does the page have? Where do they come from? (That is, who supplies them?) What happens with the first parameter? With the second?</li>
+      <li>What happens when you submit the form? Why? Which method do you need to implement to fix this?</li>
+      <li>Follow the step "Handling the form submission". Check out <code>Form</code> in the <a href='https://www.playframework.com/documentation/2.3.x/api/scala/index.html'>Play API</a>. What is the significance of <code>bindFromRequest</code>? Explain the syntax of the stuff inside <code>fold(...)</code>. </li></ol>
+    <h1>Queries</h1>
+    <ol class='la'>
+      <li>Now follow “Persist the tasks in a database”. Uncomment the four lines in conf/application.conf that start with <code>db.default</code>. Make the file conf/evolutions/default/1.sql (and be careful that you use exactly that path—otherwise, it won't work). Verify that you get the evolution screen, and click Apply. </li>
+      <li>Now start implementing the SQL queries. First, provide the <code>task</code> parser. Which class does it go into?</li>
+      <li>You've seen something just like that in Unit 12, except for <code>map</code>. What was it called there?</li></ol>
+    <h1>Implicits</h1>
+    <ol class='la'>
+      <li>Paste in the <code>all</code> method. That's a lot of strange syntax. We haven't covered <code>implicit</code> yet, except for <code>implicitly</code> in Unit 9. The idea is that a parameter labeled <code>implicit</code> is set to the unique object of the appropriate type that has been defined as <code>implicit</code>. Let's start figuring this out. What is <code>DB</code>? (Look it up in the Play API.) </li>
+      <li>There are two methods called <code>withConnection</code>. Which one are we calling?</li>
+      <li>Now click on the link DB.scala on the top of the API. Find the source code of that method. Note it refers to a function <code>db</code>. What type does that function return?</li>
+      <li>That type has a function <code>database</code>. What type does it return? </li>
+      <li>And that type has a perfectly normal function
+        <pre> def withConnection[A](block: (Connection) ⇒ A): A</pre>
+        Click on Database.scala and read the implementation (it's in <code>DefaultDatabase</code>). If you've ever done JDBC programming, this is straightforward:
+        <ol><li>Get a connection</li>
+          <li>In a try/finally block, run code that uses it</li>
+          <li>In the finally clause, close the connection</li>
+        </ol></li>
+      <li>We did all that because we wanted to follow the <code>implicit</code>. Start again with <code>DB.withTransaction</code>. Notice the last (curried) parameter. It is declared as <code>implicit</code>. That means, an object is silently passed to this function whenever it is called. What is the type of that object? </li>
+      <li>Now follow the call to <code>db</code>. What happens to that special object?</li>
+      <li>How did the <code>Application</code> object get in there in the first place? We can't (easily) answer that, but we can look at how another object is passed as an implicit object. Let's go back to
+        <pre>def all(): List[Task] = DB.withConnection { <b>implicit</b> c =&gt;
+  SQL("select * from task").as(task *)
+}</pre>
+        Ignoring the <code>implicit</code> for a minute, recall what happens here. A connection was found, and <code>block(connection)</code> was called. That's just a normal function call. To see why <code>c</code> is <code>implicit</code>, we need to look further. Mouse over the <code>as</code> method in Eclipse. What do you get?</li>
+      <li>Note the second, implicit parameter. When <code>as</code> gets called, it wants some connection. Which one is it going to get?</li>
+    </ol>
+    <h1>Finishing Up</h1>
+    <ol class='la'><li>Enough of implicit objects. Let's solve a different mystery. What is the <code>*</code> behind <code>task</code>? Hint: Mouse over it.</li>
+      <li>Finally, add the <code>create</code> and <code>delete</code> methods. Run the app and create a few tasks.</li>
+      <li>What happens when you try to delete one?</li>
+      <li>Fix that and try out that everything works now. Stop before "Deploying to Heroku"</li>
+      <li>Finally, have another look at <code>create</code> and <code>delete</code>. Notice the curious <code>'label</code> and <code>'id</code>. Those are Scala <em>symbols</em>—kind of like strings, but different. Replace them with <code>"label"</code> and <code>"id"</code>, and verify that you can still create and delete tasks.</li>
+    </ol>
+    
+    <h1>Homework</h1>
+
+    <p>Sadly, we have reached the end of the rope with Codecheck. In this homework assignment, you will write a simple Play application. Zip up the entire directory and email it to Prof. Borran when you are done. Also, be prepared to demo your solution during the next class meeting.</p>
+    <p>Write a web app that can be used for online “clickers”, rather than the paper index cards that we have used in class. Here is the workflow.  </p>
+    <ol><li>The professor visits <code>quiz/new</code> and enters the question and four answer choices [Extra credit for variable numbers of choices]. When the professor hits submit, a number is displayed (just show the ID number in the database)</li>
+      <li>The professor announces the ID number to the students.</li>
+      <li>The students visit <code>quiz/reply/id</code> (with that ID) and select an answer</li>
+      <li>Afterwards, the professor visits <code>quiz/results/id</code>, and the number of responses for each choice is displayed.</li>
+    </ol>
+    
+    <p>Tip: If you want to make the app look prettier (and also for general hints), run <code>activator new computer-database-scala</code> and have a look at the resulting app.</p>
+  </body>
+</html>
