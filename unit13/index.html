@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 12</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+  </head> 
+  <body>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
+
+    <h1>Context-Free Grammar</h1> 
+    <ul>
+      <li>Language: Set of valid token sequences</li> 
+      <li>Terminal symbol: Token in the language. Ex: "<code>class</code>" "<code>3.14</code>" "<code>(</code>" </li> <!-- ) -->
+      <li>Nonterminal symbol: Symbols in the grammar. Ex. <code>term</code></li> 
+      <li>Production: Rule for replacing a nonterminal by a sequence of nonterminals and terminals 
+        <pre>term ::= factor * term</pre> 
+      </li> 
+      <li>Can have more than one production for the same nonterminal 
+        <pre>term ::= factor</pre> 
+      </li> 
+      <li>Derivation: Sequence of productions 
+        <pre>term ::= factor * <strong>term</strong>
+  ::= factor * factor * <strong>term</strong>
+  ::= factor * factor * factor</pre> 
+      </li> 
+      <li>Context-free: The replacement doesn't depend on the context of the nonterminal</li> 
+    </ul> 
+
+    <h1>Parse Tree</h1> 
+    <ul>
+      <li>Shows derivation process 
+        <p><img src='parsetree.png' alt=''/></p> 
+      </li> 
+      <li><em>Not the same as an expression tree!</em></li> 
+      <li>Parser: Component that follows derivation process, yielding some actions</li> 
+      <li>Most common action: Building an expression tree. </li> 
+    </ul> 
+
+    <h1>Combinator Parser</h1> 
+    <ul>
+      <li>Each nonterminal becomes a function</li> 
+      <li>Terminals (strings) and nonterminals (functions) are combined with operators 
+        <ul>
+          <li>Sequence <code>~</code></li> 
+          <li>Alternative <code>|</code></li> 
+          <li>0 or more <code>rep(...)</code></li> 
+          <li>0 or 1 <code>opt(...)</code></li> 
+        </ul> 
+        <pre>class SimpleLanguageParser extends JavaTokenParsers {    
+  def expr: Parser[Any] = term ~ opt(("+" | "-") ~ expr)
+  def term: Parser[Any] = factor ~ opt(("*" | "/" ) ~ term)
+  def factor: Parser[Any] = wholeNumber | "(" ~ expr ~ ")"
+}</pre> 
+      </li> 
+      <li>Will replace <code>Parser[Any]</code> with something more useful later</li> 
+    </ul> 
+
+    <h1>Combinator Parser Result</h1> 
+    <ul>
+      <li>String returns itself</li> 
+      <li><code>opt(P)</code> returns <code>Option</code>: <code>Some</code> of the result of <code>P</code>, or <code>None</code></li> 
+      <li><code>rep(P)</code> returns <code>List</code> of the results of <code>P</code></li> 
+      <li><code>P ~ Q</code> returns instance of class <code>~</code> (similar to a pair)</li> 
+      <li>For example, 
+        <pre>val parser = new SimpleLanguageParser
+val result = parser.parse(parser.expr, "3 - 4 * 5")</pre> 
+        <p>sets <code>result</code> to </p> 
+        <pre>((3~None)~Some((-~((4~Some((*~(5~None))))~None))))</pre> 
+      </li> 
+      <li>We'll transform this to something more useful in the next slide</li>        
+    </ul> 
+    <h1>Transforming Combinator Parser Results</h1> 
+    <ul>
+      <li>Use <code>^^</code> operator to transform. For example, 
+        <pre>wholeNumber ^^ (_.toDouble) </pre> 
+      </li> 
+      <li>Use pattern matching for transforms 
+        <pre>def expr: Parser[Double] = (term ~ opt(("+" | "-") ~ expr)) ^^ { 
+  case a ~ None =&gt; a
+  case a ~ Some("+" ~ b) =&gt; a + b
+  case a ~ Some("-" ~ b) =&gt; a - b
+  }</pre> 
+      </li> 
+      <li>Use <code>~&gt;</code>, <code>&lt;~</code> to discard tokens 
+        <pre>def factor: Parser[Double] = wholeNumber ^^ (_.toDouble) |
+   <strong>"(" ~&gt; expr &lt;~ ")"</strong></pre> 
+      </li> 
+      <li>The <code>Parser[...]</code> type must match the return type of the transforms (here, <code>Double</code>)</li> 
+    </ul> 
+
+    <h1>Returning Expression Trees</h1> 
+    <ul>
+      <li>Returning <code>Double</code> works if we interpret an arithmetic expression without variables</li> 
+      <li>For interpreters, code generators, want an expression tree: <code>Parser[Expr]</code> 
+        <pre>class Expr
+case class Number(value : Int) extends Expr
+case class Variable(name : String) extends Expr
+case class Sum(left : Expr, right : Expr) extends Expr</pre> 
+      </li> 
+      <li>
+        <pre>class SimpleLanguageParser extends JavaTokenParsers {    
+  def expr: Parser[Expr] = (term ~ opt(("+" | "-") ~ expr)) ^^ { 
+    case a ~ None =&gt; a
+    case a ~ Some("+" ~ b) =&gt; <strong>Sum(a, b)</strong>
+    case a ~ Some("-" ~ b) =&gt; Difference(a, b)
+  } 
+  ...
+}</pre> 
+      </li> 
+      <li>Returns tree such as 
+        <pre>Difference(Number(3),Product(Number(4),Number(5)))</pre> 
+      </li> 
+    </ul> 
+    
+    <h1>A Grammar Problem</h1> 
+    <ul>
+      <li>Consider the input <code>3 - 4 - 5</code></li> 
+      <li>Parse: 
+        <pre>expr ::= term - <strong>expr</strong>
+  ::= term - <strong>term - expr</strong>
+  </pre> 
+      </li> 
+      <li>Resulting expression tree: 
+        <p><img height='251' width='227' src='exprtree3.png' alt=''/></p> 
+      </li> 
+    </ul> 
+    <ul>
+      <li>That's the wrong tree. 3 - (4 - 5) is 3 - (-1) = 4</li> 
+      <li>We want - to be left associative: (3 - 4) - 5</li> 
+      <li>How about switching <code>expr</code> and <code>term</code>?</li> 
+      <li>In theory, this works, but in practice, the Scala combinator parser gets into an infinite recursion 
+        <pre>expr ::= expr - term 
+ ::= expr - expr - term
+ :: expr - expr - expr - term</pre> 
+      </li> 
+    </ul> 
+
+    <h1>Remedy: Manually Group Terms</h1> 
+    <ul>
+      <li>Reorganize Grammar 
+        <pre>class SimpleLanguageParser extends JavaTokenParsers {    
+  def expr: Parser[Expr] = term ~ rep(("+" | "-") ~ term)
+  def term: Parser[Expr] = factor ~ rep(("*" | "/" ) ~ factor)
+  def factor: Parser[Expr] = wholeNumber | "(" ~ expr ~ ")"
+}</pre> 
+      </li> 
+      <li>Now we have a list of <em>all</em> terms</li> 
+      <li>Manually group them left to right 
+        <pre>Operator(Operator(...(Operator(term1, term2), term3)), ...)</pre> 
+      </li> 
+      <li>Use <code>foldLeft</code>—see next slide
+      </li> 
+    </ul> 
+
+    <h1>Use foldLeft</h1> 
+    <ul>
+      <li>Parsing 3 - 4 - 5 yields 
+        <pre>3 ~ List("-" ~ 4, "-" ~ 5)</pre> 
+      </li> 
+      <li>Note that the tail is a flat list</li> 
+      <li>Want the tree 
+        <pre>    -
+   / \
+  <strong>-</strong>   5
+ / \
+3   <strong>4</strong></pre> 
+      </li> 
+      <li>Initial element is 3</li> 
+      <li>Next element is <code>"-" ~ 4</code></li> 
+      <li>Fold operator is 
+        <pre>case (x, "+" ~ y) =&gt; Sum(x, y)
+case (x, "-" ~ y) =&gt; Difference(x, y)</pre> 
+      </li> 
+      <li>Now everything together: 
+        <pre>def expr: Parser[Expr] = (term ~ rep(("+" | "-") ~ term)) ^^ { 
+    case a ~ lst =&gt;  lst.foldLeft(a) { 
+      case (x, "+" ~ y) =&gt; Sum(x, y)
+      case (x, "-" ~ y) =&gt; Difference(x, y)
+    }</pre> 
+    </li> 
+      </ul> 
+      <ul>
+        <li>Result: Parser yields <code>Expr</code> with the correct structure</li> 
+      </ul> 
+      <h1>Repetition</h1> 
+      <ul>
+        <li>Simple repetition, ex. array bounds <code>[10][10][20]</code></li>
+        <li>Use <code>rep</code> convenience combinator 
+          <pre>def bounds = rep(bound)
+bound = "[" ~&gt; wholeNumber &lt;~ "]" ^^ { _.toInt } </pre> 
+        </li> 
+        <li>Repetition with separators, ex. function arguments <code>id(arg1, arg2, ...)</code></li> 
+        <li>Use <code>repsep</code> convenience combinator 
+          <pre>def funcall = ident ~ "(" ~&gt; repsep(expr, ",") &lt;~ ")"</pre> 
+          <code>repsep</code> returns <code>List</code> without separators; here, <code>List[Expr]</code>
+        </li> 
+      </ul> 
+
+      <h1>Lab</h1> 
+      <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+      <ul>
+        <li>You work with a buddy </li> 
+        <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+        <li>When you get stuck, ask your buddy first!</li> 
+        <li>Switch coder/scribe roles each lab</li> 
+        <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
+        <li>The scribe submits answers. Include the coder's name in the report!</li> 
+      </ul> 
+
+      
+      <h1>Part 1: Expressions</h1> 
+      <ol class='la'><li>Make a new project <code>unit12</code>. Right-click on the project in the tree display at the left, select Properties → Java Build Path → Libraries → Add External JARs, then locate to the directory where the Scala IDE is installed, go to its <code>plugins</code> directory, and pick <code>org.scala-lang.modules.scala-parser-combinators_1.0.1.jar</code>.</li>
+        <li>Then <em>restart</em> the Scala IDE.</li>
+        <li>Make a worksheet <code>expr.sc</code>. Paste in this code:
+        <pre>import scala.util.parsing.combinator._
+class ExprParser extends JavaTokenParsers {
+	def expr: Parser[Any] = term ~ rep(("+" | "-") ~ term)
+	def term: Parser[Any] = factor ~ rep("*" ~&gt; factor)
+	def factor: Parser[Any] = wholeNumber | "(" ~ expr ~ ")"
+}
+
+val parser = new ExprParser
+parser.parseAll(parser.expr, "3-4*5")</pre>
+          What do you get?</li>
+        <li>That's not so instructive. Make a copy of the <code>ExprParser</code> class and call it <code>ExprParser2</code>. Change all the <code>Parser[Any]</code> to <code>Parser[Int]</code>. Now you need to put <code>^^</code> transforms behind each result. I'll give you two of them:
+        <pre>... (term ~ rep(("+" | "-") ~ term)) ^^ { 
+    case a ~ lst =&gt;  (lst.foldLeft(a)) {
+      	case (x, "+" ~ y) =&gt; x + y
+      	case (x, "-" ~ y) =&gt; x - y
+    }
+
+... wholeNumber ^^ { _.toInt }
+</pre> Figure out the other two.</li>
+        <li>Now call
+<pre>val parser2 = new ExprParser2
+parser2.parseAll(parser2.expr, "3-4*5")</pre>
+        What happens?</li> 
+        <li>That's nice. Now we have a calculator. But what if we want to build a compiler? Then we need a parse tree. First define
+          <pre>class Expr
+case class Number(value : Int) extends Expr
+case class Sum(left : Expr, right : Expr) extends Expr
+case class Difference(left : Expr, right : Expr) extends Expr
+case class Product(left : Expr, right : Expr) extends Expr
+</pre>
+          Now we want to make a <code>Parser[Expr]</code>, not a <code>Parser[Int]</code>. So, change all the return types and change the <code>^^</code> expressions to yield instances of <code>Expr</code> subclasses. I'll give you one:
+          <pre>...factor ~ rep("*" ~&gt; factor) ^^ {
+  case f ~ r =&gt; r.foldLeft(f)(Product(_, _))
+}
+</pre></li>
+          <li>Now what do you get for
+          <pre>val parser3 = new ExprParser3
+arser3.parseAll(parser3.expr, "3-4*5")</pre>
+        </li>        
+      </ol>
+
+      <h1>Part 2: JSON Parsing</h1>
+
+      <ol class='la'><li>You have probably seen JSON, the JavaScript object notation. It is ubiquitous in web programming. It lets you describe arrays and maps of key/value pairs, where the keys are strings. Here is an example:
+          <pre>[{"balance" : 10000}, "Harry", true]
+</pre>
+          Check out the <a href='http://json.org/'>JSON web site</a>. It uses “railroad diagrams” to show the JSON syntax. It's trivial to turn them into a parser:
+          <pre>class JSONParser extends JavaTokenParsers {
+    def value: Parser[Any] = stringLiteral | floatingPointNumber | obj | array | "true" | "false" | "null"
+    def member: Parser[Any] = stringLiteral ~ ":" ~ value
+    def obj: Parser[Any] = "{" ~ repsep(member, ",") ~ "}"
+    def array: ...
+  }</pre>
+          Here, <code>stringLiteral</code> and <code>floatingPointNumber</code> are defined in the <code>JavaTokenParsers</code> to parse, you guessed it, a string literal and a floating point number.<br/>
+          I left it for you to fill in the entry for <code>array</code>.
+        </li>
+        <li>Make a <code>JSONParser</code> and parse <code>"""[{"balance" : 10000}, "Harry", true]"""</code>. The <code>"""..."""</code> is a convenient Scala syntax for string literals that can contain <code>"</code>, so you don't have to write <code>"[{\"balance\" : 10000}, \"Harry\", true]"</code>
+          What do you get?
+        </li>
+        <li>Ok, that's no good. In a Scala program, we want to use the JSON expression. We could either turn it into nested case class instances, like in the preceding exercise, or, more brutally, make an object into a <code>Map[String, Any]</code> and an array into a <code>List[Any]</code>. That's what we'll do now.
+          <br/>
+          Copy the <code>JSONParser</code> class into <code>JSONParser2</code>. A <code>value</code> is still an <code>Any</code>, but a <code>member</code> is a pair <code>(String, Any)</code>, an <code>obj</code> is a <code>Map[String, Any]</code>, and an <code>array</code> is a <code>List[Any]</code>. Update the <code>Parser</code> type parameters.
+        </li>
+        <li>Next, add <code>^^ { ... }</code> clauses. I'll just give you the ones for <code>false</code>, <code>true</code>, and <code>null</code>:
+        <pre>... "true" ^^ { _ =&gt; true } | "false" ^^ { _ =&gt; false } | "null" ^^ { _ =&gt; null }</pre>
+          For a <code>member</code>, you want to get a pair. Do this so that you don't get error messages. 
+        </li>
+        <li>For an <code>obj</code>, use <code>~&gt;</code> and <code>&lt;~</code> to get rid of the <code>{ }</code> delimiters. Then the result is a list of members, i.e. a list of pairs. Call <code>_.toMap</code> to turn it into a map.</li>
+        <li>Finally, use <code>~&gt;</code> and <code>&lt;~</code> to get rid of the <code>[ ]</code> delimiters for arrays. Then you get a list, and you want a list, so you don't have to do anything.<br/>Now make a <code>JSONParser2</code> and parse again <code>"""[{"balance" : 10000}, "Harry", true]"""</code> . What do you get?</li>
+        <li>Isn't this amazing? You have parsed JSON, with your bare hands, in less than ten lines of code. Of course, for JSON, you can get an off-the-shelf library, but if you have to parse something less common, such as <a href='http://www.graphviz.org/doc/info/lang.html'>Dot</a> or <a href='http://asciimath.org/'>asciimath</a>, Scala has you covered.</li>
+
+
+      </ol>
+      <h1>Homework</h1> 
+      <p>Do this as <em>individual work</em>, not with your partner</p> 
+      <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
+      <ul>
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw6a'>Problem 1</a></li> 
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw6b'>Problem 2</a></li> 
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw6c'>Problem 3</a></li> 
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw6d'>Problem 4</a></li> 
+        <li><a href='http://cs14.cs.sjsu.edu:8080/codecheck/files?repo=heigvdcs1&amp;problem=hw6e'>Problem 5</a></li> 
+      </ul> 
+    </body>
+  </html>
