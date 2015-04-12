@@ -3,7 +3,7 @@
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
     <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
-    <title>Borran/Fatemi/Horstmann Scala Unit 12</title> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 13</title> 
     <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
     <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
     <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script>
@@ -18,32 +18,388 @@
     </div> 
 
     <h1>Collections: recall List</h1> 
+    
+    <i><p>Note: The content of units 13 and 14 is adapted from the slides of </br>
+    "Functional Programming in Scala" by Prof. Martin Odersky.</p></i>
 	<p>A list having <script type="math/tex" id="MathJax-Element-1"> x_1, ..., x_n</script> <br>
 	as elements is written <code>List(</code><script type="math/tex" id="MathJax-Element-2"> x_1, …, x_n</script><code>)</code></p>
 
-	<p>Example</p>
+	<p><b>Example:</b></p>
 
 	<pre><code>val fruit  = List("apples", "oranges", "pears")
 val nums   = List(1, 2, 3, 4)
 val diag3  = List(List(1, 0, 0), List(0, 1, 0), List(0, 0, 1))
-val empty  = List()
+val empty  = List()</code></pre>
+
+	<p>There are two important differences between lists and arrays.</p>
+
+	<ul>
+	<li>Lists are immutable — the elements of a list cannot be changed.</li>
+	<li>Lists are recursive, while arrays are flat.</li>
+	</ul>
+	<p>The figures below show the recursive structure of the <code>fruit</code> and <code>diag3</code> lists.</p>
+	<table>
+	  <tr>
+	     <td valign = "top"> <center><image src= "listFruit.png" ></center></td>
+	     <td valign = "top"> <center><image src= "listDiag3.png" ></center></td>
+	  </tr>
+	</table>
+
+
+	<h1 id="constructors-of-lists">Constructors of Lists</h1>
+
+	<p>All lists are constructed from:</p>
+
+	<ul>
+	<li>the empty list <code>Nil</code>, and</li>
+	<li>the construction operation <code>::</code> (pronounced <i>cons</i>): <br>
+	<code>x :: xs</code> gives a new list with the first element <code>x</code>, followed by the elements of <code>xs</code>.</li>
+	</ul>
+
+	<p><b>For example:</b></p>
+
+	<pre><code>  fruit = "apples" :: ("oranges" :: ("pears" :: Nil))
+  nums  = 1 :: (2 :: (3 :: (4 :: Nil)))
+  empty = Nil</code></pre>
+
+	<h1 id="operations-on-lists">Operations on Lists</h1>
+
+	<p>All operations on lists can be expressed in terms of the following <br>
+	three operations:</p>
+    <ul>
+		<li><code>head</code> : the first element of the list</li>
+		<li><code>tail</code> : the list composed of all the elements except the first.</li>
+		<li><code>isEmpty</code> : <code>true</code> if the list is empty, <code>false</code> otherwise.</li>
+	</ul>
+	<p>These operations are defined as methods of objects of type list.</p>
+	<p><b>Example:</b></p>
+
+	<pre><code>  fruit.head      == "apples"
+  fruit.tail.head == "oranges"
+  diag3.head      == List(1, 0, 0)
+  empty.head      == throw new NoSuchElementException("head of empty list")</code></pre>
+
+	<h1 id="list-patterns">List Patterns</h1>
+
+	<p>It is also possible to decompose lists with pattern matching.</p>
+    <table>
+    	<tr>  
+    		<td> <code>Nil</code></td>
+    		<td> The <code>Nil</code> constant </td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>p :: ps</code> </td>
+    		<td> A pattern that matches a list with a <code>head</code> matching <code>p</code> and a <code>tail</code> matching <code>ps</code>.</td>   	
+    	</tr>
+    	<tr>  
+    		<td> List(p1, ..., pn) </td>
+    		<td> same as <code>p1 :: ... :: pn :: Nil</code> </td>   	
+    	</tr>
+    </table>
+	
+
+	<p><b>Example:</b></p>
+	<table>
+    	<tr>  
+    		<td> <code>1 :: 2 :: xs</code></td>
+    		<td> Lists that start with <code>1</code> and then <code>2</code> </td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>x :: Nil</code> </td>
+    		<td>  Lists of length 1 </td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>List(x)</code> </td>
+    		<td> Same as <code>x :: Nil</code></td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>List()</code> </td>
+    		<td> The empty list, same as <code>Nil</code></td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>List(2 :: xs)</code></td>
+    		<td>  A list that contains as only element another list that starts with <code>2</code>.</td>   	
+    	</tr>
+    </table>
+              
+	     
+
+	<h1 id="exercise">Exercise</h1>
+
+	<p>Consider the pattern <code>x :: y :: List(xs, ys) :: zs</code>.</p>
+
+	<p>What is the condition that describes most accurately the length <code>L</code> <br>
+	of the lists it matches?</p>
+
+	<ol class='clicker'>
+      <li>L == 3</li> 
+      <li> L == 4</li> 
+      <li> L == 5</li> 
+      <li>L &gt;= 3</li> 
+      <li>L &gt;= 4</li> 
+      <li>L &gt;= 5</li> 
+    </ol>
+	
+	
+   <h1> List Methodes (1) </h1>
+	<table border="0" cellpadding="1" cellspacing="10" style="width: 100%">
+		<tbody>
+			<tr>
+				<td valign="top"><code>xs.length</code></td>
+				<td>The number of elements of <code>xs</code></td>
+			</tr>
+			<tr>
+				<td><code>xs.last</code></td>
+				<td>The list&#39;s last element, exception if <code>xs</code> is empty</td>
+			</tr>
+			<tr>
+				<td><code>xs.init</code></td>
+				<td>A list consisting of all elements of <code>xs</code> except the last one,&nbsp;exception if <code>xs</code> is empty.</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>xs take n</code></td>
+				<td>A list consisting of the first <code>n</code> elements of <code>xs</code>, or <code>xs</code> itself<br />
+				if it is shorter than <code>n</code>.</td>
+			</tr>
+			<tr>
+				<td><code>xs drop n</code></td>
+				<td>The rest of the collection after taking <code>n</code> elements.</td>
+			</tr>
+			<tr>
+				<td><code>xs(n)</code></td>
+				<td>(or, written out, <code>xs</code> apply <code>n</code>). The element of <code>xs</code> at index <code>n</code>.</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<h1> List Methodes (2) </h1>
+	Creating new lists
+	<table border="0" cellpadding="1" cellspacing="10" style="width: 100%">
+		<tbody>
+			<tr>
+				<td valign="top"><code>xs ++ ys</code></td>
+				<td>The list consisting of all elements of <code>xs</code> followed by all elements of  <code>ys</code>.</td>
+			</tr>
+			<tr>
+				<td><code>xs.reverse</code></td>
+				<td>The list containing the elements of <code>xs</code> in reversed order</td>
+			</tr>
+			<tr>
+				<td><code>xs updated (n, x)</code></td>
+				<td>The list containing the same elements as <code>xs</code>, except at index <code>n</code> where it contains <code>x</code></td>
+			</tr>
+
+		</tbody>
+	</table>
+	Finding elements
+	<table border="0" cellpadding="1" cellspacing="10" style="width: 100%">
+		<tbody>
+			<tr>
+				<td><code>xs indexOf x</code></td>
+				<td>The index of the first element in <code>xs</code> equal to <code>x</code> or <code>-1</code> if <code>x</code> does not apear in <code>xs</code>.</td>
+			</tr>
+			<tr>
+				<td><code>xs contains x</code></td>
+				<td>same as <code>xs indexOf x >= 0</code></td>
+			</tr>
+			
+		</tbody>
+	</table>
+	
+	
+
+    <h1 id="recurring-patterns-for-computations-on-lists">Recurring Patterns for Computations on Lists</h1>
+
+	<p>Functions on lists often have similar structures.</p>
+
+	<p>We can identify several recurring patterns, like,</p>
+
+	<ul>
+	<li>transforming each element in a list in a certain way,</li>
+	<li>retrieving a list of all elements satisfying a criterion,</li>
+	<li>combining the elements of a list using an operator.</li>
+	</ul>
+
+	<p>Functional languages allow programmers to write generic functions <br>
+	that implement patterns such as these using <i> higher-order functions</i>.</p>
+
+
+
+	<h1 id="applying-a-function-to-elements-of-a-list">Applying a Function to Elements of a List</h1>
+
+	<p>A common operation is to transform each element of a list and then <br>
+	return the list of results.</p>
+
+	<p>For example, to multiply each element of a list by the same factor, you could write:</p>
+
+	<pre><code>  def scaleList(xs: List[Double], factor: Double): List[Double] = xs match {
+    case Nil     =&gt; xs
+    case y :: ys =&gt; y * factor :: scaleList(ys, factor)
+  }</code></pre>
+
+
+
+	<h1 id="map">Map</h1>
+
+	<p>This scheme can be generalized to the method <code>map</code> of the <br>
+	<code>List</code> class. A simple way to define <code>map</code> is as follows:</p>
+
+	<pre><code>  abstract class List[T] { ...
+  def map[U](f: T =&gt; U): List[U] = this match {
+    case Nil     =&gt; this
+    case x :: xs =&gt; f(x) :: xs.map(f)
+  }</code></pre>
+
+	<p>(in fact, the actual definition of <code>map</code> is a bit different, also it works for arbitrary
+	collections, not just lists).</p>
+
+	<p>Using <code>map</code>, <code>scaleList</code> can be written more concisely.</p>
+
+	<pre><code>  def scaleList(xs: List[Double], factor: Double) =
+    xs map (x =&gt; x * factor)</code></pre>
+
+	<h1 id="exercise">Exercise</h1>
+
+	<p>Consider a function to square each element of a list, and <br>
+	return the result. Complete the two following equivalent definitions of <br>
+	<code>squareList</code>.</p>
+
+	<pre><code>  def squareList(xs: List[Int]): List[Int] = xs match {
+    case Nil     =&gt; ???
+    case y :: ys =&gt; ???
+  }
+
+  def squareList(xs: List[Int]): List[Int] =
+    xs map ???
 	</code></pre>
 
-<p>There are two important differences between lists and arrays.</p>
+	<h1 id="filtering">Filtering</h1>
 
-<ul>
-<li>Lists are immutable — the elements of a list cannot be changed.</li>
-<li>Lists are recursive, while arrays are flat.</li>
+	<p>Another common operation on lists is the selection of all elements <br>
+	satisfying a given condition. For example:</p>
 
-</ul>
+	<pre><code>  def posElems(xs: List[Int]): List[Int] = xs match {
+    case Nil     =&gt; xs
+    case y :: ys =&gt; if (y &gt; 0) y :: posElems(ys) else posElems(ys)
+  }</code></pre>
 
-    <h1>add more on Lists + exercice</h1> 
-    
 
-    <h1 id="other-sequences">Other Sequences</h1>
 
-	<p>We have seen that lists are <em>linear</em>: Access to the first element is <br>
-	much faster than access to the middle or end of a list.</p>
+	<h1 id="filter">Filter</h1>
+
+	<p>This pattern is generalized by the method <code>filter</code> of the <code>List</code> class:</p>
+
+	<pre><code>  abstract class List[T] {
+    ...
+    def filter(p: T =&gt; Boolean): List[T] = this match {
+      case Nil     =&gt; this
+      case x :: xs =&gt; if (p(x)) x :: xs.filter(p) else xs.filter(p)
+    }
+  }</code></pre>
+
+	<p>Using <code>filter</code>, <code>posElems</code> can be written more concisely.</p>
+
+	<pre><code>  def posElems(xs: List[Int]): List[Int] =
+    xs filter (x =&gt; x &gt; 0)</code></pre>
+
+
+
+	<h1 id="variations-of-filter">Variations of Filter</h1>
+
+	<p>Besides filter, there are also the following methods that extract <br>
+	sublists based on a predicate:</p>
+
+
+	<table>
+    	<tr>  
+    		<td width="15%" valign="top"> <code>xs filterNot p</code></td>
+    		<td>Same as <code>xs filter (x => !p(x))</code>; The list consisting of those elements of <code>xs</code> that do not satisfy the predicate <code>p</code></td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs partition p</code> </td>
+    		<td>Same as <code>(xs filter p, xs filterNot p)</code>, but computed in a single traversal of the list <code>xs</code></td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs takeWhile p</code> </td>
+    		<td>The longest prefix of list <code>xs</code> consisting of elements that all satisfy the predicate <code>p</code>.</td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs dropWhile p</code> </td>
+    		<td>The remainder of the list <code>xs</code> after any leading elements satisfying <code>p<c/ode> have been removed.</td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs span p</code></td>
+    		<td>Same as <code>(xs takeWhile p, xs dropWhile p)</code>but computed in a single traversal of the list <code>xs</code></td>   	
+    	</tr>
+      </table>
+
+	<h1 id="exercise-2">Exercise</h1>
+
+	<p>Write a function <code>pack</code> that packs consecutive duplicates of list elements into sublists. For instance,</p>
+
+	<pre><code>  pack(List("a", "a", "a", "b", "c", "c", "a"))</code></pre>
+
+	<p>should give</p>
+
+	<pre><code>  List(List("a", "a", "a"), List("b"), List("c", "c"), List("a")).</code></pre>
+
+	<p>You can use the following template:</p>
+
+	<pre><code>  def pack[T](xs: List[T]): List[List[T]] = xs match {
+    case Nil      =&gt; Nil
+    case x :: xs1 =&gt; ???
+  }</code></pre>
+
+
+
+	<h1 id="exercise-3">Exercise</h1>
+
+	<p>Using <code>pack</code>, write a function <code>encode</code> that produces the run-length <br>
+	encoding of a list.</p>
+
+	<p>The idea is to encode <code>n</code> consecutive duplicates of an element <code>x</code> as a pair <code>(x, n)</code>. For instance,</p>
+
+	<pre><code>  encode(List("a", "a", "a", "b", "c", "c", "a")</code></pre>
+
+	<p>should give</p>
+
+	<pre><code>  List(("a", 3), ("b", 1), ("c", 2), ("a", 1)).</code></pre>
+
+    <h1>Streams</h1> 
+	<p>A <code>Stream</code> is like a list except that its elements are computed lazily. 
+	Because of this, a stream can be infinitely long. Only those elements requested are computed. Otherwise, streams have the same performance characteristics as lists.</p>
+
+	<p>Whereas lists are constructed with the <code>::</code> operator, streams are constructed with the similar-looking <code>#::</code></br>
+	<p>Here is a simple example of a stream containing the integers 1, 2, and 3:</p>
+	<pre><code>val str = 1 #:: 2 #:: 3 #:: Stream.empty  </br>//> str: scala.collection.immutable.Stream[Int] = Stream(1, ?)</code></pre>
+
+	<p>The head of this stream is 1, and the tail of it has 2 and 3. 
+	The tail is not printed here, though, because it hasn't been computed yet! Streams are specified to compute lazily.</p>
+    <h1>Streams: example</h1> 
+	<p>Below is a more interesting example. 
+	It computes a stream that contains a <i>Fibonacci sequence</i> starting with the given two numbers.</p>
+	<p>A Fibonacci sequence is one where each element is the sum of the previous two elements in the series.</p>
+
+    <pre><code>def fibFrom(a: Int, b: Int): Stream[Int] = a #:: fibFrom(b,a + b)
+//> fibFrom: (a: Int, b: Int)Stream[Int]</code></pre>
+
+    <p>This function is deceptively simple:
+    <ul>
+      <li>The first element of the sequence is clearly <code>a</code>, and </li>
+      <li>the rest of the sequence is the Fibonacci sequence starting with <code>b</code> followed by <code>a + b</code>.</li>
+    </ul>
+    <p>The tricky part is computing this sequence without causing an infinite recursion!
+   
+    <p>If the function used <code>::</code> instead of <code>#::</code>, then every call to the function would result in another call, 
+    thus causing an infinite recursion. Since it uses <code>#::</code>, though, the right-hand side is not evaluated until it is requested.</p>
+     <p>Here are the first few elements of the Fibonacci sequence starting with two ones:</p>
+         <pre><code>val fibs = fibFrom(1, 1).take(7)
+//> fibs  : scala.collection.immutable.Stream[Int] = Stream(1, ?)
+fibs.toList
+//> res4: List[Int] = List(1, 1, 2, 3, 5, 8, 13)</code></pre>
+    <h1 id="other-sequences">Vectors</h1>
+
+	<p>We have seen that lists are <em>linear</em>: Access to the first element is much faster than access to the middle or end of a list.</p>
 
 	<p>The Scala library also defines an alternative sequence implementation, <code>Vector</code>.</p>
 
@@ -74,11 +430,11 @@ val empty  = List()
 
 	<h1 id="collection-hierarchy">Collection Hierarchy</h1>
 
-	<p>A common base class of <code>List</code> and <code>Vector</code> is <code>Seq</code>, the class of all <em>sequences</em>. </p>
+	<p>A common base class of <code>Vector</code>, <code>List</code> and <code>Stream</code> is <code>Seq</code>, the class of all <em>sequences</em>. </p>
 
 	<p><code>Seq</code> itself is a subclass of <code>Iterable</code>. </p>
 
-     <img src="collectionsImmutable.png" alt="Immutable Collections" style="width:70%;height:70%">
+     <img src="collectionHierarchy.png" alt="Immutable Collections"> 
 
 	<h1 id="arrays-and-strings">Arrays and Strings</h1>
 
@@ -86,7 +442,7 @@ val empty  = List()
 	implicitly be converted to sequences where needed.</p>
 
 	<p>(They cannot be subclasses of <code>Seq</code> because they come from Java)</p>
-
+     question on val
 	<pre><code>  val xs: Array[Int] = Array(1, 2, 3)
   xs map (x =&gt; 2 * x)
 
@@ -104,11 +460,10 @@ val empty  = List()
 
 	<p><code>to</code> (inclusive), <code>until</code> (exclusive), <code>by</code> (to	determine step value):</p>
 
-	<pre><code>  val r: Range = 1 until 5
-  val s: Range = 1 to 5
-  1 to 10 by 3
-  6 to 1 by -2
-	</code></pre>
+	<pre><code>  val r: Range = 1 until 5     //> r  : Range = Range(1, 2, 3, 4)
+  val s: Range = 1 to 5     //> s  : Range = Range(1, 2, 3, 4, 5)
+  1 to 10 by 3     //> res1: scala.collection.immutable.Range = Range(1, 4, 7, 10)
+  6 to 1 by -2     //> res2: scala.collection.immutable.Range = Range(6, 4, 2)</code></pre>
 
 	<p>Ranges are represented as single objects with three fields:  <br>
 	lower bound, upper bound, step value.</p>
@@ -116,27 +471,50 @@ val empty  = List()
 
 
 	<h1 id="some-more-sequence-operations">Some more Sequence Operations:</h1>
-
-	<p><script type="math/tex; mode=display" id="MathJax-Element-2">\begin{tabular}{lp{8.7cm}}
-	   \verb`  xs exists p    `  & \verb`true` if there is an element \verb`x` of \verb`xs` such that \verb`p(x)` holds, \verb`false` otherwise.
-	\\ \verb`  xs forall p    `  & \verb`true` if \verb`p(x)` holds for all elements \verb`x` of \verb`xs`, \verb`false` otherwise.
-	\\ \verb`  xs zip ys      `  & A sequence of pairs drawn from corresponding elements of sequences \verb`xs` and \verb`ys`.
-	\\ \verb`  xs.unzip       `  & Splits a sequence of pairs \verb`xs` into two sequences consisting of the first, respectively second halves of all pairs.
-	\\ \verb`  xs.flatMap f   `  & Applies collection-valued function \verb`f` to all elements of \verb`xs` and concatenates the results
-	\\ \verb`  xs.sum         `  & The sum of all elements of this numeric collection.
-	\\ \verb`  xs.product     `  & The product of all elements of this numeric collection
-	\\ \verb`  xs.max         `  & The maximum of all elements of this collection (an \verb`Ordering` must exist)
-	\\ \verb`  xs.min         `  & The minimum of all elements of this collection
-	\end{tabular}</script></p>
-
-
+	<table>
+    	<tr>  
+    		<td width="15%"> <code>xs exists p</code></td>
+    		<td> <code>true</code> if there is an element <code>x</code> of <code>xs</code> such that <code>p(x)</code> holds, <code>false</code> otherwise</td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs forall p</code> </td>
+    		<td><code>true</code> if <code>p(x)</code> holds for all elements <code>x</code> of <code>xs</code>,<code>false</code> otherwise.</td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs zip ys</code> </td>
+    		<td>A sequence of pairs drawn from corresponding elements of sequences <code>xs</code> and <code>ys</code>.</td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs.unzip</code> </td>
+    		<td>Splits a sequence of pairs <code>xs</code> into two sequences consisting of the first, respectively second halves of all pairs.</td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs.flatMap f</code></td>
+    		<td>Applies collection-valued function <code>f</code> to all elements of <code>xs</code> and concatenates the results.</td>   	
+    	</tr>
+    	   	<tr>  
+    		<td> <code>xs.sum</code> </td>
+    		<td>The sum of all elements of this numeric collection</td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs.product</code> </td>
+    		<td>The product of all elements of this numeric collection</code></td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs.max</code> </td>
+    		<td>The maximum of all elements of this collection (an <code>ordering</code> must exist)</td>   	
+    	</tr>
+    	<tr>  
+    		<td> <code>xs.min</code></td>
+    		<td>The minimum of all elements of this collection</td>   	
+    	</tr>
+    </table>
 
 	<h1 id="example-combinations">Example: Combinations</h1>
 
 	<p>To list all combinations of numbers <code>x</code> and <code>y</code> where <code>x</code> is drawn from <code>1..M</code> and <code>y</code> is drawn from <code>1..N</code>:</p>
 
-	<pre><code>  (1 to M) flatMap (x =&gt; 
-	</code></pre>
+	<pre><code>  (1 to M) flatMap (x =&gt; </code></pre>
 
 
 
@@ -144,9 +522,7 @@ val empty  = List()
 
 	<p>To list all combinations of numbers <code>x</code> and <code>y</code> where <code>x</code> is drawn from <code>1..M</code> and <code>y</code> is drawn from <code>1..N</code>:</p>
 
-	<pre><code>  (1 to M) flatMap (x =&gt; (1 to N) map (y =&gt; (x, y)))
-	</code></pre>
-
+	<pre><code> (1 to M) flatMap (x =&gt; (1 to N) map (y =&gt; (x, y))) </code></pre>
 
 
 	<h1 id="example-scalar-product">Example: Scalar Product</h1>
@@ -154,52 +530,34 @@ val empty  = List()
 	<p>To compute the scalar product of two vectors:</p>
 
 	<pre><code>  def scalarProduct(xs: Vector[Double], ys: Vector[Double]): Double =
-		(xs zip ys).map(xy =&gt; xy._1 * xy._2).sum
-	</code></pre>
+    (xs zip ys).map(xy =&gt; xy._1 * xy._2).sum</code></pre>
 
-	<p>-&gt; <br>
-	An alternative way to write this is with a \red{pattern matching function value}.</p>
+	<p>An alternative way to write this is with a <i>pattern matching function value.</i></p>
 
 	<pre><code>  def scalarProduct(xs: Vector[Double], ys: Vector[Double]): Double =
-		(xs zip ys).map{ case (x, y) =&gt; x * y }.sum
-	</code></pre>
+    (xs zip ys).map{ case (x, y) =&gt; x * y }.sum</code></pre>
 
 	<p>Generally, the function value</p>
 
-	<pre><code>  { case p1 =&gt; e1 ... case pn =&gt; en }
-	</code></pre>
+	<pre><code>  { case p1 =&gt; e1 ... case pn =&gt; en }</code></pre>
 
 	<p>is equivalent to </p>
 
-	<pre><code>  x =&gt; x match { case p1 =&gt; e1 ... case pn =&gt; en }
-	</code></pre>
+	<pre><code>  x =&gt; x match { case p1 =&gt; e1 ... case pn =&gt; en }</code></pre>
 
 
 
 	<h1 id="exercise">Exercise:</h1>
 
-	<p>A number <code>n</code> is \red{prime} if the only divisors of <code>n</code> are <code>1</code> and <code>n</code> itself.</p>
+	<p>A number <code>n</code> is <i>prime</i> if the only divisors of <code>n</code> are <code>1</code> and <code>n</code> itself.</p>
 
-	<p>What is a high-level way to write a test for primality of numbers? For <br>
-	once, value conciseness over efficiency.</p>
+	<p>What is a high-level way to write a test for primality of numbers?  <br>
+	For once, value conciseness over efficiency.</p>
 
-	<pre><code>  def isPrime(n: Int): Boolean = ???
-	</code></pre>
-
+	<pre><code>  def isPrime(n: Int): Boolean = ???</code></pre>
 
 
-	<h1 id="exercise-1">Exercise:</h1>
-
-	<p>A number <code>n</code> is \red{prime} if the only divisors of <code>n</code> are <code>1</code> and <code>n</code> itself.</p>
-
-	<p>What is a high-level way to write a test for primality of numbers? For <br>
-	once, value conciseness over efficiency.</p>
-
-	<pre><code>  def isPrime(n: Int): Boolean = 
-	</code></pre>
-   
-
-      <h1>Lab</h1> 
+    <h1>Lab</h1> 
       <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
       <ul>
         <li>You work with a buddy </li> 
@@ -211,11 +569,21 @@ val empty  = List()
       </ul> 
 
       
-      <h1>Part 1: Expressions</h1> 
-      
-      <h1>Homework</h1> 
-      <p>Do this as <em>individual work</em>, not with your partner</p> 
-      <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> 
-      
+      <h1>Operations on Collections</h1> 
+      <ol class='la'>
+      	<li>Write a function to drop every Nth element from a List. In your implementation first use the <code>grouped</code> methode to form groups of N elements.</li> 
+<pre><code>drop(3, List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k')).toList
+    //> res1: List[Char] = List(a, b, d, e, g, h, j, k)</code></pre>
+      	<li>Write a function to rotate a list <code>N</code> places to the left. </li> 
+<pre><code>rotate(3, List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'))
+    //> res2: List[Char] = List(d, e, f, g, h, i, j, k, a, b, c)</pre></code>
+      	<li>Write a function to eliminate consecutive duplicates of list elements.</li>
+      	<pre><code>compress(List('a', 'a', 'a', 'b', 'b', 'c', 'a', 'a', 'd', 'd', 'e'))
+    //> res3: List[Char] = List(a, b, c, a, d, e)</code></pre>
+        <li>Write a function that inserts an element at a given position into a list.</li>
+<pre><code>insertAt('n', 2, List('a', 'b', 'c', 'd', 'e')) 
+    //> res4: List[Char] = List(a, b, n, c, d, e)</pre></code>
+
+      </ol>     
     </body>
   </html>
