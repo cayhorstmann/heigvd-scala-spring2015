@@ -1,0 +1,757 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 14</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+
+</html>
+   
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
+
+ 	<h1 id="handling-nested-sequences">Handling Nested Sequences</h1>
+
+	<p>We can extend the usage of higher order functions on sequences to many <br>
+	calculations which are usually expressed using nested loops.</p>
+
+	<p>Example: Given a positive integer <code>n</code>, find all pairs of positive integers <code>i</code> and <code>j</code>, with <code>1 &lt;= j &lt; i &lt; n</code> such that <code>i + j</code> is prime.</p>
+
+	<p>For example, if <code>n = 7</code>, the sought pairs are</p>
+
+    <image src="img.png">
+	<h1 id="algorithm">Algorithm</h1>
+
+	<p>A natural way to do this is to:</p>
+
+	<ul>
+	<li>Generate the sequence of all pairs of integers <code>(i, j)</code> such that <code>1 &lt;= j &lt; i &lt; n</code>.</li>
+	<li>Filter the pairs for which <code>i + j</code> is prime.</li>
+	</ul>
+
+	<p>One natural way to generate the sequence of pairs is to:</p>
+
+	<ul>
+	<li>Generate all the integers <code>i</code> between <code>1</code> and <code>n</code> (excluded).</li>
+	<li>For each integer <code>i</code>, generate the list of pairs <code>(i, 1), ..., (i, i-1)</code>.</li>
+	</ul>
+
+	<p>This can be achieved by combining <code>until</code> and <code>map</code>:</p>
+
+	<pre><code>  (1 until n) map (i =&gt;
+     (1 until i) map (j =&gt; (i, j)))</code></pre>
+	
+	<h1>Question</h1>
+	<p>What is the type of the result?</p>
+	
+    <pre><code>  (1 until n) map (i =&gt;
+     (1 until i) map (j =&gt; (i, j)))</code></pre>
+	
+	<center><image src="../unit13/collectionHierarchy.png"></center>
+
+
+
+	<h1 id="generate-pairs">Generate Pairs</h1>
+
+	<p>The previous step gave a sequence of sequences, let's call it <code>xss</code>.</p>
+
+	<p>We can combine all the sub-sequences using <code>foldRight</code> with <code>++</code>:</p>
+
+	<pre><code>  (xss foldRight Seq[Int]())(_ ++ _)</code></pre>
+
+	<p>Or, equivalently, we use the built-in method <code>flatten</code></p>
+
+	<pre><code>  xss.flatten</code></pre>
+
+	<p>This gives:</p>
+
+	<pre><code>  ((1 until n) map (i =&gt;
+      (1 until i) map (j =&gt; (i, j)))).flatten</code></pre>
+
+
+
+	<h1 id="generate-pairs-2">Generate Pairs (2)</h1>
+
+	<p>Here's a useful law: </p>
+
+	<pre><code> xs flatMap f  =  (xs map f).flatten</code></pre>
+
+	<p>Hence, the above expression can be simplified to</p>
+
+	<pre><code>(1 until n) flatMap (i =&gt;
+   (1 until i) map (j =&gt; (i, j)))</code></pre>
+
+
+
+	<h1 id="assembling-the-pieces">Assembling the pieces</h1>
+
+	<p>By reassembling the pieces, we obtain the following expression:</p>
+
+	<pre><code>(1 until n) flatMap (i =&gt;
+   (1 until i) map (j =&gt; (i, j))) filter ( pair =&gt;
+      isPrime(pair._1 + pair._2))</code></pre>
+
+	<p>This works, but makes most people's head hurt.</p>
+
+	<p>Is there a simpler way?</p>
+
+
+
+	<h1 id="for-expressions">For-Expressions</h1>
+
+	<p>Higher-order functions such as <code>map</code>, <code>flatMap</code> or <code>filter</code> provide powerful constructs for manipulating lists.</p>
+
+	<p>But sometimes the level of abstraction required by these function make the program difficult to understand.</p>
+
+	<p>In this case, Scala's <code>for</code> expression notation can help.</p>
+
+
+
+	<h1 id="for-expression-example">For-Expression Example</h1>
+
+	<p>Let <code>persons</code> be a list of elements of class <code>Person</code>, with fields <code>name</code> and <code>age</code>. </p>
+
+	<pre><code>  case class Person(name: String, age: Int)</code></pre>
+
+	<p>To obtain the names of persons over 20 years old, you can write: </p>
+
+	<pre><code>  for ( p &lt;- persons if p.age &gt; 20 ) yield p.name</code></pre>
+
+	<p>which is equivalent to:</p>
+
+	<pre><code>  persons filter (p =&gt; p.age &gt; 20) map (p =&gt; p.name)</code></pre>
+
+	<p>The for-expression is similar to loops in imperative languages, except <br>
+	that it builds a list of the results of all iterations.</p>
+
+
+
+	<h1 id="syntax-of-for">Syntax of For</h1>
+
+	<p>A for-expression is of the form</p>
+
+	<pre><code>  for ( s ) yield e</code></pre>
+	
+
+	<p>where <code>s</code> is a sequence of <i>generators</i> and <i>filters</i>, <br>
+	and <code>e</code> is an expression whose value is returned by an iteration. </p>
+
+	<ul>
+	<li>A <i>generator</i> is of the form <code>p &lt;- e</code>,  <br>
+	where <code>p</code> is a pattern and <code>e</code> an expression whose value is a collection. </li>
+	<li>A <i>filter</i> is of the form <code>if f</code> where <code>f</code> is a boolean expression.</li>
+	<li>The sequence must start with a generator.</li>
+	<li>If there are several generators in the sequence, the last generators vary faster than the first.</li>
+	</ul>
+
+	<p>Instead of <code>( s )</code>, braces <code>{ s }</code> can also be used, and then the <br>
+	sequence of generators and filters can be written on multiple lines <br>
+	without requiring semicolons.</p>
+
+
+
+	<h1 id="use-of-for">Use of For</h1>
+
+	<p>Here are two examples which were previously solved with higher-order functions:</p>
+
+	<p>Given a positive integer <code>n</code>, find all the pairs of positive integers <br>
+	<code>(i, j)</code> such that <code>1 &lt;= j &lt; i &lt; n</code>, and <code>i + j</code> is prime.</p>
+
+	<pre><code>   for {
+      i &lt;- 1 until n
+      j &lt;- 1 until i
+      if isPrime(i + j)
+   } yield (i, j)</code></pre>
+     
+    <h1 id="exercise">Exercise</h1>
+
+	<p>Write a version of <code>scalarProduct</code> (see last session) that makes use of <br>
+	a <code>for</code>:</p>
+
+	<pre><code>  def scalarProduct(xs: List[Double], ys: List[Double]) : Double =</code></pre>
+    
+	
+	<h1>Combinatorial Search Example </h1>
+    <p>In the following we are going to see <code>Sets</code> which are another fundamental collection type.</p>
+    <p>We then combine <code>Sets</code> and <code>For Expressions</code> in a classical combinatorial search problem, namely the <i>N-Queens problem</i>. </p>
+
+
+	<h1 id="sets">Sets</h1>
+
+	<p>Sets are another basic abstraction in the Scala collections.</p>
+	
+	<p>So far, all the collections we have seen were sequences. But there are also two other two other fundamental class of collections: <code>Sets</code>and <code>Maps</code></p>
+  <!--  <image src="../unit13/collectionHierarchy.png">-->
+	<p>A set is written analogously to a sequence:</p>
+
+	<pre><code>  val fruit = Set("apple", "banana", "pear")
+      //> fruit  : scala.collection.immutable.Set[String] = Set(apple, banana, pear)
+  val s = (1 to 6).toSet
+      //> s  : scala.collection.immutable.Set[Int] = Set(5, 1, 6, 2, 3, 4)</code></pre>
+
+	<p>Most operations on sequences are also available on sets:</p>
+
+	<pre><code>  s map (_ + 2)
+      //> res1: scala.collection.immutable.Set[Int] = Set(5, 6, 7, 3, 8, 4)
+  fruit filter (_.startsWith("app"))              
+      //> res2: scala.collection.immutable.Set[String] = Set(apple)
+  s.nonEmpty
+      //> res3: Boolean = true</code></pre>
+
+	<p>(see <code>Iterable</code>s Scaladoc for a list of all supported operations)</p>
+
+
+
+	<h1 id="sets-vs-sequences">Sets vs Sequences</h1>
+
+	<p>The principal differences between sets and sequences are:</p>
+
+	<p><script type="math/tex" id="MathJax-Element-6">1.</script> Sets are unordered; the elements of a set do not have a predefined order in which they appear in the set</p>
+
+	<p><script type="math/tex" id="MathJax-Element-7">2.</script> sets do not have duplicate elements:</p>
+
+	<pre><code>  s map (_ / 2)      // Set(2, 0, 3, 1)</code></pre>
+
+	<p><script type="math/tex" id="MathJax-Element-8">3.</script> The fundamental operation on sets is <code>contains</code>:</p>
+
+	<pre><code>  s contains 5       // true</code></pre>
+
+
+
+	<h1 id="example-n-queens">Example: N-Queens</h1>
+
+	<p>The eight queens problem is to place eight queens on a chessboard so that no queen is threatened by another.</p>
+	<p><image src="nQueens.gif"></p>
+
+	<p><i>In other words, there can’t be two queens in the same row, column, or diagonal.</i></p>
+
+	<p>We now develop a solution for a chessboard of any size, not just 8.</p>
+
+	<p>One way to solve the problem is to place a queen on each row. </p>
+
+	<p>Once we have placed <code>k - 1</code> queens, one must place the <code>k</code>th queen in a column where it’s not “in check” with any other queen on the board.</p>
+
+
+
+	<h1 id="algorithm">Algorithm</h1>
+
+	<p>We can solve this problem with a recursive algorithm:</p>
+
+	<ul>
+	<li>Suppose that we have already generated all the solutions consisting of placing <code>k-1</code> queens on a board of size <code>n</code>.</li>
+	<li>Each solution is represented by a list (of length <code>k-1</code>) containing the numbers of columns (between <code>0</code> and <code>n-1</code>).</li>
+	<li>The column number of the queen in the <code>k-1</code>th row comes first in the list, followed by the column number of the queen in row <code>k-2</code>, etc. </li>
+	<li>The solution set is thus represented as a set of lists, with one element for each solution. </li>
+	<li>Now, to place the <code>k</code>th queen, we generate all possible extensions of each solution preceded by a new queen:</li>
+	</ul>
+
+
+
+	<h1 id="implementation">Implementation</h1>
+
+	<pre><code>  def queens(n: Int) = {
+   def placeQueens(k: Int): Set[List[Int]] = {
+      if (k == 0) Set(List())
+      else
+         for {
+            queens &lt;- placeQueens(k - 1)
+            col &lt;- 0 until n
+            if isSafe(col, queens)
+         } yield col :: queens
+      }
+      placeQueens(n)
+   }</code></pre>
+   
+   <h1 id="exercise">Exercise</h1>
+
+    <p>Write a function</p>
+
+    <pre><code>   def isSafe(col: Int, queens: List[Int]): Boolean</code></pre>
+
+    <p>which tests if a queen placed in an indicated column <code>col</code> is secure amongst the other placed queens. </p>
+
+    <p>It is assumed that the new queen is placed in the next availabale row after the other placed queens (in other words: in row <code>queens.length</code>).</p>
+    <p><b>Steps: </b></p>
+    <ul>
+       <li>We first need to decode the column and row numbers</br>
+        => transform the list of column numbers to list of tuples representing row and column numbers </li>
+       <li>make sure that for all the queens in the <code>queens</code> list, the new queen given by <code>col</code> is not in check:</li>
+        <ul>
+       		<li>not in the same column</li>
+       		<li>not in diagonal</li>
+       </ul>
+    </ul>
+
+
+	<h1 id="queries-with-for">Queries with <code>for</code></h1>
+
+	<p>The for notation is essentially equivalent to the common operations of <br>
+	query languages for databases.</p>
+
+	<p>Example: Suppose that we have a database <code>books</code>, represented as a list of books. </p>
+
+	<pre><code>  case class Book(title: String, authors: List[String])</code></pre>
+
+
+
+	<h1 id="a-mini-database">A Mini-Database</h1>
+
+	<pre><code>  val books: List[Book] = List(
+    Book(title   = "Structure and Interpretation of Computer Programs",
+	 authors = List("Abelson, Harald", "Sussman, Gerald J.")),
+    Book(title   = "Introduction to Functional Programming",
+	 authors = List("Bird, Richard", "Wadler, Phil")),
+    Book(title   = "Effective Java",
+	 authors = List("Bloch, Joshua")),
+    Book(title   = "Java Puzzlers",
+	 authors = List("Bloch, Joshua", "Gafter, Neal")),
+    Book(title   = "Programming in Scala",
+	 authors = List("Odersky, Martin", "Spoon, Lex", "Venners, Bill")))</code></pre>
+
+
+
+	<h1 id="some-queries">Some Queries</h1>
+
+	<p>To find the titles of books whose author’s name is “Bird”:</p>
+
+	<pre><code>  for (b &lt;- books; a &lt;- b.authors if a startsWith "Bird,")
+  yield b.title</code></pre>
+
+	<p>To find all the books which have the word “Program” in the title:</p>
+
+	<pre><code>  for (b &lt;- books if b.title indexOf "Program" &gt;= 0)
+  yield b.title</code></pre>
+
+
+
+	<h1 id="another-query">Another Query</h1>
+
+	<p>To find the names of all authors who have written at least two books present in the database.</p>
+
+	<pre><code>  for {
+    b1 &lt;- books
+    b2 &lt;- books
+    if b1 != b2
+    a1 &lt;- b1.authors
+    a2 &lt;- b2.authors
+    if a1 == a2
+  } yield a1</code></pre>
+
+	<br>
+	Why do solutions show up twice?</p>
+
+	<p>How can we avoid this?</p>
+
+
+
+	<h1 id="modified-query">Modified Query</h1>
+
+	<p>To find the names of all authors who have written at least two books present in the database.</p>
+
+	<pre><code>  for {
+    b1 &lt;- books
+    b2 &lt;- books
+    if b1.title &lt; b2.title 
+    a1 &lt;- b1.authors
+    a2 &lt;- b2.authors
+    if a1 == a2
+  } yield a1</code></pre>
+
+
+
+	<h1 id="problem">Problem</h1>
+
+	<p>What happens if an author has published three books?</p>
+
+   <ol class='clicker'>
+      <li>The author is printed once</li> 
+      <li>The author is printed twice</li> 
+      <li>The author is printed three times</li> 
+      <li>The author is not printed at all</li> 
+    </ol>
+
+
+
+
+<!--
+	<h1 id="modified-query-2">Modified Query (2)</h1>
+
+	<p>Solution: We must remove duplicate authors who are in the results list twice.</p>
+
+	<p>This is achieved using the <code>distinct</code> method on sequences:</p>
+
+	<pre><code>  { for {
+		  b1 &lt;- books
+		  b2 &lt;- books
+		  if b1.title &lt; b2.title 
+		  a1 &lt;- b1.authors
+		  a2 &lt;- b2.authors
+		  if a1 == a2
+		} yield a1
+	  }.distinct
+	</code></pre>
+
+
+
+	<h1 id="modified-query-1">Modified Query</h1>
+
+	<p>Better alternative: Compute with sets instead of sequences:</p>
+
+	<pre><code>  val bookSet = books.toSet
+	  for {
+		b1 &lt;- bookSet
+		b2 &lt;- bookSet
+		if b1 != b2
+		a1 &lt;- b1.authors
+		a2 &lt;- b2.authors
+		if a1 == a2
+	  } yield a1
+	</code></pre>
+--!>	
+
+
+	<h1 id="for-expressions-and-higher-order-functions">For-Expressions and Higher-Order Functions</h1>
+
+	<p>The syntax of <code>for</code> is closely related to the higher-order functions <code>map</code>, <code>flatMap</code> and <code>filter</code>.</p>
+
+	<p>First of all, these functions can all be defined in terms of <code>for</code>:</p>
+
+	<pre><code>  def mapFun[T, U](xs: List[T], f: T =&gt; U): List[U] = 
+    for (x &lt;- xs) yield f(x)
+
+  def flatMap[T, U](xs: List[T], f: T =&gt; Iterable[U]): List[U] = 
+    for (x &lt;- xs; y &lt;- f(x)) yield y
+
+  def filter[T](xs: List[T], p: T =&gt; Boolean): List[T] = 
+    for (x &lt;- xs if p(x)) yield x</code></pre>
+
+
+
+	<h1 id="translation-of-for-1">Translation of For (1)</h1>
+
+	<p>In reality, the Scala compiler expresses for-expressions in terms of <code>map</code>, <code>flatMap</code> and a lazy variant of <code>filter</code>.</p>
+
+	<p>Here is the translation scheme used by the compiler (we limit ourselves here to simple variables in generators)</p>
+
+	<p><script type="math/tex" id="MathJax-Element-9">1.</script> A simple for-expression</p>
+
+	<pre><code>  for (x &lt;- e1) yield e2</code></pre>
+
+	<p>is translated to</p>
+
+	<pre><code>  e1.map(x =&gt; e2)</code></pre>
+
+
+
+	<h1 id="translation-of-for-2">Translation of For (2)</h1>
+
+	<p><script type="math/tex" id="MathJax-Element-10">2.</script> A for-expression</p>
+
+	<pre><code>  for (x &lt;- e1 if f; s) yield e2</code></pre>
+
+	<p>where <code>f</code> is a filter and <code>s</code> is a (potentially empty) sequence of generators and filters, is translated to</p>
+
+	<pre><code>  for (x &lt;- e1.withFilter(x =&gt; f); s) yield e2</code></pre>
+
+	<p>(and the translation continues with the new expression)</p>
+
+	<p>You can think of <code>withFilter</code> as a variant of <code>filter</code> that does not <br>
+	produce an intermediate list, but instead filters the following <code>map</code> or <code>flatMap</code> function application.</p>
+
+
+
+	<h1 id="translation-of-for-3">Translation of For (3)</h1>
+
+	<p><script type="math/tex" id="MathJax-Element-11">3.</script> A for-expression</p>
+
+	<pre><code>  for (x &lt;- e1; y &lt;- e2; s) yield e3</code></pre>
+
+	<p>where <code>s</code> is a (potentially empty) sequence of generators and filters, is translated into</p>
+
+	<pre><code>  e1.flatMap(x =&gt; for (y &lt;- e2; s) yield e3)</code></pre>
+
+	<p>(and the translation continues with the new expression)</p>
+
+
+
+	<h1 id="example">Example</h1>
+
+	<p>Take the for-expression that computed pairs whose sum is prime:</p>
+
+	<pre><code>   for {
+     i &lt;- 1 until n
+     j &lt;- 1 until i
+     if isPrime(i + j)
+   } yield (i, j)</code></pre>
+
+	<p>Applying the translation scheme to this expression gives:</p>
+
+	<pre><code>   (1 until n).flatMap(i =&gt; 
+     (1 until i).withFilter(j =&gt; isPrime(i+j))
+       .map(j =&gt; (i, j)))</code></pre>
+
+	<p>This is almost exactly the expression which we came up with first!</p>
+
+
+
+	<h1 id="exercise">Exercise</h1>
+
+	<p>Translate</p>
+
+	<pre><code>  for (b &lt;- books; a &lt;- b.authors if a startsWith "Bird") 
+  yield b.title</code></pre>
+
+	<p>into higher-order functions.</p>
+
+	
+	<h1 id="generalization-of-for">Generalization of <code>for</code></h1>
+
+	<p>Interestingly, the translation of for is not limited to lists or <br>
+	sequences, or even collections; </p>
+
+	<p>It is based solely on the presence of <br>
+	the methods <code>map</code>, <code>flatMap</code> and <code>withFilter</code>.</p>
+
+	<p>This lets you use the for syntax for your own types as well – you must only define <code>map</code>, <code>flatMap</code> and <code>withFilter</code> for these types.</p>
+
+	<p>There are many types for which this is useful: arrays, iterators, databases, XML data, optional values, parsers, etc.</p>
+
+
+
+	<h1 id="for-and-databases">For and Databases</h1>
+
+	<p>For example, <code>books</code> might not be a  list, but a database stored on some server.</p>
+
+	<p>As long as the client interface to the database defines the methods <code>map</code>, <code>flatMap</code> and <code>withFilter</code>, we can use the <code>for</code> syntax for querying the database.</p>
+
+	<p>This is the basis of the Scala data base connection frameworks <br>
+	ScalaQuery and Slick.</p>
+
+	<p>Similar ideas underly Microsoft’s LINQ.</p>
+
+	<h1 id="map">Map</h1>
+
+	<p>Another fundamental collection type is the <code>map</code>.</p>
+
+	<p>A map of type <code>Map[Key, Value]</code> is a data structure <br>
+	that associates keys of type <code>Key</code> with values of type <code>Value</code>.</p>
+
+	<p>Examples:</p>
+
+	<pre><code>  val romanNumerals = Map("I" -&gt; 1, "V" -&gt; 5, "X" -&gt; 10)
+  val capitalOfCountry = Map("US" -&gt; "Washington", "Switzerland" -&gt; "Bern")</code></pre>
+
+
+
+	<h1 id="maps-are-iterables">Maps are Iterables</h1>
+
+	<p>Class <code>Map[Key, Value]</code> extends the collection type <br>
+	<code>Iterable[(Key, Value)]</code>.</p>
+
+	<p>Therefore, maps support the same collection operations as other iterables do. </p>
+	<b><p>Example:</p></b>
+
+	<pre><code>  val countryOfCapital = capitalOfCountry map {
+    case(x, y) =&gt; (y, x)
+  }                      // Map("Washington" -&gt; "US", "Bern" -&gt; "Switzerland")</code></pre>
+
+	<p>Note that maps extend iterables of key/value <em>pairs</em>.</p>
+
+	<p>In fact, the syntax <code>key -&gt; value</code> is just an alternative way to write the pair <code>(key, value)</code>.</p>
+
+
+
+	<h1 id="maps-are-functions">Maps are Functions</h1>
+
+	<p>Class <code>Map[Key, Value]</code> also extends the function type <code>Key =&gt; Value</code>, so maps can be used everywhere functions can.</p>
+
+	<p>In particular, maps can be applied to key arguments:</p>
+
+	<pre><code>  capitalOfCountry("US")         // "Washington"</code></pre>
+
+
+
+	<h1 id="querying-map">Querying Map</h1>
+
+	<p>Applying a map to a non-existing key gives an error:</p>
+
+	<pre><code>  capitalOfCountry("Andorra")
+    // java.util.NoSuchElementException: key not found: Andorra</code></pre>
+
+	<p>To query a map without knowing beforehand whether it contains a given key, you can use the <code>get</code> operation:</p>
+
+	<pre><code>  capitalOfCountry get "US"      // Some("Washington")
+  capitalOfCountry get "Andorra" // None</code></pre>
+
+	<p>The result of a <code>get</code> operation is an <code>Option</code> value.</p>
+
+
+
+	<h1 id="the-option-type">The <code>Option</code> Type</h1>
+
+	<p>The <code>Option</code> type is defined as:</p>
+
+	<pre><code>  trait Option[+A]
+  case class Some[+A](value: A) extends Option[A]
+  object None extends Option[Nothing]</code></pre>
+
+	<p>The expression <code>map get key</code> returns</p>
+
+	<ul>
+	<li><code>None: </code>if <code>map</code> does not contain the given <code>key</code>,</li>
+	<li><code>Some(x): </code>if <code>map</code> associates the given <code>key</code> with the value <code>x</code>.</li>
+	</ul>
+
+
+
+	<h1 id="decomposing-option">Decomposing Option</h1>
+
+	<p>Since options are defined as case classes, they can be decomposed <br>
+	using pattern matching:</p>
+
+	<pre><code>  def showCapital(country: String) = capitalOfCountry.get(country) match {
+    case Some(capital) =&gt; capital
+    case None =&gt; "missing data"
+  }
+
+  showCapital("US")      // "Washington"
+  showCapital("Andorra") // "missing data"</code></pre>
+
+	<p>Options also support quite a few operations of the other collections, in particular, map, flatMap and filter, so you can run For Expressions on them!</p>
+
+	  
+    <h1 id="querying-map">Alternative Ways of Querying Map</h1>
+
+	<p>There is an alternative way to tackle with the missing key exception when querying a Map</p>
+	<p>If we do not wish to use pattern matching on the Option result of the <code>get</code> methode, we can use the <code>getOrElse</code> methode.</p>
+	<p>So we can specify the returned value if the key is missing</p>
+	
+
+	<pre><code>capitalOfCountry getOrElse("Andorra", "&ltunknown&gt;")//> res1: String = "&ltunknown&gt;"
+capitalOfCountry getOrElse("US", "&ltunknown&gt;")     //> res2: String = Washington</code></pre>
+
+	<!--<p>The result type of <code>getOrElse</code> is the upper bound of the Map value and the default value.</p>-->
+	<p>Another possibility is to use the operation <code>withDefaultValue</code> that turns a map into a <br>
+	total function:</p>
+
+	<pre><code>  val cap1 = capitalOfCountry withDefaultValue "&lt;unknown&gt;"
+  cap1("Andorra")             // "&lt;unknown&gt;"</code></pre>
+    <p>You can take look at different operations in class Map <a href= "http://docs.scala-lang.org/overviews/collections/maps.html">here</a >.
+
+	<h1 id="sorted-and-groupby">Sorted and GroupBy</h1>
+
+	<p>Two useful operation of SQL queries in addition to for-expressions are <br>
+	<code>groupBy</code> and <code>orderBy</code>.</p>
+
+	<p><code>orderBy</code> on a collection can be expressed by <code>sortWith</code> and <code>sorted</code>.</p>
+
+	<pre><code>  val fruit = List("apple", "pear", "orange", "pineapple")
+  fruit sortWith (_.length &lt; _.length)  // List("pear", "apple", "orange", "pineapple")
+  fruit.sorted      // List("apple", "orange", "pear", "pineapple")</code></pre>
+
+	<p><code>groupBy</code> is available on Scala collections. It partitions a collection <br>
+	into a map of collections according to a <em>discriminator function</em> <code>f</code>.</p>
+
+	<p>Example:</p>
+
+	<pre><code>  fruit groupBy (_.head)  //&gt; Map(p -&gt; List(pear, pineapple),
+			  //|     a -&gt; List(apple),
+			  //|     o -&gt; List(orange))</code></pre>
+
+
+
+	<h1 id="map-example">Map Example</h1>
+
+	<p>A polynomial can be seen as a map from exponents to coefficients.</p>
+
+	<p>For instance, <script type="math/tex" id="MathJax-Element-12">x^3 - 2x + 5</script> can be represented with the map.</p>
+
+	<pre><code>  Map(0 -&gt; 5, 1 -&gt; -2, 3 -&gt; 1)</code></pre>
+
+	<p>Based on this observation, let’s design a class <code>Polynom</code> that represents polynomials as maps.</p>
+
+	<h1 id="final-implementation-of-polynom">Implementation of Polynom</h1>
+
+	<pre><code>class Poly(val terms0: Map[Int, Double]) {
+  val terms = terms0 withDefaultValue 0.0
+  
+  def + (other: Poly) : Poly = {
+    val newKeySet = terms.keySet ++ other.terms.keySet
+	val setOfTuples = for(x <- newKeySet) yield
+      ( x -> (terms(x) + other.terms(x)))
+	new Poly(setOfTuples.toMap)
+  } 
+}</code></pre>
+
+
+	<h1 id="variable-length-argument-lists">Variable Length Argument Lists</h1>
+
+	<p>It’s quite inconvenient to have to write</p>
+
+	<pre><code>  Polynom(Map(1 -&gt; 2.0, 3 -&gt; 4.0, 5 -&gt; 6.2))</code></pre>
+
+	<p>Can one do without the <code>Map(...)</code>?</p>
+
+	<p>Problem: The number of <code>key -&gt; value</code> pairs passed to <code>Map</code> can vary. <br>
+	<br>
+	We can accommodate this pattern using a <i>repeated parameter</i>:</p>
+
+	<pre><code>   def Polynom(bindings: (Int, Double)*) =
+     new Polynom(bindings.toMap withDefaultValue 0)
+   
+   Polynom(1 -&gt; 2.0, 3 -&gt; 4.0, 5 -&gt; 6.2)</code></pre>
+
+	<p>Inside the <code>Polynom</code> function, <code>bindings</code> is seen as a <br>
+	<code>Seq[(Int, Double)]</code>.</p>
+
+
+
+	<h1 id="final-implementation-of-polynom">Final Implementation of Polynom</h1>
+
+	<pre><code>class Poly(val terms0: Map[Int, Double]) {
+  def this(bindings: (Int, Double)*) = this(bindings.toMap)
+  val terms = terms0 withDefaultValue 0.0
+  
+  def + (other: Poly) : Poly = {
+    val newKeySet = terms.keySet ++ other.terms.keySet
+	val setOfTuples = for(x <- newKeySet) yield
+      ( x -> (terms(x) + other.terms(x)))
+	new Poly(setOfTuples.toMap)
+  } 
+  override def toString =
+  (for ((exp, coeff) &lt;- terms.toList.sorted.reverse)
+    yield coeff+"x^"+exp) mkString " + "
+}</code></pre>
+
+<!--
+	<h1>Lab</h1> 
+      <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+      <ul>
+        <li>You work with a buddy </li> 
+        <li>One of you (the coder) writes the code, the other (the scribe) types up answers</li> 
+        <li>When you get stuck, ask your buddy first!</li> 
+        <li>Switch coder/scribe roles each lab</li> 
+        <li>The coder submits the worksheet. Include the scribe's name in the worksheet!</li> 
+        <li>The scribe submits answers. Include the coder's name in the report!</li> 
+      </ul> -->
+      <h1>Last exercice for this unit!</h1> 
+      <p>Using for expressions write a function to find the numbers x,y,z below n such that <script type="math/tex" id="MathJax-Element-2">x^2 + y^2 == z^2</script></p>
+      
+      <!--<h1>For Expressions</h1> 
+      <ol class='la'>
+      	<li>Using for expressions write a function to find the numbers x,y,z below n such that <script type="math/tex" id="MathJax-Element-2">x^2 + y^2 == z^2</script></li>
+      </ol>-->
+      <h1>Homework</h1> 
+      <i><p>Will come soon during this week. We will inform you by email. </p></i>
+      <!--<p>Do this as <em>individual work</em>, not with your partner</p>
+      <p>When all done, email the signed zip files to Fatemeh.Borran@heig-vd.ch</p> --> 
+      
+    </body>
+  </html>
