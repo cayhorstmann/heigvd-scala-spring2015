@@ -312,7 +312,7 @@ val empty  = List()</code></pre>
 
 	<table>
     	<tr>  
-    		<td width="15%" valign="top"> <code>xs filterNot p</code></td>
+    		<td width="17%" valign="top"> <code>xs filterNot p</code></td>
     		<td>Same as <code>xs filter (x => !p(x))</code>; The list consisting of those elements of <code>xs</code> that do not satisfy the predicate <code>p</code></td>   	
     	</tr>
     	<tr>  
@@ -442,7 +442,7 @@ fibs.toList
 	implicitly be converted to sequences where needed.</p>
 
 	<p>(They cannot be subclasses of <code>Seq</code> because they come from Java)</p>
-     question on val
+
 	<pre><code>  val xs: Array[Int] = Array(1, 2, 3)
   xs map (x =&gt; 2 * x)
 
