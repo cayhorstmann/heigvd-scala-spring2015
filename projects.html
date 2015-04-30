@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala</title> 
+    <link href='styles.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+  </head> 
+  <body><h1>Programmation appliquée en Scala</h1>
+    <h2>Projects</h2>
+
+    <h3>Project Rules and Deliverables</h3>
+    <ul><li>Team size: 2 or 3 people</li>
+      <li>Provide code in version control system (Git/Bitbucket). Give clear build instructions. Actually use the version control system throughout the project and don't just post the code on the last day.</li>
+      <li>Each student is responsible for one part of the project </li>
+      <li>Each student writes a report (en français ou anglais) about their part. Describe what you did, and how you did it. What problems did you encounter? For which of them was Scala elegant? Which ones did you have to fight hard? Which ones were you unable to solve? What did you learn from the project?</li>
+      <li>Your team gives a presentation (en français ou anglais) about the project. Demonstrate the software. Explain the architecture. Summarize the challenges. Point out where Scala was particularly helpful. And where it wasn't. </li>
+    </ul>
+    <h3>Project Ideas</h3>
+
+    <dl><dt>Using Scala XML to transcode HTML Slidy to OOXML PowerPoint</dt>
+      <dd>The slides for this course were written in <a href='http://www.w3.org/Talks/Tools/Slidy2'>HTML Slidy</a>. Sometimes, people want to improve them in PowerPoint. With <a href='http://officeopenxml.com/'>OOXML</a>, PowerPoint is now an XML format. Write a converter that handles simple slides with bullets, slides with code (traditionally painful in PowerPoint), titles, styles for bold/italic/code, left and centered images, and whatever else you can think of.</dd>
+      <dt>An app for in-class quizzes with Play and ScalaJS</dt>
+      <dd>Make an app for those “clicker” quizzes that is actually useful. An instructor gives a question code to students. While the quiz is in progress, show a count of how many students answered on the professor's screen. When the professor closes the quiz, display a histogram with the answer counts. Make it so that students can't vote multiple times, and that the professor can see who participated and who didn't. Can you get the JavaScript client to work on a mobile device?</dd>
+      <dt>A reactive Play app</dt>
+      <dd>Make a complete Play app that does something useful and nontrivial. Your app should take advantage of forms, validation, database persistence (preferably with something better than Anorm), and so on. Make it “reactive”—that is, show off how long-running server tasks can be easily handled. For example, you could write a prettier CodeCheck that runs Scala unit tests and notifies the user when each case passes or fails, instead of pausing for a long time until the report is finally ready.</dd>
+      <dt>An Android app</dt>
+      <dd>Research what people have done to program Android with Scala, pick a solution, and create an Android app of your choice.</dd>
+    </dl>
+  </body>
+</html>
