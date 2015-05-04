@@ -185,7 +185,7 @@ object ScalaJSExample   {
   }
 }</pre>In <code>resources/index-dev.html</code>, change the <code>div</code> containing the canvas into
       <pre>&lt;div id='div'&gt;&lt;/div&gt;
-</pre> and in the call to <code>getDocumentId</code>, change <code>canvas</code> to <code>div</code>. Reload the page. What happens? </li>
+</pre> and in the call to <code>getElementById</code>, change <code>canvas</code> to <code>div</code>. Reload the page. What happens? </li>
       <li>For generating dynamic HTML, we can use the wrapper over the DOM library. Try this in the body of <code>main</code>:
       <pre>    import dom.document
     val items = List("Hello", "World")
@@ -277,7 +277,12 @@ object Api extends Controller {
         }
     }
     updateTasks()
-  </pre></li>
+  </pre>
+        Add this to the top of the Scala file:
+        <pre>import dom.ext._
+import scalajs.js.JSON
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow</pre>
+      </li>
       <li>Now refresh the browser window that pointed to the client page. What happens? (Look into the console for any error messages.)</li>
       <li>That's a problem—for security reasons, cross-site AJAX is disabled by default. It's because we don't yet know how to combine a Play and a ScalaJS project. Here is a remedy: <br/>Start Chrome/Chromium from the command line with the flag <code>--disable-web-security</code>. Point it to http://localhost:12345/target/scala-2.11/classes/index-dev.html. What happens now?</li>
     </ol>
