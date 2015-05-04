@@ -202,7 +202,7 @@ object ScalaJSExample   {
     <ol class='la'><li>Oh yes—that's why we detest the DOM library. So let's use JQuery. In <code>resources/index-dev.html</code>, add
       <pre>&lt;script type="text/javascript" src="http://cdn.jsdelivr.net/jquery/2.1.3/jquery.js"&gt;&lt;/script&gt;</pre> inside the <code>head</code> element. In <code>workbench-example-app/build.sbt</code> (<em>not</em> the <code>project/build.sbt</code> file!), add
       <pre>, "be.doeraene" %%% "scalajs-jquery" % "0.8.0"</pre> to the <code>Seq</code> of library dependencies. Then
-      <ul><li>Add this <code>import</code> to the top of <code>ScalaJSExample.java</code>:
+      <ul><li>Add this <code>import</code> to the top of <code>ScalaJSExample.scala</code>:
           <pre>import org.scalajs.jquery._
 </pre> You should get an error message about an unknown import.</li>
         <li>Close the project in the Scala IDE</li>
