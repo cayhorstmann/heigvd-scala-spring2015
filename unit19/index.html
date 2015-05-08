@@ -18,21 +18,22 @@
     </div> 
 
 <h1 id="data-parallel-programming">Distributed Data-Parallel Programming with Spark</h1>
-<p> <i>The content of this unit is adapted from the slides of the course "Parallel Programming and Data Analysis" by Heather Miller at EPFL.</i></p>
+<p> <i>Note: The content of this unit is adapted from the slides of the course "Parallel Programming and Data Analysis" <br>
+by Heather Miller at EPFL.</i></p>
 
 <p>So far we have seen: </p>
 
 <ul>
-<li>Principles of programming in Scala in a non-parallel and non-distributed style.</li>
-<li>A number of useful tools in the Scala and technology stack.</li>
+<li>Principles of programming in Scala in sequential and non-distributed style.</li>
+<li>A number of useful tools and technologies based on Scala.</li>
 </ul>
 Scala also offers parallel programming via "parallel collections", allowing to use collections 
 in a very similar way that we have learned so far but taking advantage of data parallelism, hence 
-better exploiting multi-core/multi-processo   
-We are not covering this in the current course.   
+better exploiting multi-core/multi-processor architecture.   
+<br>Although this aspect will not be treated in the current course.  
 
 
-<p>Today:</p>
+<p>What we'll see in this course:</p>
 
 <ul>
 <li>Data parallelism in a <em>distributed setting</em>.</li>
@@ -104,30 +105,36 @@ Matei Zaharia. O’Reilly, February 2015.</p>
 <h1 id="resilient-distributed-datasets-rdds">Resilient Distributed Datasets (RDDs)</h1>
 
 <p>RDDs look just like <strong><em>immutable</em></strong> sequential or parallel Scala collections.</p>
-<p> put the table </p>
-<p><script type="math/tex; mode=display" id="MathJax-Element-7">\begin{columns}[T] % contents are top vertically aligned
-\begin{column}[T]{0.48\linewidth}
-  \vspace{0.5cm}
-  {\bf\centering Combinators on Scala parallel/sequential collections:}
-  \newline\texttt{map}
-  \newline\texttt{flatMap}
-  \newline\texttt{filter}
-  \newline\texttt{reduce}
-  \newline\texttt{fold}
-  \newline\texttt{aggregate}
-\end{column}
-\begin{column}[T]{0.48\linewidth}
-  \vspace{0.5cm}
-  {\bf\centering Combinators on RDDs:}
-  \newline\newline\texttt{map}
-  \newline\texttt{flatMap}
-  \newline\texttt{filter}
-  \newline\texttt{reduce}
-  \newline\texttt{fold}
-  \newline\texttt{aggregate}
-\end{column}
-\end{columns}</script></p>
-
+<table>
+<tr>
+  <td width="10%"><b>Combinators on Scala <br>parallel/sequential collections:</b></td>
+  <td width="20%"><b>Combinators on RDDs:</b></td>
+</tr>
+<tr>
+  <td>map</td>
+  <td>map</td>
+</tr>
+<tr>
+  <td>flatMap</td>
+  <td>flatMap</td>
+</tr>
+<tr>
+  <td>filter</td>
+  <td>filter</td>
+</tr>
+<tr>
+  <td>reduce</td>
+  <td>reduce</td>
+</tr>
+<tr>
+  <td>fold</td>
+  <td>fold</td>
+</tr>
+<tr>
+  <td>aggregate</td>
+  <td>aggregate</td>
+</tr>
+</table>
 
 
 <h1 id="resilient-distributed-datasets-rdds-1">Resilient Distributed Datasets (RDDs)</h1>
@@ -232,69 +239,41 @@ val count = rdd.flatMap(line =&gt; line.split(" ")) // separate lines into words
 <p>That’s it.</p>
 
 
-<!--
+
 <h1 id="transformations-and-actions">Transformations and Actions</h1>
 
-<p>Collection methodes that you have already seen the Scala standard library <br>are divided into two major groupes:</p>
-<p><b>Transformers.</b>  Return new collections as results. (Not single values.) <br>
-<b>Examples:<code>map, filter, flatMap, groupBy</code><br>
-<script type="math/tex; mode=display" id="MathJax-Element-8">\begin{minted}{scala}
-map(f: A => B): Traversable[B]
-\end{minted}</script> <br>
-\vspace{0.3cm}</p>
+<p>Collection methodes that you have already seen in the Scala standard library <br>are divided into two major groupes:</p>
+<p><b>Transformers: </b>  Return new collections as results. (Not single values.) </p>
+<p><b>Examples:</b> <code>map, filter, flatMap, groupBy</code><br> </p>
+<code><pre>map(f: A => B): Traversable[B] </code></pre>
 
 
-<p><b>Accessors:</b> Return single values as results. (Not collections.) <br>
-<b>Examples:</b> <code>reduce, fold, aggregate</code><br>
-<script type="math/tex; mode=display" id="MathJax-Element-9">\begin{minted}{scala}
-reduce(op: (A, A) => A): A
-\end{minted}</script></p>
+<p><b>Accessors:</b> Return single values as results. (Not collections.) <br></p>
+<p><b>Examples:</b> <code>reduce, fold, aggregate</code><br></p>
+<code><pre>reduce(op: (A, A) => A): A</pre></code>
 
--->
+
 
 <h1 id="transformations-and-actions-1">Transformations and Actions</h1>
 
-<p>Similarly, Spark defines  <em><strong>transformations</strong></em> and <em><strong>actions</strong></em> on RDDs.</p>
+<p>Similarly, Spark defines <em><strong>transformations</strong></em> and <em><strong>actions</strong></em> on RDDs.</p>
 
 <p>They seem similar to transformers and accessors, but there are some <br>
 important differences.</p>
 
 
-<b>Transformations.</b> Return new <b>RDDs</b> as results. <br>
+<p><b>Transformations.</b> Return new <b>RDDs</b> as results. <br></p>
 
-<b>Actions.</b> Compute a result based on an RDD, and either <br>
-returned or saved to an external storage system (e.g., HDFS). <br>
+<p><b>Actions.</b> Compute a result based on an RDD, and either <br>
+returned or saved to an external storage system (e.g., HDFS). <br></p>
 
-
-
-<h1 id="transformations-and-actions-2">Transformations and Actions</h1>
-
-<p>Similarly, Spark defines <em><strong>transformations</strong></em> and <em><strong>actions</strong></em> on RDDs.</p>
-
-<p>\textcolor{gray}{They seem similar to \st{transformers} and \st{accessors}, but there are some <br>
-important differences.}</p>
-
-<p>\vspace{0.3cm} <br>
-\textbf{\color{darkred}Transformations.} Return new \st{collections} RDDs as results. <br>
-\vspace{0.1cm} <br>
-\newline\textbf{They are \textcolor{blue}{lazy}, their result RDD is not immediately computed.}</p>
-
-
- CHANGED UP TO HERE
-<p>\vspace{0.3cm} <br>
-\textbf{\color{darkred}Actions.} Compute a result based on an RDD, and either <br>
-returned or saved to an external storage system (e.g., HDFS). <br>
-\vspace{0.1cm} <br>
-\newline\textbf{They are \textcolor{blue}{eager}, their result is immediately computed.}</p>
-
-
-
+<h1 id="transformations-and-actions-1">Transformations and Actions</h1>
+<p>Transformations are <i>lazy</i>, their result RDD is not immediately computed.</p>
+<p>They are <i>eager</i>, their result is immediately computed.</p>
 <p>\vspace{0.3cm} <br>
 \includegraphics[scale=0.6]{images/week19-10.eps}</p>
 
-
-
-<h1 id="example">Example</h1>
+<h1 id="exercise">Quiz</h1>
 
 <p>Consider the following simple example:</p>
 
@@ -305,13 +284,12 @@ val lengthsRdd = wordsRdd.map(_.length)
 
 <p>What has happened on the cluster at this point?</p>
 
-<p>-&gt;</p>
-
-<p>\vspace{0.5cm}</p>
-
-<p><strong>Nothing.</strong> Execution of <code>map</code> (a transformation) is deferred.</p>
-
-<p>To kick off the computation and wait for its result…</p>
+	<ol class='clicker'>
+      <li>The lengths of the strings in the RDD are calculated on the worker nodes</li> 
+      <li>The lengths of the strings in the RDD are calculated on the worker nodes and returned to the master node</li> 
+      <li>The sum of the lengths of the strings in the RDD is calculated by the master node </li> 
+      <li>Nothing</li> 
+    </ol>
 
 
 
@@ -325,9 +303,7 @@ val lengthsRdd = wordsRdd.map(_.length)
 val totalChars = lengthsRdd.reduce(_ + _)
 </code></pre>
 
-<p>\vspace{0.5cm}</p>
-
-<p><strong>…we can add an action</strong></p>
+<p><strong>... we can add an action!</strong></p>
 
 
 
@@ -335,15 +311,14 @@ val totalChars = lengthsRdd.reduce(_ + _)
 
 <p><strong>If you perform an action on an RDD, on what machine is its result “returned” to?</strong></p>
 
-<p>\vspace{0.5cm} <br>
-\textbf{\textcolor{darkred}{Example}}</p>
+<p>
+<b>Example:</b></p>
 
 <pre><code>val people: RDD[Person] = ...
 val first10 = people.take(10)
 </code></pre>
 
 <p>Where will the <code>Array[Person]</code> representing <code>first10</code> end up?</p>
-
 
 
 <h1 id="execution-of-spark-programs">Execution of Spark Programs</h1>
@@ -370,8 +345,7 @@ coordinated by the <em><strong>driver program</strong></em>.</p>
 
 <p><strong>If you perform an action on an RDD, on what machine is its result “returned” to?</strong></p>
 
-<p>\vspace{0.5cm} <br>
-\textbf{\textcolor{darkred}{Example}}</p>
+<p><b>Example</b></p>
 
 <pre><code>val people: RDD[Person] = ...
 val first10 = people.take(10)
@@ -379,13 +353,11 @@ val first10 = people.take(10)
 
 <p>Where will the <code>Array[Person]</code> representing <code>first10</code> end up?</p>
 
-<p>-&gt; <br>
-\vspace{0.5cm}</p>
 
 <p><strong>The driver program.</strong></p>
 
-<p>\textit{\textcolor{gray}{In general, executing an action involves communication between worker nodes <br>
-and the node running the driver program.}}</p>
+<p><i>In general, executing an action involves communication between worker nodes <br>
+and the node running the driver program.</i></p>
 
 
 
@@ -395,15 +367,13 @@ and the node running the driver program.}}</p>
 
 <p>This helps when processing large amounts of data.</p>
 
-<p>\textbf{\textcolor{darkred}{Example:}}</p>
+<p><b>Example:</b></p>
 
 <pre><code>val lastYearsLogs: RDD[String] = ...
 val firstLogsWithErrors = lastYearsLogs.filter(_.contains("ERROR")).take(10)
 </code></pre>
 
-<!-- In the above example, lazy execution of `filter` makes a big difference. -->
-
-<p>\footnotesize</p>
+<p><i>In the above example, lazy execution of `filter` makes a big difference.</i></p>
 
 <p>The execution of <code>filter</code> is deferred until the <code>take</code> action is applied.</p>
 
@@ -420,16 +390,13 @@ be expensive (in time) if you need to traverse a dataset more than once.</p>
 
 
 
-<p><script type="math/tex; mode=display" id="MathJax-Element-10">\begin{center}
-\textbf{\textcolor{darkred}{Spark allows you to control what is cached in memory.}}
-\end{center}</script></p>
+<p><b>Spark allows you to control what is cached in memory.</b></p>
 
-<p>-&gt; <br>
-<script type="math/tex; mode=display" id="MathJax-Element-11">\begin{minted}{scala}
+<p><code><pre>
 val lastYearsLogs: RDD[String] = ...
 val logsWithErrors = lastYearsLogs.filter(_.contains("ERROR")).persist()
 val firstLogsWithErrors = logsWithErrors.take(10)
-\end{minted}</script></p>
+</pre></code></p>
 
 <p>Here, we <em>cache</em> <code>logsWithErrors</code> in memory.</p>
 
@@ -437,27 +404,8 @@ val firstLogsWithErrors = logsWithErrors.take(10)
 <code>logsWithErrors</code> for faster access in future operations if we would like to <br>
 reuse it.</p>
 
-
-
-<h1 id="caching-and-persistence-1">Caching and Persistence</h1>
-
-<p>By default, RDDs are recomputed each time you run an action on them. This can <br>
-be expensive (in time) if you need to traverse a dataset more than once.</p>
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-12">\begin{center}
-\textbf{\textcolor{darkred}{Spark allows you to control what is cached in memory.}}
-\end{center}</script></p>
-
-
-
-<p><script type="math/tex; mode=display" id="MathJax-Element-13">\begin{minted}{scala}
-val lastYearsLogs: RDD[String] = ...
-val logsWithErrors = lastYearsLogs.filter(_.contains("ERROR")).persist()
-val firstLogsWithErrors = logsWithErrors.take(10)
-val numErrors = logsWithErrors.count() // faster
-\end{minted}</script></p>
+<p><code><pre>val numErrors = logsWithErrors.count() // faster
+</pre></code></p>
 
 <p><strong>Now, computing the <code>count</code> on <code>logsWithErrors</code> is much faster.</strong></p>
 
@@ -467,43 +415,7 @@ val numErrors = logsWithErrors.count() // faster
 
 <p><strong>Persistence levels.</strong> Other ways to control how Spark stores objects.</p>
 
-<p>\vspace{0.5cm} <br>
-<script type="math/tex; mode=display" id="MathJax-Element-14">\begin{tabular}{*5l}
-\rowcolor{darkred!}\emph{\textcolor{white}{Level}} & \emph{\textcolor{white}{Space used}} & \emph{\textcolor{white}{CPU time}} & \emph{\textcolor{white}{In memory}} & \emph{\textcolor{white}{On disk}} \\
-\texttt{MEMORY\_ONLY}                     & High & Low    & Y    & N \\
-\texttt{MEMORY\_ONLY\_SER}                & Low  & High   & Y    & N \\
-\texttt{MEMORY\_AND\_DISK}$^*$            & High & Medium & Some & Some \\
-\texttt{MEMORY\_AND\_DISK\_SER}$^\dagger$ & Low  & High   & Some & Some \\
-\texttt{DISK\_ONLY}                       & Low  & High   & N    & Y \\
- \hline
-\end{tabular}</script></p>
-
-<p>\vspace{0.5cm} <br>
-\footnotesize<script type="math/tex" id="MathJax-Element-15">^*</script> Spills to disk if there is too much data to fit in memory <br>
-\newline <script type="math/tex" id="MathJax-Element-16">^\dagger</script> Spills to disk if there is too much data to fit in memory. Stores serialized representation in memory.</p>
-
-
-
-<h1 id="caching-and-persistence-3">Caching and Persistence</h1>
-
-<p><strong>Persistence levels.</strong> Other ways to control how Spark stores objects.</p>
-
-<p>\vspace{0.5cm} <br>
-<script type="math/tex; mode=display" id="MathJax-Element-17">\begin{tabular}{*5l}
-\rowcolor{darkred!}\emph{\textcolor{white}{Level}} & \emph{\textcolor{white}{Space used}} & \emph{\textcolor{white}{CPU time}} & \emph{\textcolor{white}{In memory}} & \emph{\textcolor{white}{On disk}} \\
-\textbf{\textcolor{blue}{\texttt{MEMORY\_ONLY}}} & \textbf{\textcolor{blue}{High}} & \textbf{\textcolor{blue}{Low}}    & \textbf{\textcolor{blue}{Y}}    & \textbf{\textcolor{blue}{N}} \\
-\texttt{MEMORY\_ONLY\_SER}                & Low  & High   & Y    & N \\
-\texttt{MEMORY\_AND\_DISK}$^*$            & High & Medium & Some & Some \\
-\texttt{MEMORY\_AND\_DISK\_SER}$^\dagger$ & Low  & High   & Some & Some \\
-\texttt{DISK\_ONLY}                       & Low  & High   & N    & Y \\
- \hline
-\end{tabular}</script></p>
-
-<p>\vspace{0.1cm} <br>
-\textbf{\textcolor{blue}{Default}} <br>
-\newline\footnotesize<script type="math/tex" id="MathJax-Element-18">^*</script> Spills to disk if there is too much data to fit in memory <br>
-\newline <script type="math/tex" id="MathJax-Element-19">^\dagger</script> Spills to disk if there is too much data to fit in memory. Stores serialized representation in memory.</p>
-
+<img src="../images/sparkPersistenceLevels.png"/>
 
 
 <h1 id="other-important-rdd-transformations">Other Important RDD Transformations</h1>
@@ -511,52 +423,63 @@ val numErrors = logsWithErrors.count() // faster
 <p>Beyond the transformer-like combinators you may be familiar with from Scala <br>
 collections, RDDs introduce a number of other important transformations.</p>
 
-<p>\vspace{0.5cm} <br>
-<script type="math/tex; mode=display" id="MathJax-Element-20">\begin{tabular}{p{3cm}p{8cm}}
-\texttt{\textbf{sample}}
-& \footnotesize Sample a fraction fraction of the data, with or without
-replacement, using a given random number generator seed. \vspace{0.1cm} \\
-\texttt{\textbf{union}}
-& \footnotesize Return a new dataset that contains the union of the elements in the source dataset and the argument. Pseudo-set operations (duplicates remain).\vspace{0.1cm} \\
-\texttt{\textbf{intersection}}
-& \footnotesize Return a new RDD that contains the intersection of elements in the source dataset and the argument. Pseudo-set operations (duplicates remain). \vspace{0.1cm} \\
-\end{tabular}</script></p>
+<table>
+<tr>
+  <td width="20">sample</td>
+  <td width="10">Sample a fraction fraction of the data, with or without
+replacement, using a given random number generator seed.</td>
+</tr>
+<tr>
+  <td>union</td>
+  <td>Return a new dataset that contains the union of the elements in the source dataset and the argument. Pseudo-set operations (duplicates remain).</td>
+</tr>
+<tr>
+  <td>intersection</td>
+  <td>Return a new RDD that contains the intersection of elements in the source dataset and the argument. Pseudo-set operations (duplicates remain).</td>
+</tr>
+</table>
 
 
 
 <h1 id="other-important-rdd-transformations-2">Other Important RDD Transformations (2)</h1>
 
-<p>Beyond the transformer-like combinators you may be familiar with from Scala <br>
-collections, RDDs introduce a number of other important transformations.</p>
-
-<p>\vspace{0.5cm} <br>
-<script type="math/tex; mode=display" id="MathJax-Element-21">\begin{tabular}{p{3cm}p{8cm}}
-\texttt{\textbf{distinct}}
-& \footnotesize Return a new dataset that contains the distinct elements of the source dataset. \vspace{0.1cm} \\
-\texttt{\textbf{coalesce}}
-& \footnotesize Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset. \vspace{0.1cm} \\
-\texttt{\textbf{repartition}}
-& \footnotesize Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network. \vspace{0.1cm} \\
-\end{tabular}</script></p>
-
+<table>
+<tr>
+  <td width="20">distinct</td>
+  <td width="10">Return a new dataset that contains the distinct elements of the source dataset.</td>
+</tr>
+<tr>
+  <td>coalesce</td>
+  <td>Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset.</td>
+</tr>
+<tr>
+  <td>repartition</td>
+  <td>Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network. </td>
+</tr>
+</table>
 
 
 <h1 id="other-important-rdd-actions">Other Important RDD Actions</h1>
 
 <p>RDDs also contain other important actions which are useful when dealing with distributed data.</p>
-
-<p>\vspace{0.5cm} <br>
-<script type="math/tex; mode=display" id="MathJax-Element-22">\begin{tabular}{p{3cm}p{8cm}}
-\texttt{\textbf{collect}}
-& \footnotesize Return all the elements of the dataset as an array at the driver program. This is usually useful after a filter or other operation that returns a sufficiently small subset of the data. \\
-\texttt{\textbf{count}}
-& \footnotesize Return the number of elements in the dataset. \vspace{0.1cm} \\
-\texttt{\textbf{foreach}}
-& \footnotesize Run a function func on each element of the dataset. This is usually done for side effects such as interacting with external storage systems. \vspace{0.1cm} \\
-\texttt{\textbf{saveAsTextFile}}
-& \footnotesize Write the elements of the dataset as a text file (or set of text files) in a given directory in the local filesystem, HDFS or any other Hadoop-supported file system. Spark will call toString on each element to convert it to a line of text in the file. \vspace{0.1cm} \\
-\end{tabular}</script></p>
-
+<table>
+<tr>
+  <td width="20">collect</td>
+  <td width="10">Return all the elements of the dataset as an array at the driver program. This is usually useful after a filter or other operation that returns a sufficiently small subset of the data.</td>
+</tr>
+<tr>
+  <td>count</td>
+  <td>Return the number of elements in the dataset.</td>
+</tr>
+<tr>
+  <td>foreach</td>
+  <td>Run a function func on each element of the dataset. This is usually done for side effects such as interacting with external storage systems.</td>
+</tr>
+<tr>
+  <td>saveAsTextFile</td>
+  <td>Write the elements of the dataset as a text file (or set of text files) in a given directory in the local filesystem, HDFS or any other Hadoop-supported file system. Spark will call toString on each element to convert it to a line of text in the file.</td>
+</tr>
+</table>
 
 
 <h1 id="pair-rdds">Pair RDDs</h1>
@@ -578,8 +501,7 @@ def join[W](other: RDD[(K, W)]): RDD[(K, (V, W))]
 <p>Depending on the operation, data in an RDD may have to be <strong>shuffled</strong> among <br>
 worker nodes, using worker-worker communication.</p>
 
-<p>\centering <br>
-\textbf{\textcolor{darkred}{This is often the case for many operations Pair RDDs!}}</p>
+<p><b>This is often the case for many operations Pair RDDs!</b></p>
 
 <!-- UP TO HERE CHNAGED -->
 
