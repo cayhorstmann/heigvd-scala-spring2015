@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 17</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+  </head> 
+  <body>
+
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
+
+    <h1>Polyglot Programming</h1>
+
+    <ul><li>Many projects have components in different programming languages</li>
+      <li>Ex. JavaScript client, Java server, SQL for database, Ruby for cloud install</li>
+      <li>Not easy to find people with expertise in multiple languages</li>
+      <li>Particularly in maintenance phase</li>
+      <li>One language everywhere? That's the lure of node.js</li>
+      <li>But it's JavaScript<p><img src='javascript-the-good-parts-the-definitive-guide.jpg'/></p></li>
+    </ul>
+
+    <h1>Scala for the JavaScript VM</h1>
+
+    <ul><li>Scala, as we know it, targets the JVM</li>
+      <li>For a while, there was a port to the .NET VM</li>
+      <li>ScalaJS targets the JavaScript VM</li>
+      <li>JavaScript VMs are everywhere</li>
+      <li>...and they are surprisingly non-bad
+        <ul><li>Performance has dramatically improved in recent years</li>
+          <li>Larger bodies of JS code are now routine (JQuery 300K, AngularJS 900K before minimization/compression)</li> 
+          <li>VM security is probably better than JVM</li>
+        </ul></li>      
+    </ul>
+
+    <h1>Scala.js</h1>
+
+    <ul><li>Translates Scala code to JavaScript</li>
+      <li>Result can be run in browser, standalone VM (e.g. node)</li>
+      <li>Scala everywhere in a web app
+        <ul><li>Easy to move code between client and server</li>
+        </ul></li>
+      <li>Challenge: Generate small code sizes
+        <ul><li>JS library after minimize/zip is 28L (JQuery 32K)</li>
+          <li>Scala.js compiler eliminates dead code</li>
+        </ul></li>
+    </ul>
+
+    <h1>Canvas</h1>
+    <ul><li>ScalaJS has wrappers for DOM, Canvas, JQuery</li>
+      <li><pre>@JSExport
+object ScalaJSExample {
+  @JSExport
+  def main(canvas: html.Canvas) {
+    val ctx = canvas.getContext("2d")
+                    .asInstanceOf[dom.CanvasRenderingContext2D]
+    ctx.fillRect(0, 0, 100, 100)
+  }
+}</pre></li>
+      <li>Calls such as <code>cxt.fillRect</code> are typesafe, can use IDE autocompletion</li>
+      <li>Annotate classes, methods that are called from JavaScript with <code>@JSExport</code> </li>
+    </ul>
+
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p>  
+    
+    <h1>Part 1: Canvas</h1>
+    <p>This follows the <a href='http://lihaoyi.github.io/hands-on-scala-js'>excellent tutorial</a> by Li Haoyi</p>
+    <ol class='la'><li>Run <code>git clone https://github.com/lihaoyi/workbench-example-app</code>, or if for whatever reason, you don't have git on your computer, download and unzip <a href='https://github.com/lihaoyi/workbench-example-app/archive/master.zip'>this zip file</a>.</li>
+      <p>In a command shell, type
+        <pre>cd workbench-example-app
+../activator-1.3.2/activator ~fastOptJS</pre>
+        (adjusting the directory paths and version number if necessary)<br/>
+        Note: Here, we use the activator where Haoyi's instructions use <code>sbt</code>. The activator is a superset of the sbt tool.</p>
+      <li>When you see
+
+        <pre> 1. Waiting for source changes... (press enter to interrupt)</pre>
+        point your browser to http://localhost:12345/target/scala-2.11/classes/index-dev.html. What happens?</li>
+      <li>Now let's look at the code.  First hit Enter in the console window to terminate the activator. Edit the file <code>workbench-example-app/project/build.sbt</code> and add a line
+        <pre>addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "3.0.0")</pre>
+        to the end. Run
+        <pre>../activator-1.3.2/activator eclipse
+</pre>
+        Then run the Scala IDE and import the project at <code>workbench-example-app</code>.</li>
+      <p>Run
+        <pre>../activator-1.3.2/activator ~fastOptJS</pre> again. In the IDE, find the file <code>src/main/scala/example/ScalaJSExample</code>. You'll find the source code for the fractal, which isn't very illuminating. Let's do something simpler instead. Change the <code>run</code> method to
+        <pre>def run = {
+      count += 1
+      ctx.fillStyle = "green"
+      ctx.fillRect(0, 0, count, 100)      
+    }</pre> Refresh your browser window. What happens? Why?</p>
+      <li>That's nice, but it doesn't really show off the power of Scala. Like, it doesn't use <code>for/yield</code> anywhere. Let's fix that. We want to draw a bar chart, like this:<br/><img src='bars.png'/><br/>So, let's say we have our data in a list
+        <pre>val data = List(2, 3, 5, 7, 11, 13)</pre>
+        For now, comment out the line
+        <pre>dom.setInterval(() =&gt; run, 50)</pre>
+        Add this class
+        <pre>case class Rect(x: Double, y: Double, width: Double, height: Double) {
+  def fill(ctx: CanvasRenderingContext2D) { ctx.fillRect(x, y, width, height)}
+}
+</pre> and transform <code>data</code> to a list of <code>Rect</code>, using <code>for/yield</code>. Put the code outside the <code>run</code> method. What is your code?</li>
+      <li>Then add
+        <pre>rects foreach { _.fill(ctx) } </pre>
+        and refresh the browser. Did it work?</li>
+      <li>If you are like me, it didn't. Add a call
+        <pre>println(rects)</pre>. Where do you think the printout shows up? (Hint: It's JavaScript—look into the console of your browser dev tools...)</li>
+      <li>Using that, you should be able to fix the rectangles and enjoy a bar chart. </li>
+    </ol>
+
+    <h1>DOM and JQuery</h1>
+    <ol><li>Drawing with Canvas is fun, but the money is with web apps.</li>
+      <li>More and more, web app clients are written in JavaScript</li>
+      <li>... which we will generate with Scala</li>
+      <li>Can dynamically change web page with DOM interface:
+      <pre>def main(target: html.Div) = {
+  var p = document.createElement("p")
+  val t = document.createTextNode("Hello, World!")
+  p.appendChild(t)
+  target.appendChild(n)
+}
+</pre></li>
+      <li>Ugh—that's why so many people use JQuery.</li>
+      <li>With the ScalaJS bindings, use <code>jQuery</code> instead of <code>$</code>:
+      <pre>target.append(jQuery("&lt;p/&gt;").text("Hello, World"))
+</pre></li>
+      <li>Not bad, but not as typesafe as one would like. Potential alternative: <a href='https://github.com/lihaoyi/scalatags'>ScalaTags</a></li>
+    </ol>
+
+    <h1>AJAX/JSON</h1>
+    
+    <ol><li>We want to make calls from the JavaScript client to the server</li>
+      <li>Use AJAX. Simplest form:
+      <pre>Ajax.get(url).onSuccess { case xhr =&gt;
+  val str = xhr.responseText
+  ...
+}</pre></li>
+      <li>Want support for POST/PUT/DELETE</li>
+      <li>Want to send/receive JSON data</li>
+      <li><code>JSON.parse</code> turns response string into an object of type <code>scalajs.js.Dynamic</code></li>
+      <li>Can dynamically invoke properties, e.g.
+      <pre>val response = JSON.parse(xhr.responseText) // has type Dynamic
+val tasks = response.tasks // Works if JSON has field with name "tasks"</pre></li>
+      <li>May need to cast for further processing
+      <pre>val tasksAsArray = tasks.asInstanceOf[scalajs.js.Array[String]]
+  // Works if it was a JavaScript array of strings
+</pre></li>
+    </ol>
+
+    <h1>What's Missing?</h1>
+    <ul><li>Convenient AJAX/JSON serialization/deserialization
+      <ul><li>Check out <a href='http://lihaoyi.github.io/upickle/'>uPickle</a>/<a href='https://github.com/lihaoyi/autowire'>autowire</a></li>
+      </ul></li>
+      <li>JQueryUI integration</li>
+      <li>Form handling</li>
+      <li>Client-side validation</li>
+      <li>IDE integration</li>
+      <li>But that could all come...</li>
+    </ul>
+
+    <h1>Lab</h1> 
+    <p class='sideimage'><img alt='Scary looking lab' src='../images/lab.jpg'/></p> 
+    
+    
+    <h1>Part 2: DOM</h1>
+
+    <ol class='la'><li>Change the <code>ScalaJSExample.scala</code> file so that it contains
+      <pre>package example
+import org.scalajs.dom
+import dom.html
+import scalajs.js.annotation.JSExport
+@JSExport
+object ScalaJSExample   {
+  @JSExport
+  def main(target: html.Div) ={
+    target.innerHTML = s"""
+    &lt;div&gt;
+      &lt;h1&gt;Hello World!&lt;/h1&gt;
+    &lt;/div&gt;
+    """
+  }
+}</pre>In <code>resources/index-dev.html</code>, change the <code>div</code> containing the canvas into
+      <pre>&lt;div id='div'&gt;&lt;/div&gt;
+</pre> and in the call to <code>getElementById</code>, change <code>canvas</code> to <code>div</code>. Reload the page. What happens? </li>
+      <li>For generating dynamic HTML, we can use the wrapper over the DOM library. Try this in the body of <code>main</code>:
+      <pre>    import dom.document
+    val items = List("Hello", "World")
+    var n1 = document.createElement("ul")
+    for (i &lt;- items) {
+      val t = document.createTextNode(i)
+      val n = document.createElement("li")
+      n.appendChild(t)
+      n1.appendChild(n)
+    }
+    target.appendChild(n1)
+</pre> What happens? Why?</li></ol>
+    <h1>Part 3: JQuery</h1>
+    <ol class='la'><li>Oh yes—that's why we detest the DOM library. So let's use JQuery. In <code>resources/index-dev.html</code>, add
+      <pre>&lt;script type="text/javascript" src="http://cdn.jsdelivr.net/jquery/2.1.3/jquery.js"&gt;&lt;/script&gt;</pre> inside the <code>head</code> element. In <code>workbench-example-app/build.sbt</code> (<em>not</em> the <code>project/build.sbt</code> file!), add
+      <pre>, "be.doeraene" %%% "scalajs-jquery" % "0.8.0"</pre> to the <code>Seq</code> of library dependencies. Then
+      <ul><li>Add this <code>import</code> to the top of <code>ScalaJSExample.scala</code>:
+          <pre>import org.scalajs.jquery._
+</pre> You should get an error message about an unknown import.</li>
+        <li>Close the project in the Scala IDE</li>
+        <li>Hit Enter in the terminal window to terminate Activator</li>
+        <li>In the terminal Window, run <code>../activator-1.3.2/activator</code> and type
+          <pre>reload
+eclipse
+~fastOptJS
+</pre></li>
+          <li>Reopen the project. Check that the error message has gone away.</li>
+      </ul></li>
+      <li>Now replace the body of <code>main</code> with
+      <pre>    val items = List("Hello", "World")
+    var n1 = jQuery("&lt;ol/&gt;").appendTo(jQuery("#div"))
+    for (i &lt;- items) 
+      n1.append(jQuery("&lt;li/&gt;").text(i))
+</pre> Reload. What happens?</li>
+    </ol>
+
+    <h1>Part 4: Event Handling</h1>
+    <ol><li>Change the contents of the <code>div</code> in <code>index-dev.html</code> to
+      <pre>&lt;h1&gt;Capital Box!&lt;/h1&gt;
+&lt;p id='cap'&gt;Type below and have it capitalized!&lt;/p&gt;
+&lt;input id='box' type="text" value='Type here'&gt;
+</pre>
+      Change the contents of <code>main</code> to
+      <pre>    val box = jQuery("#box")
+    box.keyup((ev: JQueryEventObject) =&gt; {
+      val t = box.value()
+      jQuery("#cap").text(t.toString().toUpperCase()) 
+    })</pre></li>
+      <li>Reload the page and type something into the input field. What happens? Why?</li>
+      <li>What is the type of <code>box</code>? What is the type of <code>t</code>?</li>
+      <li>Why is the <code>toString</code> necessary?</li>
+      <li>Why can't the <code>JQueryEventObject</code> parameter type be inferred?</li>
+    </ol>
+
+    <h1>Part 5: Connecting with a Web App</h1>
+
+    <ol class='la'><li>Start up the task list app from last week, by running the activator in the <code>unit15</code> directory (or whereever you had it), and pointing a browser to http://localhost:9000. Add a few tasks. </li>
+      <li>Here, we are using server-generated HTML forms. That's sooo last millennium. These days, we just want to make REST calls from the JavaScript client. Add a class
+      <pre>package controllers
+
+import play.api._
+import play.api.mvc._
+import play.api.libs.json._
+import models.Task
+
+object Api extends Controller {
+  def tasks = Action {
+    Ok(Json.toJson(Json.obj("tasks" -&gt; Task.all().map(t =&gt; Json.obj("id" -&gt; t.id, "label" -&gt; t.label)))))
+  }
+}</pre> and a route
+      <pre>GET	   /api/tasks				controllers.Api.tasks</pre>
+      Point a browser window to <code>http://localhost:9000/api/tasks</code>. What do you get? Why?</li>
+      <li>Now we want to see those tasks in our JavaScript client. In the ScalaJS example app, change the <code>div</code> to
+      <pre>&lt;div id='div'&gt;
+	&lt;ul id='tasks'&gt;
+	&lt;/ul&gt;
+&lt;/div&gt;</pre> and the <code>main</code> method to
+      <pre>    val tasks = jQuery("#tasks")
+    val prefix = "http://localhost:9000/api/" 
+    val url = prefix + "tasks"
+    def updateTasks() {
+      tasks.empty()
+      Ajax.get(url).onSuccess { case xhr =&gt;
+      JSON.parse(xhr.responseText).tasks.asInstanceOf[scalajs.js.Array[scalajs.js.Dynamic]] map { t =&gt;
+            val task = jQuery("&lt;li/&gt;")
+            task.text(t.label.asInstanceOf[String])
+            tasks.append(task)    
+          }
+        }
+    }
+    updateTasks()
+  </pre>
+        Add this to the top of the Scala file:
+        <pre>import dom.ext._
+import scalajs.js.JSON
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow</pre>
+      </li>
+      <li>Now refresh the browser window that pointed to the client page. What happens? (Look into the console for any error messages.)</li>
+      <li>That's a problem—for security reasons, cross-site AJAX is disabled by default. It's because we don't yet know how to combine a Play and a ScalaJS project. Here is a remedy: <br/>Start Chrome/Chromium from the command line with the flag <code>--disable-web-security</code>. Point it to http://localhost:12345/target/scala-2.11/classes/index-dev.html. What happens now?</li>
+    </ol>
+
+    <h1>Part 6: Completing the Web App</h1>
+
+    <ol class='la'><li>Let's add the buttons to delete tasks. Here is the code.
+      <pre>            val button = jQuery("&lt;input type='button' value='Delete' style='margin: 0.2em'/&gt;")
+            task.append(button)
+            button.click((ev: JQueryEventObject) =&gt; {
+              Ajax.post(prefix + "tasks/" + t.id + "/delete", "").onSuccess { case xhr =&gt; 
+                println(xhr.responseText)
+              }
+            })</pre>
+      Where do you put it?</li>
+      <li>What happens when you click a Delete button? (Watch the console!)</li>
+      <li>That's not surprising. We have to add that to the web app's API. Add a route
+      <pre>POST   /api/tasks/:id/delete    controllers.Api.deleteTask(id: Long)</pre> and a method
+      <pre> def deleteTask(id: Long) = Action {
+    Task.delete(id)
+    Ok("deleted " + id)
+  }</pre> Now what happens when you delete a task?</li>
+      <li>Actually, the task is deleted, as you can tell by refreshing the client window. But that should happen in the client app. How do you fix that? (Hint: <code>updateTasks</code>.)</li>
+      <li>If you ran out of tasks while testing, you had to go back to the unit15 app to add more. That's no good. Let's put it into the JavaScript client. First, add this to the HTML:
+      <pre>&lt;p&gt;Label &lt;input id='label' type="text"/&gt;
+	&lt;input id='create' type="button" value="Create"/&gt;&lt;/p&gt;</pre> And add a button handler:
+      <pre>    jQuery("#create").click((ev: JQueryEventObject) =&gt; {
+      val label = jQuery("#label").value().toString
+            
+      Ajax.post(prefix + "tasks/" + label +  "/create", "").onSuccess { case xhr =&gt; 
+        println(xhr.responseText)
+        updateTasks()
+      }
+      
+    })
+</pre> What will happen when you click the button?</li>
+      <li>You need to implement the API again. Just follow the previous steps and the implementation of <code>newTask</code> from Unit 15. (It's a bit wrong to put the label into the URL—it really should go with the POST data, but that's not so easy due to the immaturity of the libraries, so we'll skip it.) What did you do to make creating new tasks possible?</li>
+      <li>Have a final look at the JavaScript client and the client that we did in Unit 15.  First, notice that the JavaScript client is more fluid. It doesn't have the “page flip” that you have in web applications. And it is far easier to prettify because you can just write the HTML/JavaScript/JQueryUI code to do so, instead of writing the server-side code that generates the client-side code.</li>
+      <li>And appreciate that both the server-side and the client-side code are Scala, not two different languages. And not JavaScript.</li>
+    </ol>
+
+
+    <h1>Homework</h1>
+    <p>This was a cutting-edge lab, and there were two weak points. The transfer of data between the client and server are not really satisfactory. As already mentioned, that's something that can be fixed with some libraries.</p>
+    <p>But what is less satisfactory is running two projects and hacking the browser to allow connections to two ports. We just didn't have the time in the lab to do this right. Your homework assignment is to fix it.</p>
+    <p>Follow <a href='https://github.com/hussachai/play-scalajs-showcase'>this</a> or <a href='https://github.com/vmunier/play-with-scalajs-example'>this</a> post and deliver a single project that includes both the Play app and the Scala JS client. Make it so that connecting to localhost:9000 serves up the single page of the app.</p>
+  </body>
+</html>
