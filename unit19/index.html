@@ -654,6 +654,7 @@ with the highest second component (the count) should be the first element of the
 <p>How long does the code take? What is the list of ranked languages?</p>
 
 <h1>Rank languages attempt #2: <code>rankLangsUsingIndex</code></h1>
+
 <p><strong>Compute an inverted index: <code>makeIndex</code></strong></p>
 <p>An inverted index is an index data structure storing a mapping from content, 
 such as words or numbers, to a set of documents. In particular, the purpose of an inverted 
@@ -668,6 +669,7 @@ This RDD contains pairs, such that for each language in the given <code>langs</c
 Furthermore, the second component of each pair (the <code>Iterable</code>) contains the <code>WikipediaArticles</code>
 that mention the language at least once. </p>
 <p><em>Hint:</em> You might want to use methods <code>flatMap</code> and <code>groupByKey</code> on RDD for this part.</p>
+
 <p><strong>Computing the ranking: <code>rankLangsUsingIndex</code></strong></p>
 <p>Use the <code>makeIndex</code> method implemented in the previous part to implement a faster method 
 for computing the language ranking.</p>
