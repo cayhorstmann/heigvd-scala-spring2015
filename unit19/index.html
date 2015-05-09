@@ -651,7 +651,7 @@ articles that mention the language (the first component of the pair is the name 
 <p>The list should be sorted in descending order. That is, according to this ranking, the pair 
 with the highest second component (the count) should be the first element of the list.</p>
 <p>Pay attention to roughly how long it takes to run this part! (It should take tens of seconds.)</p>
-<p>How much does the code take? What is the list of ranked languages?</p>
+<p>How long does the code take? What is the list of ranked languages?</p>
 
 <h1>Rank languages attempt #2: <code>rankLangsUsingIndex</code></h1>
 <p><strong>Compute an inverted index: <code>makeIndex</code></strong></p>
@@ -676,7 +676,7 @@ component of the pair is the number of articles that mention the language
 (the first component of the pair is the name of the language).</p>
 <p>Again, the list should be sorted in descending order. That is, according to this ranking, 
 the pair with the highest second component (the count) should be the first element of the list.</p>
-<p>How much does the code take? What is the list of ranked languages?</p>
+<p>How long does the code take? What is the list of ranked languages?</p>
 <p>Can you notice a performance improvement over attempt #1? Why?</p>
 
 <h1>Rank languages attempt #3: <code>rankLangsReduceByKey</code></h1>
@@ -693,7 +693,7 @@ second component of the pair is the number of articles that mention the language
 <p>Again, the list should be sorted in descending order. That is, according to this ranking, 
 the pair with the highest second component (the count) should be the first element of the list.</p>
 <p><em>Hint:</em> method <code>mapValues</code> on <code>PairRDD</code> could be useful for this part.</p>
-<p>How much does the code take? What is the list of ranked languages?</p>
+<p>How long does the code take? What is the list of ranked languages?</p>
 <p>Can you notice an improvement in performance compared to measuring both the computation of
 the index and the computation of the ranking as we did in attempt #2? If so, can you think of a reason?</p>
 
