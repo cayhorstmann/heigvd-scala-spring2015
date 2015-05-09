@@ -510,6 +510,186 @@ worker nodes, using worker-worker communication.</p>
 
 
 
+
+
+
+
+
+
+
+
+
+<h1>Lab: Spark Setup</h1>
+<p>First download Spark form <a href="http://www.apache.org/dyn/closer.cgi/spark/spark-1.3.1/spark-1.3.1-bin-hadoop2.6.tgz">here</a>.
+And then open the archive and goto inside Spark directory and run</p>
+<pre><code>./bin/run-example SparkPi 10
+</code></pre>
+<p>It should compute Pi without any error message.</p>
+<p>Spark runs on Java 6+ and Python 2.6+. 
+For the Scala API, Spark 1.3.1 uses Scala 2.10. 
+You will need to use a compatible Scala version (2.10.x).
+The additional information can be found on
+<a href="https://spark.apache.org/docs/latest/">Spark documentation</a>.</p>
+<h1>Interactive Analysis with the Spark Shell</h1>
+<p>We use Spark shell to learn the framework.
+Run following command from Spark home directory:</p>
+<pre><code>./bin/spark-shell
+</code></pre>
+<p>We are going to process <code>README.md</code> file of Spark.
+Run following commands on Spark shell and explain each line and show the results:</p>
+<pre><code>scala&gt; val textFile = sc.textFile("README.md")
+
+scala&gt; textFile.count
+
+scala&gt; textFile.first
+
+scala&gt; val linesWithSpark = textFile.filter(line =&gt; line.contains("Spark"))
+
+scala&gt; textFile.filter(line =&gt; line.contains("Spark")).count
+</code></pre>
+<h1>Self-Contained Applications</h1>
+<p>Now we create a very simple Spark application in Scala.</p>
+<pre><code>/* SimpleApp.scala */
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkContext._
+import org.apache.spark.SparkConf
+
+object SimpleApp {
+    def main(args: Array[String]) {
+        val logFile = "YOUR_SPARK_HOME/README.md" // Should be some file on your system
+        val conf = new SparkConf().setAppName("Simple Application")
+        val sc = new SparkContext(conf)
+        val logData = sc.textFile(logFile, 2).cache()
+        val numAs = logData.filter(line =&gt; line.contains("a")).count()
+        val numBs = logData.filter(line =&gt; line.contains("b")).count()
+        println("Lines with a: %s, Lines with b: %s".format(numAs, numBs))
+    }
+}
+</code></pre>
+<p>Note that applications should define a <code>main()</code> method instead of extending <code>scala.App</code>. 
+Subclasses of <code>scala.App</code> may not work correctly.
+What does this program?</p>
+<p>Our application depends on the Spark API, so we'll also include an <code>sbt</code> configuration file, 
+<code>build.sbt</code> which explains that Spark is a dependency. This file also adds a repository that Spark depends on:</p>
+<pre><code>name := "Simple Project"
+
+version := "1.0"
+
+scalaVersion := "2.10.4"
+
+libraryDependencies += "org.apache.spark" %% "spark-core" % "1.3.1"
+</code></pre>
+<p>For sbt to work correctly, we'll need to layout <code>SimpleApp.scala</code> and <code>build.sbt</code> according 
+to the typical directory structure. Once that is in place, we can create a JAR package 
+containing the application's code, then use the <code>spark-submit</code> script to run our program.</p>
+<pre><code># Your directory layout should look like this
+$ find .
+.
+./build.sbt
+./src
+./src/main
+./src/main/scala
+./src/main/scala/SimpleApp.scala
+
+# Package a jar containing your application
+$ activator package
+...
+[info] Packaging {..}/{..}/target/scala-2.10/simple-project_2.10-1.0.jar
+
+# Use spark-submit to run your application
+$ YOUR_SPARK_HOME/bin/spark-submit \
+--class "SimpleApp" \
+--master local[4] \
+target/scala-2.10/simple-project_2.10-1.0.jar
+...
+</code></pre>
+<p>What is the output of the program?</p>
+
+
+<h1>Homework: exploring full-text Wikipedia articles</h1>
+<p>In this assignment, you will get to know Spark by exploring full-text Wikipedia articles.
+To start first download the assignment: <a href="wikipeida.zip">wikipedia.zip</a></p>
+<p>Gauging how popular a programming language is important for companies judging whether or 
+not they should adopt an emerging programming language. For that reason, industry analyst 
+firm RedMonk has bi-annually computed a ranking of programming language popularity using 
+a variety of data sources, typically from websites like GitHub and StackOverflow. 
+See their <a href="http://redmonk.com/sogrady/2015/01/14/language-rankings-1-15/">top-20 ranking for January 2015</a> as an example.</p>
+<p>In this assignment, we'll use our full-text data from Wikipedia to produce a rudimentary 
+metric of how popular a programming language is, in an effort to see if our Wikipedia-based 
+rankings bear any relation to the popular RedMonk rankings.
+You'll complete this exercise on just one node (your laptop).</p>
+<p>First create a <code>SparkConfig</code> instance. A <code>SparkConfig</code> represents the configuration of your Spark application. 
+It's here that you must specify that you intend to run your application in "local" mode. 
+You must also name your Spark application at this point.
+Then create a <code>SparkContext</code>. A <code>SparkContext</code> is the "handle" to your cluster. 
+Once you have a <code>SparkContext</code>, you can use it to create and populate <code>RDD</code>s with data.
+For help, see the <a href="https://spark.apache.org/docs/latest/api/scala/index.html#package">Spark API Docs</a>.</p>
+<h2>Read-in Wikipedia Data</h2>
+<p>There are several ways to read data into Spark. The simplest (but most unrealistic) way 
+to read in data is to convert an existing collection in memory to an RDD using the <code>parallelize</code> 
+method of the Spark context.</p>
+<p>We have already pre-processed a small chunk of Wikipedia for you, and have made it available 
+in the <code>articles</code> member of the <code>WikipediaData</code> object.
+Create an <code>RDD</code> (by implementing <code>val wikiRdd</code>) which contains the <code>WikipediaArticle</code> objects of <code>articles</code>.</p>
+<h2>Compute a ranking of programming languages</h2>
+<p>We will use a simple metric for determining the popularity of a programming language: 
+the number of Wikipedia articles that mention the language at least once.</p>
+<h3>Rank languages attempt #1: <code>rankLangs</code></h3>
+<p>Start by implementing a helper method <code>occurrencesOfLang</code> which computes the number of 
+articles in an RDD of type <code>RDD[WikipediaArticles]</code> that mention the given language at least once.</p>
+<p>Computing the ranking, <code>rankLangs</code> using <code>occurrencesOfLang</code>, implement a method <code>rankLangs</code> 
+which computes a list of pairs where the second component of the pair is the number of 
+articles that mention the language (the first component of the pair is the name of the language).</p>
+<p>An example of what <code>rankLangs</code> returns might look like this:</p>
+<pre><code>List(("Scala",999999),("JavaScript",1278),("LOLCODE",982),("Java",42))
+</code></pre>
+<p>The list should be sorted in descending order. That is, according to this ranking, the pair 
+with the highest second component (the count) should be the first element of the list.</p>
+<p>Pay attention to roughly how long it takes to run this part! (It should take tens of seconds.)</p>
+<p>How much does the code take? What is the list of ranked languages?</p>
+<h3>Rank languages attempt #2: <code>rankLangsUsingIndex</code></h3>
+<p><strong>Compute an inverted index: <code>makeIndex</code></strong></p>
+<p>An inverted index is an index data structure storing a mapping from content, 
+such as words or numbers, to a set of documents. In particular, the purpose of an inverted 
+index is to allow fast full text searches. In our use-case, an inverted index would be useful 
+for mapping from the names of programming languages to the collection of Wikipedia articles
+that mention the name at least once.</p>
+<p>To make working with the dataset more efficient and more convenient, implement a method 
+that computes an "inverted index" which maps programming language names to the Wikipedia 
+articles on which they occur at least once.</p>
+<p>Implement method <code>makeIndex</code> which returns an RDD of the following type: <code>RDD[(String, Iterable[WikipediaArticle])]</code>. 
+This RDD contains pairs, such that for each language in the given <code>langs</code> list there is at most one pair. 
+Furthermore, the second component of each pair (the <code>Iterable</code>) contains the <code>WikipediaArticles</code>
+that mention the language at least once. </p>
+<p><em>Hint:</em> You might want to use methods <code>flatMap</code> and <code>groupByKey</code> on RDD for this part.</p>
+<p><strong>Computing the ranking: <code>rankLangsUsingIndex</code></strong></p>
+<p>Use the <code>makeIndex</code> method implemented in the previous part to implement a faster method 
+for computing the language ranking.</p>
+<p>Like in part 1, <code>rankLangsUsingIndex</code> should compute a list of pairs where the second 
+component of the pair is the number of articles that mention the language 
+(the first component of the pair is the name of the language).</p>
+<p>Again, the list should be sorted in descending order. That is, according to this ranking, 
+the pair with the highest second component (the count) should be the first element of the list.</p>
+<p>How much does the code take? What is the list of ranked languages?</p>
+<p>Can you notice a performance improvement over attempt #1? Why?</p>
+<h3>Rank languages attempt #3: <code>rankLangsReduceByKey</code></h3>
+<p>In the case where the inverted index from above is only used for computing the ranking 
+and for no other task (full-text search, say), it is more efficient to use the <code>reduceByKey</code> 
+method to compute the ranking directly, without first computing an inverted index. 
+Note that the <code>reduceByKey</code> method is only defined for RDDs containing pairs 
+(each pair is interpreted as a key-value pair).</p>
+<p>Implement the <code>rankLangsReduceByKey</code> method, this time computing the ranking without 
+the inverted index, using <code>reduceByKey</code>.</p>
+<p>Like in part 1 and 2, <code>rankLangsReduceByKey</code> should compute a list of pairs where the 
+second component of the pair is the number of articles that mention the language 
+(the first component of the pair is the name of the language).</p>
+<p>Again, the list should be sorted in descending order. That is, according to this ranking, 
+the pair with the highest second component (the count) should be the first element of the list.</p>
+<p><em>Hint:</em> method <code>mapValues</code> on <code>PairRDD</code> could be useful for this part.</p>
+<p>How much does the code take? What is the list of ranked languages?</p>
+<p>Can you notice an improvement in performance compared to measuring both the computation of
+the index and the computation of the ranking as we did in attempt #2? If so, can you think of a reason?</p>
+
       
     </body>
   </html>
