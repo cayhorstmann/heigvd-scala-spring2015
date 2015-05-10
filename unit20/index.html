@@ -1,0 +1,812 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'/> 
+    <title>Borran/Fatemi/Horstmann Scala Unit 20</title> 
+    <link href='http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <link href='../MySlidy/style.css' media='screen, projection, print' rel='stylesheet' type='text/css'/> 
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
+   </head>
+</html >  
+<html >  
+    <h1>Programmation appliquée en Scala</h1> 
+    <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
+    <div class='license'>
+      <p>Copyright © Cay S. Horstmann 2015 <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' src='https://i.creativecommons.org/l/by/4.0/88x31.png'/></a><br/>This work is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a> </p> 
+    </div> 
+
+<h1 id="what-weve-seen-so-far">What we’ve seen so far</h1>
+
+
+<p> <i>Note: The content of this unit is adapted from the slides of the course "Parallel Programming and Data Analysis" <br>
+by Heather Miller at EPFL.</i></p>
+<p>
+<strong>Spark’s Programming Model</strong> <br>
+</p>
+
+<ul>
+<li>We saw that, at a glance, Spark looks like Scala collections</li>
+<li>However, interally, Spark behaves differently than Scala collections <br>
+<ul><li>Spark uses <em><strong>laziness</strong></em> to save time and memory</li></ul></li>
+<li>We saw <em>transformations</em> and <em>actions</em></li>
+<li>We saw caching and persistence (<em>i.e.,</em> cache in memory, save time!)</li>
+<li>We saw how the cluster topology comes into the programming model</li>
+<li>We got a sampling of Spark’s key-value pairs (Pair RDDs)</li>
+</ul>
+
+
+
+<h1 id="today">In this unit...</h1>
+
+<ol>
+<li>Reduction operations in Spark vs Scala collections</li>
+<li>More on Pair RDDs (key-value pairs)</li>
+<li>We’ll get a glimpse of what “shuffling” is, and why it hits performance (latency)</li>
+</ol>
+
+
+
+<h1 id="reduction-operations">Reduction Operations</h1>
+
+<p>Spark provides a subset of the reduction operations of Scala.</br>
+In fact, not all reduction operations are parallelizable.</p>
+
+<p>Take the two operations, <code>fold</code> and <code>foldLeft</code>. Which of these two were parallelizable?</p>
+
+<p><code><pre>
+def foldLeft[B](z: B)(f: (B, A) => B): B
+</pre></code></p>
+<p><pre><code>def fold(z: A)(f: (A, A) =&gt; A): A</code></pre></p>
+
+
+<h1 id="reduction-operations">Non-Parallelizable Operations</h1>
+
+<p>Spark provides a subset of the reduction operations of Scala.</br>
+In fact, not all reduction operations are parralizable.</p>
+
+<p>Let's examine the <code>foldLeft</code> signature.</p>
+
+<p><code><pre>
+def foldLeft[B](z: B)(f: (B, A) => B): B
+</pre></code></p>
+
+<p><image src="ba-b.png" width="40%" height="auto"/></p>
+
+<h1 id="reduction-operations">Non-Parallelizable Operations</h1>
+
+<p>Spark provides a subset of the reduction operations of Scala.</br>
+In fact, not all reduction operations are parralizable.</p>
+
+<p>Let's examine the <code>foldLeft</code> signature.</p>
+
+<p><code><pre>
+def foldLeft[B](z: B)(f: (B, A) => B): B
+</pre></code></p>
+
+<p><image src="ba-b.png" width="40%" height="auto"/></p>
+<p><strong><code>foldLeft</code> is not parallelizable.</strong></p>
+<p> Operations <code>foldRight, reduceLeft, reduceRight, scanLeft</code> and <code>scanRight</code> 
+<br>similarly must process elements sequentially.</p>
+
+<h1 id="reduction-operations-1">Non-Parallelizable Operations</h1>
+
+<p>Being able to change the result type from <code>A</code> to <code>B</code> forces us to have to <br>
+execute <code>foldLeft</code> sequentially from left to right.</p>
+
+<p>Concretely, given:</p>
+
+<pre><code>val xs = List(1, 2, 3)
+val res = xs.foldLeft("")((str: String, i: Int) =&gt; str + i)
+</code></pre>
+
+<p>What happens if we try to break this collection in two and parallelize?</p>
+
+
+
+
+<h1 id="reduction-operations-fold">Reduction Operations: Fold</h1>
+
+<p><code>fold</code> enables us to parallelize things, but it restricts us to always <br>
+returning the same type.</p>
+
+<pre><code>def fold(z: A)(f: (A, A) =&gt; A): A
+</code></pre>
+
+<p><image src="bb-b-operator.png" width="40%" height="auto"/></p>
+
+<p>**It enables us to parallelize using a single function <code>f</code> by enabling us to <br>
+build parallelizable reduce trees.**</p>
+
+
+
+<h1 id="reduction-operations-fold-1">Reduction Operations: Fold</h1>
+
+<p>**It enables us to parallelize using a single function <code>f</code> by enabling us to <br>
+build parallelizable reduce trees.**</p>
+
+<pre><code>def fold(z: A)(f: (A, A) =&gt; A): A
+</code></pre>
+
+<p><image src="bb-b.png" width="40%" height="auto"</p>
+
+
+
+<h1 id="reduction-operations-aggregate">Reduction Operations: Aggregate</h1>
+
+<p>Has someone already used the <code>aggregate</code> operation?</p>
+
+<pre><code>aggregate[B](z: =&gt; B)(seqop: (B, A) =&gt; B, combop: (B, B) =&gt; B): B
+</code></pre>
+
+<p><code>aggregate</code> is said to be general because it gets you the best of  both <br>
+worlds.</p>
+
+<p><strong>Properties of <code>aggregate</code></strong></p>
+
+<ol>
+<li>Parallelizable.</li>
+<li>Possible to change the return type.</li>
+</ol>
+
+
+
+<h1 id="reduction-operations-aggregate-1">Reduction Operations: Aggregate</h1>
+
+<pre><code>aggregate[B](z: =&gt; B)(seqop: (B, A) =&gt; B, combop: (B, B) =&gt; B): B
+</code></pre>
+
+<p><image src="aggregate.png" width="40%" height="auto" /></p>
+
+<p>Aggregate lets you still do sequential-style folds <em>in chunks</em> which change <br>
+the result type. Additionally requiring the <code>combop</code> function enables building <br>
+one of these nice reduce trees that we saw is possible with <code>fold</code> to combine <br>
+these chunks in parallel.</p>
+
+
+<h1 id="reduction-operations-on-rdds">Reduction Operations on RDDs</h1>
+<table>
+<tr>
+   <td width="20%"><b>Scala collections:</b></td>
+   <td width="25%"><b>Spark:</b></td>
+</tr>
+<tr>
+   <td>fold</td>
+   <td>fold</td>
+</tr>
+<tr>
+   <td>foldLeft/foldRight</td>
+   <td>- </td>
+</tr>
+<tr>
+   <td>reduce</td>
+   <td>reduce</td>
+</tr>
+<tr>
+   <td>aggregate</td>
+   <td>aggregate</td>
+</tr>
+</table>
+
+<p>Spark doesn’t even give you the option to use <code>foldLeft</code>/<code>foldRight</code>. Which <br>
+means that if you have to change the return type of your reduction operation, <br>
+your only choice is to use <code>aggregate</code>.</p>
+
+<h1 id="rdd-reduction-operations-aggregate">RDD Reduction Operations: Aggregate</h1>
+
+<p>In Spark, <code>aggregate</code> is a more desirable reduction operator a majority of the <br>
+time.</p>
+
+<p>As you will realize from experimenting with Spark
+, much of the time when working with large-scale data, our goal is to 
+<b>project down from larger/more complex data types</b></p>
+
+<p><strong>Example:</strong></p>
+
+<pre><code>case class WikipediaPage(
+  title: String,
+  redirectTitle: String,
+  timestamp: String,
+  lastContributorUsername: String,
+  text: String)
+</code></pre>
+
+<p>We might only care about <code>title</code> and 
+<code>timestamp</code>, for example. In this case, it’d save a lot of time/memory <br>
+to not have to carry around the full-text of each article in <br>
+our accumulator!</p>
+
+<h1 id="pair-rdds-key-value-pairs">Pair RDDs (Key-Value Pairs)</h1>
+
+<p><b>Key-value pairs are known as Pair RDDs in Spark.</b></p>
+
+<p>When an RDD is created with a pair as its element type, Spark automatically <br>
+adds a number of extra useful additional methods (extension methods) for such <br>
+pairs.</p>
+
+
+
+<h1 id="pair-rdds-key-value-pairs-1">Pair RDDs (Key-Value Pairs)</h1>
+
+<p><b>Creating a Pair RDD</b> <br>
+<p>Pair RDDs are most often created from already-existing non-pair RDDs, <br>
+for example by using the <code>map</code> operation on RDDs:</p>
+
+<pre><code>val rdd: RDD[WikipediaPage] = ...
+
+
+val pairRdd = ???
+</code></pre>
+
+
+
+<h1 id="pair-rdds-key-value-pairs-2">Pair RDDs (Key-Value Pairs)</h1>
+
+<p><b>Creating a Pair RDD</b> <br>
+<p>Pair RDDs are most often created from already-existing non-pair RDDs, <br>
+for example by using the <code>map</code> operation on RDDs:</p>
+
+<pre><code>val rdd: RDD[WikipediaPage] = ...
+
+// Has type: org.apache.spark.rdd.RDD[(String, String)]
+val pairRdd = rdd.map(page =&gt; (page.title, page.text))
+</code></pre>
+
+<p>Once created, you can now use transformations specific to key-value pairs such <br>
+as <code>reduceByKey</code>, <code>groupByKey</code>, and <code>join</code></p>
+
+
+
+<h1 id="some-interesting-pair-rdds-operations">Some interesting Pair RDDs operations</h1>
+
+<p><strong>Transformations</strong></p>
+
+<ul>
+<li><code>groupByKey</code></li>
+<li><code>reduceByKey</code></li>
+<li><code>join</code></li>
+<li><code>leftOuterJoin</code>/<code>rightOuterJoin</code></li>
+</ul>
+
+<p><strong>Action</strong></p>
+
+<ul>
+<li><code>countByKey</code></li>
+</ul>
+
+
+
+<h1 id="pair-rdd-transformation-groupbykey">Pair RDD Transformation: <code>groupByKey</code></h1>
+
+<p>Recall <code>groupBy</code> from Scala collections. <code>groupByKey</code> can be thought of as a <br>
+<code>groupBy</code> on Pair RDDs that is specialized on grouping all values that have <br>
+the same key. As a result, it takes no argument.</p>
+
+<pre><code>def groupByKey(): RDD[(K, Iterable[V])]
+</code></pre>
+
+<p><strong>Example</strong>:</p>
+
+<pre><code>case class Event(organizer: String, name: String, budget: Int)
+val eventsRdd = sc.parallelize(...)
+                  .map(event =&gt; (event.organizer, event.budget))
+
+val groupedRdd = eventsRdd.groupByKey()
+</code></pre>
+
+<p>Here the key is <code>organizer</code>. What does this call do?</p>
+<!--TRICK QUESTION! As-is, it "does" nothing. It returns an unevaluated RDD-->
+
+
+<h1 id="pair-rdd-transformation-groupbykey-1">Pair RDD Transformation: <code>groupByKey</code></h1>
+
+<p><strong>Example</strong>:</p>
+
+<pre><code>case class Event(organizer: String, name: String, budget: Int)
+val eventsRdd = sc.parallelize(...)
+                  .map(event =&gt; (event.organizer, event.budget))
+
+val groupedRdd = eventsRdd.groupByKey()</br>
+groupedRdd.collect().foreach(println)
+// (Prime Sound,CompactBuffer(42000))
+// (Sportorg,CompactBuffer(23000, 12000, 1400))
+// ...
+</code></pre>
+
+
+
+
+<h1 id="pair-rdd-transformation-reducebykey">Pair RDD Transformation: <code>reduceByKey</code></h1>
+
+<p>Conceptually, <code>reduceByKey</code> can be thought of as a combination of <code>groupByKey</code> <br>
+and <code>reduce</code>-ing on all the values per key. It’s more efficient though, than <br>
+using each separately. (We’ll see why later.)</p>
+
+<pre><code>def reduceByKey(func: (V, V) =&gt; V): RDD[(K, V)]
+</code></pre>
+
+<p><strong>Example:</strong> Let’s use <code>eventsRdd</code> from the previous example to calculate  the <br>
+total budget per organizer of all of their organized events.</p>
+
+<pre><code>case class Event(organizer: String, name: String, budget: Int)
+val eventsRdd = sc.parallelize(...)
+                  .map(event =&gt; (event.organizer, event.budget))
+
+val budgetsRdd = ...
+</code></pre>
+
+
+
+<h1 id="pair-rdd-transformation-reducebykey-1">Pair RDD Transformation: <code>reduceByKey</code></h1>
+
+<p><strong>Example:</strong> Let’s use <code>eventsRdd</code> from the previous example to calculate  the <br>
+total budget per organizer of all of their organized events.</p>
+
+<pre><code>case class Event(organizer: String, name: String, budget: Int)
+val eventsRdd = sc.parallelize(...)
+                  .map(event =&gt; (event.organizer, event.budget))
+
+val budgetsRdd = eventsRdd.reduceByKey(_+_)
+
+reducedRdd.collect().foreach(println)
+// (Prime Sound,42000)
+// (Sportorg,36400)
+// (Innotech,320000)
+// (Association Balélec,50000)
+</code></pre>
+
+
+
+
+<h1 id="pair-rdd-transformation-mapvalues-and-action-countbykey">Pair RDD Transformation: <code>mapValues</code> and Action: <code>countByKey</code></h1>
+
+<pre><code>def mapValues[U](f: (V) ⇒ U): RDD[(K, U)]</code></pre> 
+
+<p><code>mapValues</code> can be  thought of as a short-hand for:</p>
+<pre><code>rdd.map { case (x, y): (x, func(y))}
+</code></pre>
+
+<p>That is, it simply applies a function to only the values in a Pair RDD.</p>
+
+<p><strong><code>countByKey</code></strong> (<code>def countByKey(): Map[K, Long]</code>) simply counts the number <br>
+of  elements per key in a Pair RDD, returning a normal Scala <code>Map</code> (remember, <br>
+it’s an action!) mapping from keys to counts.</p>
+
+
+
+<h1 id="pair-rdd-transformation-mapvalues-and-action-countbykey-1">Pair RDD Transformation: <code>mapValues</code> and Action: <code>countByKey</code></h1>
+
+
+<p><strong>Example:</strong> we can use each of these operations to compute the average budget <br>
+per event organizer.</p>
+
+<pre><code>// Calculate a pair (as a key's value) containing (budget, #events)
+val intermediate =
+  eventsRdd.mapValues(b =&gt; (b, 1))
+           .reduceByKey((v1, v2) =&gt; (v1._1 + v2._1, v1._2 + v2._2))
+// intermediate: RDD[(String, (Int, Int))]
+
+val avgBudgets = ???
+</code></pre>
+
+
+
+<h1 id="pair-rdd-transformation-mapvalues-and-action-countbykey-2">Pair RDD Transformation: <code>mapValues</code> and Action: <code>countByKey</code></h1>
+
+<p><strong>Example:</strong> we can use each of these operations to compute the average budget <br>
+per event organizer.</p>
+
+<pre><code>// Calculate a pair (as a key's value) containing (budget, #events)
+val intermediate =
+  eventsRdd.mapValues(b =&gt; (b, 1))
+           .reduceByKey((v1, v2) =&gt; (v1._1 + v2._1, v1._2 + v2._2))
+// intermediate: RDD[(String, (Int, Int))]
+
+val avgBudgets = intermediate.mapValues {
+  case (budget, numberOfEvents) =&gt; budget / numberOfEvents
+}
+avgBudgets.collect().foreach(println)
+// (Prime Sound,42000)
+// (Sportorg,12133)
+// (Innotech,106666)
+// (Association Balélec,50000)
+</code></pre>
+
+
+
+<h1 id="joins">Joins</h1>
+
+<p>Joins are another sort of transformation on Pair RDDs. They’re used to combine <br>
+multiple datasets They are one of the most commonly-used operations on Pair <br>
+RDDs!</p>
+
+<p>There are two kinds of joins:</p>
+
+<ul>
+<li>Inner joins (<code>join</code>)</li>
+<li>Outer joins (<code>leftOuterJoin</code>/<code>rightOuterJoin</code>)</li>
+</ul>
+
+<p>The difference between the two types of joins is exactly the same as in databases</p>
+
+
+<h1 id="inner-joins-join">Inner Joins (<code>join</code>)</h1>
+
+<p>Inner joins return a new RDD containing combined pairs whose keys are present in both input RDDs.</p>
+
+<pre><code>def join[W](other: RDD[(K, W)]): RDD[(K, (V, W))]
+</code></pre>
+
+<p><strong>Example:</strong> Let’s pretend the CFF has two datasets. One RDD representing <br>
+customers  and their subscriptions (<code>abos</code>), and another representing <br>
+customers and cities they frequently travel to (<code>locations</code>). (<em>E.g.,</em> <br>
+gathered from CFF smartphone app.)</p>
+
+<p>How do we combine only customers that have a subscription and where there is <br>
+location info?</p>
+
+<pre><code>val abos = ... // RDD[(Int, (String, Abonnement))]
+val locations = ... // RDD[(Int, String)]
+
+val trackedCustomers = ???
+</code></pre>
+
+
+
+<h1 id="inner-joins-join-1">Inner Joins (<code>join</code>)</h1>
+
+<p><strong>Example:</strong> Let’s pretend the CFF has two datasets. One RDD representing <br>
+customers  and their subscriptions (<code>abos</code>), and another representing <br>
+customers and cities they frequently travel to (<code>locations</code>). (<em>E.g.,</em> <br>
+gathered from CFF smartphone app.)</p>
+
+<p>How do we combine only customers that have a subscription and where there is <br>
+location info?</p>
+
+<pre><code>val abos = ... // RDD[(Int, (String, Abonnement))]
+val locations = ... // RDD[(Int, String)]
+
+val trackedCustomers = abos.join(locations)
+// trackedCustomers: RDD[(Int, ((String, Abonnement), String))]
+</code></pre>
+
+
+
+<h1 id="inner-joins-join-2">Inner Joins (<code>join</code>)</h1>
+
+<p><strong>Example continued with concrete data:</strong></p>
+
+<pre><code>val as = List((101, ("Ruetli", AG)), (102, ("Brelaz", DemiTarif)),
+              (103, ("Gress", DemiTarifVisa)), (104, ("Schatten", DemiTarif)))
+val abos = sc.parallelize(as)
+
+val ls = List((101, "Bern"), (101, "Thun"), (102, "Lausanne"), (102, "Geneve"),
+              (102, "Nyon"), (103, "Zurich"), (103, "St-Gallen"), (103, "Chur"))
+vals locations = sc.parallelize(ls)
+
+val trackedCustomers = abos.join(locations)
+// trackedCustomers: RDD[(Int, ((String, Abonnement), String))]
+</code></pre>
+
+
+
+<h1 id="inner-joins-join-3">Inner Joins (<code>join</code>)</h1>
+
+<p><strong>Example continued with concrete data:</strong></p>
+
+<pre><code>trackedCustomers.collect().foreach(println)
+// (101,((Ruetli,AG),Bern))
+// (101,((Ruetli,AG),Thun))
+// (102,((Brelaz,DemiTarif),Nyon))
+// (102,((Brelaz,DemiTarif),Lausanne))
+// (102,((Brelaz,DemiTarif),Geneve))
+// (103,((Gress,DemiTarifVisa),St-Gallen))
+// (103,((Gress,DemiTarifVisa),Chur))
+// (103,((Gress,DemiTarifVisa),Zurich))
+</code></pre>
+
+<p>What happened to customer 104?</p>
+
+
+
+<h1 id="resources-to-learn-more-operations-on-pair-rdds">Resources to learn more operations on Pair RDDs</h1>
+
+<p><strong>Book</strong></p>
+
+<p>The <em>Learning Spark</em> book is the most complete reference.</p>
+
+<p><strong>Free</strong></p>
+
+<ul>
+  <li><a href="http://spark.apache.org/docs/1.2.1/programming-guide.html"><b>Spark Programming Guide</b></a></br>
+  Contains compact overview of Spark's programming model. Lists table of all transformers vs
+  accessors, for example. However, doesn't go into a lot of detail about individual operations.
+  </li>
+  <li><a href="https://spark.apache.org/docs/latest/api/scala/index.html#package"><b>Spark
+  API Docs</b></a></br>
+  Look for class PairRDDFunctions for all possible operations on Pair RDDs.
+  </li>
+</ul>
+
+<h1 id="today">Optimizing...</h1>
+
+<p>Now that we understand Spark’s programming model, and a majority of Spark’s <br>
+key operations, we’ll now see how we can optimize what we do with Spark to <br>
+keep it practical.</p>
+
+<p>It’s very easy to write clear code that takes tens of minutes to compute when <br>
+it could be computed in only tends of seconds!</p>
+<h1 id="grouping-and-reducing-example">Grouping and Reducing, Example</h1>
+
+<p>Let’s start with an example. Given:</p>
+
+<pre><code>case class CFFPurchase(customerId: Int, destination: String, price: Double)
+</code></pre>
+
+<p>Assume we have an RDD of the purchases that users of the CFF mobile app have <br>
+made in the past month.</p>
+
+<pre><code>val purchasesRdd: RDD[CFFPurchase] = sc.textFile(...)
+</code></pre>
+
+<p><b>Goal: calculate how many trips, and how much money <br>
+was spent by each individual customer over the course of the month.</b></p>
+
+
+
+<h1 id="grouping-and-reducing-example-1">Grouping and Reducing, Example</h1>
+
+<p>**Goal: calculate how many trips, and how much money was spent by each <br>
+individual customer over the course of the month.**</p>
+
+<pre><code>val purchasesRdd: RDD[CFFPurchase] = sc.textFile(...)
+
+
+val purchasesPerMonth = ...
+</code></pre>
+
+
+
+<h1 id="grouping-and-reducing-example-2">Grouping and Reducing, Example</h1>
+
+<p>**Goal: calculate how many trips, and how much money was spent by each <br>
+individual customer over the course of the month.**</p>
+
+<pre><code>val purchasesRdd: RDD[CFFPurchase] = sc.textFile(...)
+
+
+val purchasesPerMonth =
+  purchasesRdd.map(p =&gt; (p.customerId, p.price)) // Pair RDD
+</code></pre>
+
+
+
+<h1 id="grouping-and-reducing-example-3">Grouping and Reducing, Example</h1>
+
+<p>**Goal: calculate how many trips, and how much money was spent by each <br>
+individual customer over the course of the month.**</p>
+
+<pre><code>val purchasesRdd: RDD[CFFPurchase] = sc.textFile(...)
+
+
+val purchasesPerMonth =
+  purchasesRdd.map(p =&gt; (p.customerId, p.price)) // Pair RDD
+              .groupByKey() // groupByKey returns RDD[K, Iterable[V]]
+</code></pre>
+
+
+
+<h1 id="grouping-and-reducing-example-4">Grouping and Reducing, Example</h1>
+
+<p>**Goal: calculate how many trips, and how much money was spent by each <br>
+individual customer over the course of the month.**</p>
+
+<pre><code>val purchasesRdd: RDD[CFFPurchase] = sc.textFile(...)
+
+// Returns: Array[(Int, (Int, Double))]
+val purchasesPerMonth =
+  purchasesRdd.map(p =&gt; (p.customerId, p.price)) // Pair RDD
+              .groupByKey() // groupByKey returns RDD[K, Iterable[V]]
+              .map(p =&gt; (p._1, (p._2.size, p._2.sum)))
+              .collect()
+</code></pre>
+
+
+
+<h1 id="grouping-and-reducing-example-whats-happening">Grouping and Reducing, Example – What’s Happening?</h1>
+
+<p>Let’s start with an example dataset:</p>
+
+<pre><code>val purchases = List(CFFPurchase(100, "Geneva", 22.25),
+                     CFFPurchase(300, "Zurich", 42.10),
+                     CFFPurchase(100, "Fribourg", 12.40),
+                     CFFPurchase(200, "St. Gallen", 8.20),
+                     CFFPurchase(100, "Lucerne", 31.60),
+                     CFFPurchase(300, "Basel", 16.20))
+</code></pre>
+
+<p>What might the cluster look like with this data distributed over it?</p>
+
+
+
+<h1 id="grouping-and-reducing-example-whats-happening-1">Grouping and Reducing, Example – What’s Happening?</h1>
+
+<p>What might the cluster look like with this data distributed over it?</p>
+
+<p>Starting with <code>purchasesRdd</code>:</p>
+
+<p><image src="week20-02.pdf" /></p>
+
+
+
+<h1 id="grouping-and-reducing-example-whats-happening-2">Grouping and Reducing, Example – What’s Happening?</h1>
+
+<p>What might this look like on the cluster?</p>
+
+<p><image src="week20-03.pdf" /></p>
+
+
+
+<h1 id="grouping-and-reducing-example-5">Grouping and Reducing, Example</h1>
+
+<p>**Goal: calculate how many trips, and how much money was spent by each <br>
+individual customer over the course of the month.**</p>
+
+<pre><code>val purchasesRdd: RDD[CFFPurchase] = sc.textFile(...)
+
+
+val purchasesPerMonth =
+  purchasesRdd.map(p =&gt; (p.customerId, p.price)) // Pair RDD
+              .groupByKey() // groupByKey returns RDD[K, Iterable[V]]
+</code></pre>
+
+
+<p><b>Note: groupByKey results in one key-value pair per key. 
+</br>And this single key-value pair cannot span across multiple worker nodes.</b></p>
+
+
+
+<h1 id="grouping-and-reducing-example-whats-happening-3">Grouping and Reducing, Example – What’s Happening?</h1>
+
+<p>What might this look like on the cluster?</p>
+
+<p><image src="week20-03.pdf" /></p>
+
+
+
+<h1 id="grouping-and-reducing-example-whats-happening-4">Grouping and Reducing, Example – What’s Happening?</h1>
+
+<p>What might this look like on the cluster?</p>
+
+<p><image src="week20-04.pdf" /></p>
+
+
+
+<h1 id="grouping-and-reducing-example-whats-happening-5">Grouping and Reducing, Example – What’s Happening?</h1>
+
+<p>What might this look like on the cluster?</p>
+
+<p><image src="week20-05.pdf" /></p>
+<p>But, we don’t want to be sending all of our data over the network if it’s not absolutely required. 
+</br>Too much network communication kills performance.
+</p>
+
+
+<h1 id="can-we-do-a-better-job">Can we do a better job?</h1>
+
+<p>Perhaps we don’t need to send all pairs over the network.</p>
+
+<p><image src="week20-03.pdf" /></p>
+
+<p>Perhaps we can reduce before we shuffle. This could greatly reduce the amount of data we have to send over the network.</p>
+
+
+
+<h1 id="grouping-and-reducing-example-optimized">Grouping and Reducing, Example – Optimized</h1>
+
+<p>We can use <code>reduceByKey</code>.</p>
+
+<p>Conceptually, <code>reduceByKey</code> can be thought of as a combination of first doing <br>
+<code>groupByKey</code> and then <code>reduce</code>-ing on all the values grouped per key. It’s <br>
+more efficient though, than using each separately. We’ll see how in the <br>
+following example.</p>
+
+
+<p><strong>Signature:</strong></p>
+
+<pre><code>def reduceByKey(func: (V, V) =&gt; V): RDD[(K, V)]
+</code></pre>
+
+
+
+<h1 id="grouping-and-reducing-example-optimized-1">Grouping and Reducing, Example – Optimized</h1>
+
+<p><strong>Goal:</strong> calculate how many trips, and how much money was spent by each <br>
+individual customer over the course of the month.</p>
+
+<pre><code>val purchasesRdd: RDD[CFFPurchase] = sc.textFile(...)
+
+val purchasesPerMonth =
+  purchasesRdd.map(p =&gt; (p.customerId, (1, p.price))) // Pair RDD
+              .reduceByKey(...) // ?
+</code></pre>
+
+
+
+<p>Notice that the function passed to <code>map</code> has changed. <br>
+It’s now <code>p =&gt; (p.customerId, (1, p.price))</code></p>
+
+<p>**What function do we pass to <code>reduceByKey</code> in order to get a result that <br>
+looks like: <code>(customerId, (numTrips, totalSpent))</code> returned?**</p>
+
+
+
+<h1 id="grouping-and-reducing-example-optimized-2">Grouping and Reducing, Example – Optimized</h1>
+
+<pre><code>val purchasesPerMonth =
+  purchasesRdd.map(p =&gt; (p.customerId, (1, p.price))) // Pair RDD
+              .reduceByKey(...) // ?
+</code></pre>
+
+
+<p>Recall that we’re reducing over the <em>values per key</em>.</p>
+
+<p>Since our values are an <code>Iterable[(Int, Double)]</code>, the function that we pass <br>
+to <code>reduceByKey</code> must reduce over two such pairs.</p>
+
+
+
+<h1 id="grouping-and-reducing-example-optimized-3">Grouping and Reducing, Example – Optimized</h1>
+
+<pre><code>val purchasesPerMonth =
+  purchasesRdd.map(p =&gt; (p.customerId, (1, p.price))) // Pair RDD
+              .reduceByKey((v1, v2) =&gt; (v1._1 + v2._1, v1._2 + v2._2))
+              .collect()
+</code></pre>
+
+
+<p>What might this look like on the cluster?</p>
+
+
+
+<h1 id="grouping-and-reducing-example-optimized-4">Grouping and Reducing, Example – Optimized</h1>
+
+<p>What might this look like on the cluster?</p>
+
+<p><image src="week20-07.pdf" /></p>
+
+
+
+<h1 id="grouping-and-reducing-example-optimized-5">Grouping and Reducing, Example – Optimized</h1>
+
+<p>What might this look like on the cluster?</p>
+<p><image src="week20-08-2.pdf" /></p>
+
+
+
+<h1 id="grouping-and-reducing-example-optimized-6">Grouping and Reducing, Example – Optimized</h1>
+
+<p>What might this look like on the cluster?</p>
+
+<p><image src="week20-09.pdf" /></p>
+
+
+
+<h1 id="grouping-and-reducing-example-optimized-7">Grouping and Reducing, Example – Optimized</h1>
+
+<p><b>What are the benefits of this approach?</b></p>
+
+<p>By reducing the dataset first, the amount of data sent over the network during <br>
+the shuffle is greatly reduced.</p>
+
+<p>This can result in non-trival gains in performance! <br>
+
+
+<h1 id="groupbykey-and-reducebykey-running-times"><code>groupByKey</code> and <code>reduceByKey</code> Running Times</h1>
+<strong>Benchmark results on a real cluster:</strong>
+<p><image src="week20-06.pdf" /></p>
+
+    
+</body>
+</html>
