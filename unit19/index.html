@@ -9,8 +9,8 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
     <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
    </head>
-</html >  
-<html >  
+ 
+<body >  
     <h1>Programmation appliquée en Scala</h1> 
     <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
@@ -63,19 +63,12 @@ Latency cannot be masked completely; it will be an important aspect that also im
 
 <p>What does <strong>distributed</strong> data-parallel look like?</p>
 
-<p><script type="math/tex; mode=display" id="MathJax-Element-4">\begin{columns}[T] % contents are top vertically aligned
-\begin{column}[T]{0.48\linewidth}
-  \vspace{0.5cm}
-  {\bf\centering Shared memory:}
-  \includegraphics[scale=0.4]{images/week19-07.eps}
-\end{column}
-\begin{column}[T]{0.48\linewidth}
-  \vspace{0.5cm}
-  {\bf\centering Distributed:}
-  \includegraphics[scale=0.4]{images/week19-08.eps}
-\end{column}
-\end{columns}</script></p>
-
+<table>
+  <tr> 
+     <td width="500"> <image width="50%" height=auto src="./week19-07.jpg"></td>
+    <td width="500"> <image width="50%" height= auto src="./week19-08.jpg"></td>
+  </tr>
+</table>
 
 <p><strong>Shared memory case:</strong> Data-parallel programming model. Data partitioned in <br>
 memory and operated upon in parallel.</p>
@@ -85,22 +78,20 @@ between  machines, network in between, operated upon in parallel.</p>
 
 
 <h1 id="apache-spark">Apache Spark</h1>
-
+<image src="spark-logo.png" align="right">
 <p>Throughout this part of the course we will use the <b>Apache Spark</b>
   framework for distributed data-parallel programming.
 <p>Spark implements a distributed data parallel model called <b>Resilient Distributed Datasets (RDDs)</b></p>
 
-<!-- \includegraphics[scale=0.6]{images/week19-09.eps} -->
 
 
 
 <h1 id="book">Book</h1>
 
-<p>\centering <br>
-\includegraphics[scale=0.25]{images/learning-spark.jpg}</p>
+<center><image src="learning-spark.jpg" width="25%" height="auto"/></center>
 
-<p><em>Learning Spark</em> by Holden Karau, Andy Konwinski, Patrick Wendell &amp; <br>
-Matei Zaharia. O’Reilly, February 2015.</p>
+<center><p><em>Learning Spark</em> by Holden Karau, Andy Konwinski, Patrick Wendell &amp; <br>
+Matei Zaharia. O’Reilly, February 2015.</p></center>
 
 <h1 id="resilient-distributed-datasets-rdds">Resilient Distributed Datasets (RDDs)</h1>
 
@@ -270,8 +261,7 @@ returned or saved to an external storage system (e.g., HDFS). <br></p>
 <h1 id="transformations-and-actions-1">Transformations and Actions</h1>
 <p>Transformations are <i>lazy</i>, their result RDD is not immediately computed.</p>
 <p>They are <i>eager</i>, their result is immediately computed.</p>
-<p>\vspace{0.3cm} <br>
-\includegraphics[scale=0.6]{images/week19-10.eps}</p>
+<image src="week19-10.jpg" width="50%" height="auto">
 
 <h1 id="exercise">Quiz</h1>
 
@@ -326,10 +316,8 @@ val first10 = people.take(10)
 <p>A Spark application is run using a set of processes on a cluster. All these processes are <br>
 coordinated by the <em><strong>driver program</strong></em>.</p>
 
-<p>\centering <br>
-\includegraphics[scale=0.26]{images/week19-11.png}</p>
+<center><image src="week19-11.jpg" width="30%" height="auto"></center>
 
-<p>\footnotesize</p>
 
 <ol>
 <li>The driver program runs the Spark application, which creates a <code>SparkContext</code> upon start-up.</li>
