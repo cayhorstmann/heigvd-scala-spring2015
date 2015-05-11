@@ -636,7 +636,7 @@ val purchasesPerMonth =
 
 <p>Starting with <code>purchasesRdd</code>:</p>
 
-<p><image src="week20-02.pdf" /></p>
+<p><image src="week20-02.png" width="80%" height="auto"/></p>
 
 
 
@@ -644,7 +644,7 @@ val purchasesPerMonth =
 
 <p>What might this look like on the cluster?</p>
 
-<p><image src="week20-03.pdf" /></p>
+<p><image src="week20-03.png" width="80%" height="auto" /></p>
 
 
 
@@ -671,7 +671,7 @@ val purchasesPerMonth =
 
 <p>What might this look like on the cluster?</p>
 
-<p><image src="week20-03.pdf" /></p>
+<p><image src="week20-03.png" width="80%" height="auto"/></p>
 
 
 
@@ -679,7 +679,7 @@ val purchasesPerMonth =
 
 <p>What might this look like on the cluster?</p>
 
-<p><image src="week20-04.pdf" /></p>
+<p><image src="week20-04.png" width="80%" height="auto"/></p>
 
 
 
@@ -687,7 +687,7 @@ val purchasesPerMonth =
 
 <p>What might this look like on the cluster?</p>
 
-<p><image src="week20-05.pdf" /></p>
+<p><image src="week20-05.png" width="80%" height="auto"/></p>
 <p>But, we don’t want to be sending all of our data over the network if it’s not absolutely required. 
 </br>Too much network communication kills performance.
 </p>
@@ -697,7 +697,7 @@ val purchasesPerMonth =
 
 <p>Perhaps we don’t need to send all pairs over the network.</p>
 
-<p><image src="week20-03.pdf" /></p>
+<p><image src="week20-03.png" width="80%" height="auto"/></p>
 
 <p>Perhaps we can reduce before we shuffle. This could greatly reduce the amount of data we have to send over the network.</p>
 
@@ -774,14 +774,14 @@ to <code>reduceByKey</code> must reduce over two such pairs.</p>
 
 <p>What might this look like on the cluster?</p>
 
-<p><image src="week20-07.pdf" /></p>
+<p><image src="week20-07.png" width="80%" height="auto" /></p>
 
 
 
 <h1 id="grouping-and-reducing-example-optimized-5">Grouping and Reducing, Example – Optimized</h1>
 
 <p>What might this look like on the cluster?</p>
-<p><image src="week20-08-2.pdf" /></p>
+<p><image src="week20-08-2.png" width="80%" height="auto"/></p>
 
 
 
@@ -789,7 +789,7 @@ to <code>reduceByKey</code> must reduce over two such pairs.</p>
 
 <p>What might this look like on the cluster?</p>
 
-<p><image src="week20-09.pdf" /></p>
+<p><image src="week20-09.png" width="80%" height="auto"/></p>
 
 
 
@@ -805,7 +805,7 @@ the shuffle is greatly reduced.</p>
 
 <h1 id="groupbykey-and-reducebykey-running-times"><code>groupByKey</code> and <code>reduceByKey</code> Running Times</h1>
 <strong>Benchmark results on a real cluster:</strong>
-<p><image src="week20-06.png" /></p>
+<p><image src="week20-06.png" width="80%" height="auto"></p>
 
     
 </body>
