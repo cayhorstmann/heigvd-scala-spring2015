@@ -85,10 +85,6 @@ In fact, not all reduction operations are parrallelizable.</p>
 def foldLeft[B](z: B)(f: (B, A) => B): B
 </pre></code></p>
 
-<p><image src="ba-b.png" width="40%" height="auto"/></p>
-<p><strong><code>foldLeft</code> is not parallelizable.</strong></p>
-<p> Operations <code>foldRight, reduceLeft, reduceRight, scanLeft</code> and <code>scanRight</code> 
-<br>similarly must process elements sequentially.</p>
 
 <h1 id="reduction-operations-1">Non-Parallelizable Operations</h1>
 
@@ -103,7 +99,10 @@ val res = xs.foldLeft("")((str: String, i: Int) =&gt; str + i)
 
 <p>What happens if we try to break this collection in two and parallelize?</p>
 
-
+<p><image src="ba-b.png" width="40%" height="auto"/></p>
+<p><strong><code>foldLeft</code> is not parallelizable.</strong></p>
+<p> Operations <code>foldRight, reduceLeft, reduceRight, scanLeft</code> and <code>scanRight</code> 
+<br>similarly must process elements sequentially.</p>
 
 
 <h1 id="reduction-operations-fold">Reduction Operations: Fold</h1>
