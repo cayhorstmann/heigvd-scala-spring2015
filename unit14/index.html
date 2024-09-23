@@ -9,8 +9,8 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
     <script type='text/javascript' charset='utf-8' src='http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz'></script> 
 
-</html>
-   
+</head>
+<body>   
     <h1>Programmation appliquée en Scala</h1> 
     <p class='fullimage'><img src='../images/cheseaux.jpg'/></p> 
     <div class='license'>
@@ -19,14 +19,14 @@
 
  	<h1 id="handling-nested-sequences">Handling Nested Sequences</h1>
 
-	<p>We can extend the usage of higher order functions on sequences to many <br>
+	<p>We can extend the usage of higher order functions on sequences to many <br/>
 	calculations which are usually expressed using nested loops.</p>
 
 	<p>Example: Given a positive integer <code>n</code>, find all pairs of positive integers <code>i</code> and <code>j</code>, with <code>1 &lt;= j &lt; i &lt; n</code> such that <code>i + j</code> is prime.</p>
 
 	<p>For example, if <code>n = 7</code>, the sought pairs are</p>
 
-    <image src="img.png">
+    <img src="img.png"/>
 	<h1 id="algorithm">Algorithm</h1>
 
 	<p>A natural way to do this is to:</p>
@@ -54,7 +54,7 @@
     <pre><code>  (1 until n) map (i =&gt;
      (1 until i) map (j =&gt; (i, j)))</code></pre>
 	
-	<center><image src="../unit13/collectionHierarchy.png"></center>
+	<center><img src="../unit13/collectionHierarchy.png"/></center>
 
 
 
@@ -128,7 +128,7 @@
 
 	<pre><code>  persons filter (p =&gt; p.age &gt; 20) map (p =&gt; p.name)</code></pre>
 
-	<p>The for-expression is similar to loops in imperative languages, except <br>
+	<p>The for-expression is similar to loops in imperative languages, except <br/>
 	that it builds a list of the results of all iterations.</p>
 
 
@@ -140,19 +140,19 @@
 	<pre><code>  for ( s ) yield e</code></pre>
 	
 
-	<p>where <code>s</code> is a sequence of <i>generators</i> and <i>filters</i>, <br>
+	<p>where <code>s</code> is a sequence of <i>generators</i> and <i>filters</i>, <br/>
 	and <code>e</code> is an expression whose value is returned by an iteration. </p>
 
 	<ul>
-	<li>A <i>generator</i> is of the form <code>p &lt;- e</code>,  <br>
+	<li>A <i>generator</i> is of the form <code>p &lt;- e</code>,  <br/>
 	where <code>p</code> is a pattern and <code>e</code> an expression whose value is a collection. </li>
 	<li>A <i>filter</i> is of the form <code>if f</code> where <code>f</code> is a boolean expression.</li>
 	<li>The sequence must start with a generator.</li>
 	<li>If there are several generators in the sequence, the last generators vary faster than the first.</li>
 	</ul>
 
-	<p>Instead of <code>( s )</code>, braces <code>{ s }</code> can also be used, and then the <br>
-	sequence of generators and filters can be written on multiple lines <br>
+	<p>Instead of <code>( s )</code>, braces <code>{ s }</code> can also be used, and then the <br/>
+	sequence of generators and filters can be written on multiple lines <br/>
 	without requiring semicolons.</p>
 
 
@@ -161,7 +161,7 @@
 
 	<p>Here are two examples which were previously solved with higher-order functions:</p>
 
-	<p>Given a positive integer <code>n</code>, find all the pairs of positive integers <br>
+	<p>Given a positive integer <code>n</code>, find all the pairs of positive integers <br/>
 	<code>(i, j)</code> such that <code>1 &lt;= j &lt; i &lt; n</code>, and <code>i + j</code> is prime.</p>
 
 	<pre><code>   for {
@@ -172,7 +172,7 @@
      
     <h1 id="exercise">Exercise</h1>
 
-	<p>Write a version of <code>scalarProduct</code> (see last session) that makes use of <br>
+	<p>Write a version of <code>scalarProduct</code> (see last session) that makes use of <br/>
 	a <code>for</code>:</p>
 
 	<pre><code>  def scalarProduct(xs: List[Double], ys: List[Double]) : Double =</code></pre>
@@ -228,7 +228,7 @@
 	<h1 id="example-n-queens">Example: N-Queens</h1>
 
 	<p>The eight queens problem is to place eight queens on a chessboard so that no queen is threatened by another.</p>
-	<p><image src="nQueens.gif"></p>
+	<p><img src="nQueens.gif"/></p>
 
 	<p><i>In other words, there can’t be two queens in the same row, column, or diagonal.</i></p>
 
@@ -280,19 +280,21 @@
     <p>It is assumed that the new queen is placed in the next availabale row after the other placed queens (in other words: in row <code>queens.length</code>).</p>
     <p><b>Steps: </b></p>
     <ul>
-       <li>We first need to decode the column and row numbers</br>
+       <li>We first need to decode the column and row numbers<br/>
         => transform the list of column numbers to list of tuples representing row and column numbers </li>
        <li>make sure that for all the queens in the <code>queens</code> list, the new queen given by <code>col</code> is not in check:</li>
+       <li>
         <ul>
        		<li>not in the same column</li>
        		<li>not in diagonal</li>
        </ul>
+       </li>
     </ul>
 
 
 	<h1 id="queries-with-for">Queries with <code>for</code></h1>
 
-	<p>The for notation is essentially equivalent to the common operations of <br>
+	<p>The for notation is essentially equivalent to the common operations of <br/>
 	query languages for databases.</p>
 
 	<p>Example: Suppose that we have a database <code>books</code>, represented as a list of books. </p>
@@ -344,8 +346,8 @@
     if a1 == a2
   } yield a1</code></pre>
 
-	<br>
-	Why do solutions show up twice?</p>
+	<br/>
+	<p>Why do solutions show up twice?</p>
 
 	<p>How can we avoid this?</p>
 
@@ -414,7 +416,6 @@
 		if a1 == a2
 	  } yield a1
 	</code></pre>
---!>	
 
 
 	<h1 id="for-expressions-and-higher-order-functions">For-Expressions and Higher-Order Functions</h1>
@@ -462,7 +463,7 @@
 
 	<p>(and the translation continues with the new expression)</p>
 
-	<p>You can think of <code>withFilter</code> as a variant of <code>filter</code> that does not <br>
+	<p>You can think of <code>withFilter</code> as a variant of <code>filter</code> that does not <br/>
 	produce an intermediate list, but instead filters the following <code>map</code> or <code>flatMap</code> function application.</p>
 
 
@@ -513,10 +514,10 @@
 	
 	<h1 id="generalization-of-for">Generalization of <code>for</code></h1>
 
-	<p>Interestingly, the translation of for is not limited to lists or <br>
+	<p>Interestingly, the translation of for is not limited to lists or <br/>
 	sequences, or even collections; </p>
 
-	<p>It is based solely on the presence of <br>
+	<p>It is based solely on the presence of <br/>
 	the methods <code>map</code>, <code>flatMap</code> and <code>withFilter</code>.</p>
 
 	<p>This lets you use the for syntax for your own types as well – you must only define <code>map</code>, <code>flatMap</code> and <code>withFilter</code> for these types.</p>
@@ -531,7 +532,7 @@
 
 	<p>As long as the client interface to the database defines the methods <code>map</code>, <code>flatMap</code> and <code>withFilter</code>, we can use the <code>for</code> syntax for querying the database.</p>
 
-	<p>This is the basis of the Scala data base connection frameworks <br>
+	<p>This is the basis of the Scala data base connection frameworks <br/>
 	ScalaQuery and Slick.</p>
 
 	<p>Similar ideas underly Microsoft’s LINQ.</p>
@@ -540,7 +541,7 @@
 
 	<p>Another fundamental collection type is the <code>map</code>.</p>
 
-	<p>A map of type <code>Map[Key, Value]</code> is a data structure <br>
+	<p>A map of type <code>Map[Key, Value]</code> is a data structure <br/>
 	that associates keys of type <code>Key</code> with values of type <code>Value</code>.</p>
 
 	<p>Examples:</p>
@@ -552,7 +553,7 @@
 
 	<h1 id="maps-are-iterables">Maps are Iterables</h1>
 
-	<p>Class <code>Map[Key, Value]</code> extends the collection type <br>
+	<p>Class <code>Map[Key, Value]</code> extends the collection type <br/>
 	<code>Iterable[(Key, Value)]</code>.</p>
 
 	<p>Therefore, maps support the same collection operations as other iterables do. </p>
@@ -613,7 +614,7 @@
 
 	<h1 id="decomposing-option">Decomposing Option</h1>
 
-	<p>Since options are defined as case classes, they can be decomposed <br>
+	<p>Since options are defined as case classes, they can be decomposed <br/>
 	using pattern matching:</p>
 
 	<pre><code>  def showCapital(country: String) = capitalOfCountry.get(country) match {
@@ -637,17 +638,17 @@
 	<pre><code>capitalOfCountry getOrElse("Andorra", "&ltunknown&gt;")//> res1: String = "&ltunknown&gt;"
 capitalOfCountry getOrElse("US", "&ltunknown&gt;")     //> res2: String = Washington</code></pre>
 
-	<!--<p>The result type of <code>getOrElse</code> is the upper bound of the Map value and the default value.</p>-->
-	<p>Another possibility is to use the operation <code>withDefaultValue</code> that turns a map into a <br>
+	<p>The result type of <code>getOrElse</code> is the upper bound of the Map value and the default value.</p>-->
+	<p>Another possibility is to use the operation <code>withDefaultValue</code> that turns a map into a <br/>
 	total function:</p>
 
 	<pre><code>  val cap1 = capitalOfCountry withDefaultValue "&lt;unknown&gt;"
   cap1("Andorra")             // "&lt;unknown&gt;"</code></pre>
-    <p>You can take look at different operations in class Map <a href= "http://docs.scala-lang.org/overviews/collections/maps.html">here</a >.
+    <p>You can take look at different operations in class Map <a href= "http://docs.scala-lang.org/overviews/collections/maps.html">here</a >.</p>
 
 	<h1 id="sorted-and-groupby">Sorted and GroupBy</h1>
 
-	<p>Two useful operation of SQL queries in addition to for-expressions are <br>
+	<p>Two useful operation of SQL queries in addition to for-expressions are <br/>
 	<code>groupBy</code> and <code>orderBy</code>.</p>
 
 	<p><code>orderBy</code> on a collection can be expressed by <code>sortWith</code> and <code>sorted</code>.</p>
@@ -656,7 +657,7 @@ capitalOfCountry getOrElse("US", "&ltunknown&gt;")     //> res2: String = Washin
   fruit sortWith (_.length &lt; _.length)  // List("pear", "apple", "orange", "pineapple")
   fruit.sorted      // List("apple", "orange", "pear", "pineapple")</code></pre>
 
-	<p><code>groupBy</code> is available on Scala collections. It partitions a collection <br>
+	<p><code>groupBy</code> is available on Scala collections. It partitions a collection <br/>
 	into a map of collections according to a <em>discriminator function</em> <code>f</code>.</p>
 
 	<p>Example:</p>
@@ -684,7 +685,7 @@ capitalOfCountry getOrElse("US", "&ltunknown&gt;")     //> res2: String = Washin
   
   def + (other: Poly) : Poly = {
     val newKeySet = terms.keySet ++ other.terms.keySet
-	val setOfTuples = for(x <- newKeySet) yield
+	val setOfTuples = for(x &lt;- newKeySet) yield
       ( x -> (terms(x) + other.terms(x)))
 	new Poly(setOfTuples.toMap)
   } 
@@ -699,8 +700,8 @@ capitalOfCountry getOrElse("US", "&ltunknown&gt;")     //> res2: String = Washin
 
 	<p>Can one do without the <code>Map(...)</code>?</p>
 
-	<p>Problem: The number of <code>key -&gt; value</code> pairs passed to <code>Map</code> can vary. <br>
-	<br>
+	<p>Problem: The number of <code>key -&gt; value</code> pairs passed to <code>Map</code> can vary. <br/>
+	<br/>
 	We can accommodate this pattern using a <i>repeated parameter</i>:</p>
 
 	<pre><code>   def Polynom(bindings: (Int, Double)*) =
@@ -708,7 +709,7 @@ capitalOfCountry getOrElse("US", "&ltunknown&gt;")     //> res2: String = Washin
    
    Polynom(1 -&gt; 2.0, 3 -&gt; 4.0, 5 -&gt; 6.2)</code></pre>
 
-	<p>Inside the <code>Polynom</code> function, <code>bindings</code> is seen as a <br>
+	<p>Inside the <code>Polynom</code> function, <code>bindings</code> is seen as a <br/>
 	<code>Seq[(Int, Double)]</code>.</p>
 
 
@@ -721,7 +722,7 @@ capitalOfCountry getOrElse("US", "&ltunknown&gt;")     //> res2: String = Washin
   
   def + (other: Poly) : Poly = {
     val newKeySet = terms.keySet ++ other.terms.keySet
-	val setOfTuples = for(x <- newKeySet) yield
+	val setOfTuples = for(x &lt;- newKeySet) yield
       ( x -> (terms(x) + other.terms(x)))
 	new Poly(setOfTuples.toMap)
   } 
@@ -761,5 +762,5 @@ capitalOfCountry getOrElse("US", "&ltunknown&gt;")     //> res2: String = Washin
         <li><a href='http://codecheck.it/codecheck/files/1504202020dswxclakw577zitazqbeqsjs'>Problem 6</a></li> 
       </ul> 
       
-    </body>
+   </body>
   </html>
